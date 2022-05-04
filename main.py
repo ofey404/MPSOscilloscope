@@ -15,10 +15,14 @@ class OscilloscopeCtrl:
         model.startWorker()
 
     def _connectSignals(self):
-        self.view.mainwindow.actionDisplay.triggered.connect(
-            lambda: self.view.switchToPage(1))
-        self.model.worker.dataSignal.connect(self.view.canvas.addData)
+        self.view.mainwindow.actionDisplay.triggered.connect(lambda: self.model.readData.emit())
+        # self.model.worker.dataReady.connect(self.view.canvas.addData)
 
+def testWorker():
+    app = QApplication([])
+    model = OscilloscopeModel()
+    model.startWorker()
+    sys.exit(app.exec_())
 
 def main(argv):
     app = QApplication(argv)
@@ -33,3 +37,4 @@ def main(argv):
 if __name__ == "__main__":
     import sys
     main(sys.argv)
+    # testWorker()

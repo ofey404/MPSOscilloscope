@@ -106,22 +106,22 @@ class OscilloscopeUi(QMainWindow):
         self.mainwindow = MainWindow()
         self.mainwindow.setupUi(self)
 
-        page1 = QWidget()
+        # page1 = QWidget()
 
-        displayScreen = DisplayScreen()
-        displayScreen.setupUi(page1)
+        # displayScreen = DisplayScreen()
+        # displayScreen.setupUi(page1)
 
-        placeholder = displayScreen.plotPlaceHolder
-        self.canvas = CustomFigCanvas()
+        # placeholder = displayScreen.plotPlaceHolder
+        # self.canvas = CustomFigCanvas()
 
-        containing_layout = placeholder.parent().layout()
-        containing_layout.replaceWidget(placeholder, self.canvas)
+        # containing_layout = placeholder.parent().layout()
+        # containing_layout.replaceWidget(placeholder, self.canvas)
 
-        self.mainwindow.display.addWidget(page1)
-        self.mainwindow.display.setCurrentWidget(page1)
+        # self.mainwindow.display.addWidget(page1)
+        # self.mainwindow.display.setCurrentWidget(page1)
 
-        page2 = QWidget()
-        self.mainwindow.display.addWidget(page2)
+        # page2 = QWidget()
+        # self.mainwindow.display.addWidget(page2)
 
     def switchToPage(self, index):
         self.mainwindow.display.setCurrentIndex(index)
