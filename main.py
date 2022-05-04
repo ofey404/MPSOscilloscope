@@ -1,14 +1,14 @@
 # This Python file uses the following encoding: utf-8
-from mainwindow import Ui_MainWindow
+from mainwindow import Ui_MainWindow as MainWindow
+from displayscreen import Ui_Form as DisplayScreen
 import sys
 from PyQt5.QtCore import QObject, pyqtSignal
 import numpy as np
 from matplotlib.lines import Line2D
-from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QPushButton
+from PyQt5.QtWidgets import QMainWindow, QApplication, QLabel, QPushButton, QWidget
 from matplotlib.animation import TimedAnimation
 from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from numpy import place
 import matplotlib
 matplotlib.use("Qt5Agg")
 
@@ -111,12 +111,28 @@ class OscilloscopeUi(QMainWindow):
     def __init__(self) -> None:
         """View initializer."""
         super().__init__()
-        self._ui = Ui_MainWindow()
-        self._ui.setupUi(self)
+        self.ui = MainWindow()
+        self.ui.setupUi(self)
 
-        newWidget = CustomFigCanvas()
-        self._ui.display.addWidget(newWidget)
-        self._ui.display.setCurrentWidget(newWidget)
+        page1 = QWidget()
+
+        displayScreen = DisplayScreen()
+        displayScreen.setupUi(page1)
+
+        placeholder = displayScreen.plotPlaceHolder
+        new_widget = CustomFigCanvas()
+
+        containing_layout = placeholder.parent().layout()
+        containing_layout.replaceWidget(placeholder, new_widget)
+
+        self.ui.display.addWidget(page1)
+        self.ui.display.setCurrentWidget(page1)
+
+        page2 = QWidget()
+        self.ui.display.addWidget(page2)
+
+    def switchToPage(self, index):
+        self.ui.display.setCurrentIndex(index)
 
     def setDisplayWaveform(self, data):
         pass
@@ -129,22 +145,25 @@ class OscilloscopeUi(QMainWindow):
         pass
 
 
-class OscilloscopeCtrl:
-    """MPS Oscilloscope's controller class."""
-
-    def __init__(self, model, view: OscilloscopeUi):
-        self.model = model
-        self._view = view
-
-    def _connectSignals(self):
-        pass
-
 
 class OscilloscopeModel:
     """MPS Oscilloscope's model."""
 
     def __init__(self):
         pass
+
+class OscilloscopeCtrl:
+    """MPS Oscilloscope's controller class."""
+
+    def __init__(self, model: OscilloscopeModel, view: OscilloscopeUi):
+        self.model = model
+        self.view = view
+
+        self._connectSignals()
+
+    def _connectSignals(self):
+        self.view.ui.actionDisplay.triggered.connect(lambda: self.view.switchToPage(1))
+
 
 
 if __name__ == "__main__":
