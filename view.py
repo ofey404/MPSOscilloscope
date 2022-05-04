@@ -5,8 +5,7 @@ from matplotlib.backends.backend_qt4agg import \
     FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
-from PyQt5.QtWidgets import (QApplication, QLabel, QMainWindow, QPushButton,
-                             QWidget)
+from PyQt5.QtWidgets import QMainWindow, QWidget
 
 from displayscreen import Ui_Form as DisplayScreen
 from mainwindow import Ui_MainWindow as MainWindow
