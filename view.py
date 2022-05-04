@@ -7,8 +7,8 @@ from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 from PyQt5.QtWidgets import QMainWindow, QWidget
 
-from displayscreen import Ui_Form as DisplayScreen
-from mainwindow import Ui_MainWindow as MainWindow
+from ui.displayscreen import Ui_Form as DisplayScreen
+from ui.mainwindow import Ui_MainWindow as MainWindow
 
 matplotlib.use("Qt5Agg")
 

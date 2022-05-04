@@ -4,7 +4,7 @@ from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QMutex, QTimer
 
 
-class WorkerSharedState:
+class WorkerConfig:
     """Shared state between Model and Worker.
     Access with lock!
     """
@@ -29,12 +29,12 @@ class MPSWorker(QObject):
     def __init__(self):
         super().__init__()
 
-        self.sharedState = WorkerSharedState()
+        self.config = WorkerConfig()
 
         self.card = MPS060602(
-            device_number=self.sharedState.deviceNumber,
-            para=self.sharedState.parameter,
-            buffer_size=self.sharedState.bufferSize
+            device_number=self.config.deviceNumber,
+            para=self.config.parameter,
+            buffer_size=self.config.bufferSize
         )
 
     def start(self):
@@ -62,7 +62,7 @@ class MPSWorker(QObject):
 
 class OscilloscopeModel(QObject):
     """MPS Oscilloscope's model."""
-    updateConfig = pyqtSignal(WorkerSharedState)
+    updateConfig = pyqtSignal(WorkerConfig)
     readData = pyqtSignal()
 
     def __init__(self):
