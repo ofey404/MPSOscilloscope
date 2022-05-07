@@ -1,4 +1,5 @@
 from ctypes import c_ushort
+import logging
 from dataclasses import dataclass
 
 from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
@@ -6,6 +7,7 @@ from PyQt5.QtCore import QObject, QTimer, pyqtSignal
 
 from .utils import Pool, LeakQueue
 
+logger = logging.getLogger(__name__)
 
 DEVICE_NUMBER = 0
 
@@ -47,6 +49,7 @@ def _initGlobalCard():
         buffer_size=BUFFER_SIZE
     )
     GLOBAL_CARD.start()
+    logger.info("MPS060602 card started")
 
 
 def _initWorkerGlobalState():
@@ -65,12 +68,12 @@ class MPSDataWorker(QObject):
         self.poller = QTimer()
         self.poller.timeout.connect(self.dataIn)
         self.poller.start(0)
+        logger.info(f"Data worker started")
 
     def stop(self):
         print("stopped!")
 
     def dataIn(self):
-        print("dataIn!")
         block = GLOBAL_STATE.pool.alloc()
 
         GLOBAL_CARD._data_into_buffer(block.buffer)
@@ -97,9 +100,10 @@ class PostProcessWorker(QObject):
         self.poller = QTimer()
         self.poller.timeout.connect(self.process)
         self.poller.start(self.timeoutMs)
+        logger.info(f"Post process worker started")
 
     def process(self):
-        print("Processor working.")
+        logger.info("Processor working.")
         block = GLOBAL_STATE.leakQueue.get()
 
         # Do copy manually, since PyQt object is never auto copied in signals.

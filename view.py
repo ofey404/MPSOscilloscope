@@ -48,7 +48,8 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
     def addData(self, value):
         # self.addedData.append(value)
-        print(f"data added, {value}")
+        # print(f"data added, {value}")
+        pass
 
     def _step(self, *args):
         # Extends the _step() method for the TimedAnimation class.

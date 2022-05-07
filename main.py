@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QApplication
+import logging
 
 from model import OscilloscopeModel
 from view import OscilloscopeUi
@@ -21,6 +22,8 @@ class OscilloscopeCtrl:
         # self.model.worker.dataReady.connect(self.view.canvas.addData)
 
 def main(argv):
+    logging.basicConfig(level=logging.INFO)
+
     app = QApplication(argv)
     view = OscilloscopeUi()
     view.show()
