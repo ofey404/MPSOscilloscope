@@ -1,6 +1,6 @@
 import time
 import typing
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from itertools import cycle
 
 from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
@@ -8,25 +8,59 @@ from PyQt5.QtCore import (QMutex, QMutexLocker, QObject, QReadWriteLock,
                           QThread, QTimer, pyqtSignal, QReadLocker)
 
 
+@dataclass
+class DataBlock:
+    buffer: list = field(default_factory=list)
+    mutex: QMutex = QMutex()
+
+
+class BlockPool:
+    def __init__(self, size: int):
+        self.available = [DataBlock() for _ in range(size)]
+
+    def release(self, block: DataBlock):
+        if block.mutex.tryLock():
+            self.available.append(block)
+            block.mutex.unlock()
+            return
+        raise Exception("Shouldn't return locked block!")
+
+    def alloc(self):
+        if self.available:
+            return self.available.pop()
+        raise Exception("Block pool should not expire!")
+
+
+@dataclass
 class WorkerConfig:
-    """Shared state between Model and Worker."""
+    deviceNumber: int = 0
+    bufferSize: int = 2048
+    settingChanged: bool = False
+    parameter: MPS060602Para = MPS060602Para(
+        ADChannel=ADChannelMode.in1,
+        ADSampleRate=10000,
+        Gain=PGAAmpRate.range_10V,
+    )
 
-    def __init__(self):
-        self.parameter = MPS060602Para(
-            ADChannel=ADChannelMode.in1,
-            ADSampleRate=10000,
-            Gain=PGAAmpRate.range_10V,
-        )
-        self.deviceNumber = 0
-        self.bufferSize = 2048
+@dataclass
+class Billboard:
+    block: DataBlock = None
+    mutex: QMutex = QMutex()    
 
-        self.settingChanged = False
+@dataclass()
+class ModelSharedState:
+    config: WorkerConfig
+    pool: BlockPool
+
+    # DataWorker post latest data to the board,
+    # while postprocess worker check and visualize it.
+    board: Billboard
 
 
-class MPSDataAquireWorker(QObject):
+class MPSDataWorker(QObject):
     dataReady = pyqtSignal(list)
 
-    def __init__(self):
+    def __init__(self, state: ModelSharedState):
         super().__init__()
 
         self.config = WorkerConfig()
@@ -35,6 +69,7 @@ class MPSDataAquireWorker(QObject):
             para=self.config.parameter,
             buffer_size=self.config.bufferSize
         )
+        self.state = state
 
     def start(self):
         # https://stackoverflow.com/questions/68163578/stopping-an-infinite-loop-in-a-worker-thread-in-pyqt5-the-simplest-way
@@ -59,10 +94,11 @@ class MPSDataAquireWorker(QObject):
 
 
 class PostProcessWorker(QObject):
-    def __init__(self, frameRate: int = 24):
+    def __init__(self, state: ModelSharedState, frameRate: int = 24):
         super().__init__()
 
         self.timeoutMs = 1000 / frameRate
+        self.state = state
 
     def start(self):
         self.poller = QTimer()
@@ -85,10 +121,15 @@ class OscilloscopeModel(QObject):
 
     def __init__(self):
         super().__init__()
-        self.dataWorker = MPSDataAquireWorker()
+        sharedState = ModelSharedState(
+            config=WorkerConfig(),
+            pool=BlockPool(20),
+            board=Billboard()
+        )
+        self.dataWorker = MPSDataWorker(sharedState)
         self.dataWorkerThread = self._moveToThread(self.dataWorker)
 
-        self.processor = PostProcessWorker(frameRate=60)
+        self.processor = PostProcessWorker(sharedState, frameRate=60)
         self.processorThread = self._moveToThread(self.processor)
 
         self._connectSignals()
