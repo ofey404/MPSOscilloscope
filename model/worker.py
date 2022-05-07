@@ -112,7 +112,7 @@ class PostProcessWorker(QObject):
         while True:
             volt = self._getVoltDataFromQueue()
             index = self.trigger.triggeredIndex(volt)
-            if index is None:
+            if (index is None) or (index > BUFFER_SIZE / 2):
                 continue
             break
 

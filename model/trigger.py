@@ -20,11 +20,18 @@ class EdgeTrigger(Trigger):
     def __init__(self,
                  volt: float = 0,
                  upEdge: bool = True,
-                 holdOffMs: int = 10
                  ) -> None:
         self.volt = volt
-        self.upEdge = upEdge
-        self.holdOff = holdOffMs
+
+        upEdgeCriterion = lambda data, lastData: data > self.volt and lastData < self.volt
+        downEdgeCriterion = lambda data, lastData: data < self.volt and lastData > self.volt
+        self.criterion = upEdgeCriterion if upEdge else downEdgeCriterion
+
 
     def triggeredIndex(self, waveformVolt: typing.Iterable[float]) -> "int | None":
-        return 0
+        lastData = waveformVolt[0]
+        for i, data in enumerate(waveformVolt):
+            if self.criterion(data, lastData):
+                return i
+            lastData = data
+        return None
