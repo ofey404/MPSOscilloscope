@@ -49,7 +49,7 @@ def _initGlobalCard():
         buffer_size=BUFFER_SIZE
     )
     GLOBAL_CARD.start()
-    logger.info("MPS060602 card started")
+    logger.info("MPS060602 card started.")
 
 
 def _initWorkerGlobalState():
@@ -68,7 +68,7 @@ class MPSDataWorker(QObject):
         self.poller = QTimer()
         self.poller.timeout.connect(self.dataIn)
         self.poller.start(0)
-        logger.info(f"Data worker started")
+        logger.info(f"Data worker started.")
 
     def stop(self):
         print("stopped!")
@@ -100,7 +100,7 @@ class PostProcessWorker(QObject):
         self.poller = QTimer()
         self.poller.timeout.connect(self.process)
         self.poller.start(self.timeoutMs)
-        logger.info(f"Post process worker started")
+        logger.info(f"Post process worker started.")
 
     def process(self):
         logger.info("Processor working.")

@@ -1,7 +1,10 @@
-import imp
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 
 from .worker import MPSDataWorker, PostProcessWorker, initWorkerGlobalInfo
+import logging
+
+
+logger = logging.getLogger(__name__)
 
 
 class OscilloscopeModel(QObject):
@@ -20,6 +23,7 @@ class OscilloscopeModel(QObject):
         self.processorThread = self._moveToThread(self.processor)
 
         self._connectSignals()
+        logger.info("Model inited.")
 
     def _connectSignals(self):
         self.dataWorkerThread.started.connect(self.dataWorker.start)
@@ -43,3 +47,4 @@ class OscilloscopeModel(QObject):
     def startWorker(self):
         self.dataWorkerThread.start()
         self.processorThread.start()
+        logger.info("Worker threads started.")

@@ -5,6 +5,9 @@ from model import OscilloscopeModel
 from view import OscilloscopeUi
 
 
+logger = logging.getLogger(__name__)
+
+
 class OscilloscopeCtrl:
     """MPS Oscilloscope's controller class."""
 
@@ -15,11 +18,15 @@ class OscilloscopeCtrl:
         self._connectSignals()
         model.startWorker()
 
+        logger.info("Controller inited.")
+
     def _connectSignals(self):
-        self.view.mainwindow.actionDisplay.triggered.connect(lambda: self.model.readData.emit())
+        self.view.mainwindow.actionDisplay.triggered.connect(
+            lambda: self.model.readData.emit())
 
         self.model.dataReady.connect(self.view.canvas.addData)
         # self.model.worker.dataReady.connect(self.view.canvas.addData)
+
 
 def main(argv):
     logging.basicConfig(level=logging.INFO)
@@ -30,7 +37,6 @@ def main(argv):
     model = OscilloscopeModel()
     OscilloscopeCtrl(model, view)
     sys.exit(app.exec_())
-
 
 
 if __name__ == "__main__":

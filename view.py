@@ -9,8 +9,12 @@ from PyQt5.QtWidgets import QMainWindow, QWidget
 
 from ui.displayscreen import Ui_Form as DisplayScreen
 from ui.mainwindow import Ui_MainWindow as MainWindow
+import logging
 
 matplotlib.use("Qt5Agg")
+
+
+logger = logging.getLogger(__name__)
 
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
@@ -37,12 +41,13 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=50, blit=True)
+        logger.info("View inited.")
 
     def new_frame_seq(self):
         return iter(range(self.n.size))
 
     def _init_draw(self):
-        lines = [self.line1,]
+        lines = [self.line1, ]
         for l in lines:
             l.set_data([], [])
 
@@ -70,7 +75,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
         self.line1.set_data(
             self.n[0:self.n.size - margin], self.y[0:self.n.size - margin])
-        self._drawn_artists = [self.line1,]
+        self._drawn_artists = [self.line1, ]
         for l in self._drawn_artists:
             l.set_animated(True)
 
