@@ -1,7 +1,7 @@
 import matplotlib
 import numpy as np
 from matplotlib.animation import TimedAnimation
-from matplotlib.backends.backend_qt4agg import \
+from matplotlib.backends.backend_qt5agg import \
     FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
@@ -21,14 +21,6 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         # The data
         self.xlim = 200
         self.n = np.linspace(0, self.xlim - 1, self.xlim)
-        a = []
-        b = []
-        a.append(2.0)
-        a.append(4.0)
-        a.append(2.0)
-        b.append(4.0)
-        b.append(3.0)
-        b.append(4.0)
         self.y = (self.n * 0.0) + 50
 
         # The window
@@ -39,12 +31,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         self.ax1.set_xlabel('time')
         self.ax1.set_ylabel('raw data')
         self.line1 = Line2D([], [], color='blue')
-        self.line1_tail = Line2D([], [], color='red', linewidth=2)
-        self.line1_head = Line2D(
-            [], [], color='red', marker='o', markeredgecolor='r')
         self.ax1.add_line(self.line1)
-        self.ax1.add_line(self.line1_tail)
-        self.ax1.add_line(self.line1_head)
         self.ax1.set_xlim(0, self.xlim - 1)
         self.ax1.set_ylim(0, 100)
 
@@ -55,20 +42,12 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         return iter(range(self.n.size))
 
     def _init_draw(self):
-        lines = [self.line1, self.line1_tail, self.line1_head]
+        lines = [self.line1,]
         for l in lines:
             l.set_data([], [])
 
     def addData(self, value):
         self.addedData.append(value)
-
-    def zoomIn(self, value):
-        bottom = self.ax1.get_ylim()[0]
-        top = self.ax1.get_ylim()[1]
-        bottom += value
-        top -= value
-        self.ax1.set_ylim(bottom, top)
-        self.draw()
 
     def _step(self, *args):
         # Extends the _step() method for the TimedAnimation class.
@@ -89,10 +68,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
         self.line1.set_data(
             self.n[0:self.n.size - margin], self.y[0:self.n.size - margin])
-        self.line1_tail.set_data(np.append(
-            self.n[-10:-1 - margin], self.n[-1 - margin]), np.append(self.y[-10:-1 - margin], self.y[-1 - margin]))
-        self.line1_head.set_data(self.n[-1 - margin], self.y[-1 - margin])
-        self._drawn_artists = [self.line1, self.line1_tail, self.line1_head]
+        self._drawn_artists = [self.line1,]
         for l in self._drawn_artists:
             l.set_animated(True)
 
@@ -106,22 +82,22 @@ class OscilloscopeUi(QMainWindow):
         self.mainwindow = MainWindow()
         self.mainwindow.setupUi(self)
 
-        # page1 = QWidget()
+        page1 = QWidget()
 
-        # displayScreen = DisplayScreen()
-        # displayScreen.setupUi(page1)
+        displayScreen = DisplayScreen()
+        displayScreen.setupUi(page1)
 
-        # placeholder = displayScreen.plotPlaceHolder
-        # self.canvas = CustomFigCanvas()
+        placeholder = displayScreen.plotPlaceHolder
+        self.canvas = CustomFigCanvas()
 
-        # containing_layout = placeholder.parent().layout()
-        # containing_layout.replaceWidget(placeholder, self.canvas)
+        containing_layout = placeholder.parent().layout()
+        containing_layout.replaceWidget(placeholder, self.canvas)
 
-        # self.mainwindow.display.addWidget(page1)
-        # self.mainwindow.display.setCurrentWidget(page1)
+        self.mainwindow.display.addWidget(page1)
+        self.mainwindow.display.setCurrentWidget(page1)
 
-        # page2 = QWidget()
-        # self.mainwindow.display.addWidget(page2)
+        page2 = QWidget()
+        self.mainwindow.display.addWidget(page2)
 
     def switchToPage(self, index):
         self.mainwindow.display.setCurrentIndex(index)

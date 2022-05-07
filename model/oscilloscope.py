@@ -1,17 +1,17 @@
 import time
+import typing
 from dataclasses import dataclass
+from itertools import cycle
+
 from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
-from PyQt5.QtCore import QObject, QThread, pyqtSignal, QMutex, QTimer
+from PyQt5.QtCore import (QMutex, QMutexLocker, QObject, QReadWriteLock,
+                          QThread, QTimer, pyqtSignal, QReadLocker)
 
 
 class WorkerConfig:
-    """Shared state between Model and Worker.
-    Access with lock!
-    """
+    """Shared state between Model and Worker."""
 
     def __init__(self):
-        self.mutex = QMutex()
-
         self.parameter = MPS060602Para(
             ADChannel=ADChannelMode.in1,
             ADSampleRate=10000,
@@ -23,14 +23,13 @@ class WorkerConfig:
         self.settingChanged = False
 
 
-class MPSWorker(QObject):
+class MPSDataAquireWorker(QObject):
     dataReady = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
 
         self.config = WorkerConfig()
-
         self.card = MPS060602(
             device_number=self.config.deviceNumber,
             para=self.config.parameter,
@@ -50,7 +49,6 @@ class MPSWorker(QObject):
 
     def dataIn(self):
         print("dataIn!")
-        time.sleep(1)
 
     def readData(self):
         data = [0, 1]
@@ -60,27 +58,53 @@ class MPSWorker(QObject):
         print("Config updated.")
 
 
+class PostProcessWorker(QObject):
+    def __init__(self, frameRate: int = 24):
+        super().__init__()
+
+        self.timeoutMs = 1000 / frameRate
+
+    def start(self):
+        self.poller = QTimer()
+        self.poller.timeout.connect(self.process)
+        self.poller.start(self.timeoutMs)
+
+    def process(self):
+        print("Processor working.")
+
+    def stop(self):
+        print("stopped!")
+
+    def updateConfig(self, config):
+        print("Processor config updated.")
+
+
 class OscilloscopeModel(QObject):
     """MPS Oscilloscope's model."""
     updateConfig = pyqtSignal(WorkerConfig)
-    readData = pyqtSignal()
 
     def __init__(self):
         super().__init__()
-        self.worker = MPSWorker()
-        self.thread = QThread()
+        self.dataWorker = MPSDataAquireWorker()
+        self.dataWorkerThread = self._moveToThread(self.dataWorker)
 
-        self.worker.moveToThread(self.thread)
+        self.processor = PostProcessWorker(frameRate=60)
+        self.processorThread = self._moveToThread(self.processor)
+
         self._connectSignals()
 
     def _connectSignals(self):
-        self.thread.started.connect(self.worker.start)
-        self.updateConfig.connect(self.worker.updateConfig)
-        self.readData.connect(self.worker.readData)
-        self.worker.dataReady.connect(self.processData)
+        self.dataWorkerThread.started.connect(self.dataWorker.start)
+        self.processorThread.started.connect(self.processor.start)
+
+        self.updateConfig.connect(self.dataWorker.updateConfig)
+        self.updateConfig.connect(self.processor.updateConfig)
+
+    def _moveToThread(self, object: QObject) -> QThread:
+        thread = QThread()
+        object.moveToThread(thread)
+        return thread
 
     def startWorker(self):
-        self.thread.start()
-
-    def processData(self, data):
-        print(f"processData={data}")
+        self.dataWorkerThread.start()
+        self.processorThread.start()
