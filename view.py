@@ -9,6 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QWidget
 
 from ui.displayscreen import Ui_Form as DisplayScreen
 from ui.mainwindow import Ui_MainWindow as MainWindow
+from model.worker import BUFFER_SIZE
 import logging
 
 matplotlib.use("Qt5Agg")
@@ -19,11 +20,10 @@ logger = logging.getLogger(__name__)
 
 class CustomFigCanvas(FigureCanvas, TimedAnimation):
     def __init__(self):
-        self.addedData = []
         print('Matplotlib Version:', matplotlib.__version__)
 
         # The data
-        self.xlim = 200
+        self.xlim = BUFFER_SIZE
         self.n = np.linspace(0, self.xlim - 1, self.xlim)
         self.y = (self.n * 0.0) + 50
 
@@ -37,7 +37,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         self.line1 = Line2D([], [], color='blue')
         self.ax1.add_line(self.line1)
         self.ax1.set_xlim(0, self.xlim - 1)
-        self.ax1.set_ylim(0, 100)
+        self.ax1.set_ylim(-1, 1)
 
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=50, blit=True)
@@ -54,7 +54,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
     def addData(self, value):
         # self.addedData.append(value)
         # print(f"data added, {value}")
-        pass
+        self.y = value
 
     def _step(self, *args):
         # Extends the _step() method for the TimedAnimation class.
@@ -68,13 +68,9 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
 
     def _draw_frame(self, framedata):
         margin = 2
-        while(len(self.addedData) > 0):
-            self.y = np.roll(self.y, -1)
-            self.y[-1] = self.addedData[0]
-            del(self.addedData[0])
 
         self.line1.set_data(
-            self.n[0:self.n.size - margin], self.y[0:self.n.size - margin])
+            self.n[0:len(self.y)], self.y)
         self._drawn_artists = [self.line1, ]
         for l in self._drawn_artists:
             l.set_animated(True)
