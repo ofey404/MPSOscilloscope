@@ -16,6 +16,8 @@ class OscilloscopeCtrl:
 
     def _connectSignals(self):
         self.view.mainwindow.actionDisplay.triggered.connect(lambda: self.model.readData.emit())
+
+        self.model.dataReady.connect(self.view.canvas.addData)
         # self.model.worker.dataReady.connect(self.view.canvas.addData)
 
 def testWorker():
