@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
 from PyQt5.QtCore import QObject, QThread, QTimer, pyqtSignal
 
-from .utils import Billboard, Pool
+from .utils import Pool, LeakQueue
 
 
 @dataclass
@@ -24,14 +24,11 @@ class WorkerConfig:
     )
 
 
-@dataclass()
 class ModelSharedState:
-    config: WorkerConfig
-    pool: Pool
-
-    # DataWorker post latest data to the board,
-    # while postprocess worker check and visualize it.
-    board: Billboard
+    def __init__(self, config: WorkerConfig) -> None:
+        self.config = config
+        self.pool = Pool(20, DataBlock)
+        self.queue = LeakQueue(maxsize=19, onKick=self.pool.retire)
 
 
 class MPSDataWorker(QObject):
@@ -47,7 +44,7 @@ class MPSDataWorker(QObject):
             buffer_size=self.config.bufferSize
         )
         self.pool = state.pool
-        self.board = state.board
+        self.queue = state.queue
 
     def start(self):
         # https://stackoverflow.com/questions/68163578/stopping-an-infinite-loop-in-a-worker-thread-in-pyqt5-the-simplest-way
@@ -67,12 +64,7 @@ class MPSDataWorker(QObject):
         # TODO: read data to block.buffer
         block.buffer = [time.time()]
 
-        # Post new data block.
-        old = self.board.atomicSwap(block)
-
-        # Retire unused data block.
-        if old is not None:
-            self.pool.retire(block)
+        self.queue.put(block)
 
     def readData(self):
         data = [0, 1]
@@ -89,7 +81,7 @@ class PostProcessWorker(QObject):
         super().__init__()
 
         self.timeoutMs = 1000 / frameRate
-        self.board = state.board
+        self.queue = state.queue
         self.pool = state.pool
 
     def start(self):
@@ -99,9 +91,8 @@ class PostProcessWorker(QObject):
 
     def process(self):
         print("Processor working.")
-        block = self.board.atomicSwap(None)
-        if block is None:
-            return
+        block = self.queue.get()
+
         # Do copy manually, since PyQt object is never auto copied in signals.
         self.dataReady.emit(block.buffer.copy())
 
@@ -123,9 +114,7 @@ class OscilloscopeModel(QObject):
     def __init__(self):
         super().__init__()
         sharedState = ModelSharedState(
-            config=WorkerConfig(),
-            pool=Pool(20, DataBlock),
-            board=Billboard()
+            config=WorkerConfig()
         )
         self.dataWorker = MPSDataWorker(sharedState)
         self.dataWorkerThread = self._moveToThread(self.dataWorker)

@@ -20,12 +20,6 @@ class OscilloscopeCtrl:
         self.model.dataReady.connect(self.view.canvas.addData)
         # self.model.worker.dataReady.connect(self.view.canvas.addData)
 
-def testWorker():
-    app = QApplication([])
-    model = OscilloscopeModel()
-    model.startWorker()
-    sys.exit(app.exec_())
-
 def main(argv):
     app = QApplication(argv)
     view = OscilloscopeUi()
@@ -39,4 +33,3 @@ def main(argv):
 if __name__ == "__main__":
     import sys
     main(sys.argv)
-    # testWorker()

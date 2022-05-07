@@ -1,7 +1,9 @@
+from tkinter import W
 from typing import Callable
 from dataclasses import dataclass
 
 
+from queue import Queue
 from PyQt5.QtCore import QMutex, QMutexLocker
 
 
@@ -20,17 +22,16 @@ class Pool:
         raise Exception("Pool should not expire!")
 
 
-@dataclass
-class Billboard:
-    """Object for thread synchronization.
-
-    Producer post block to billboard, then consumer take them away.
+class LeakQueue(Queue):
+    """Thread safe FIFO queue.
+       Kick last item when putting into full LeakQueue.
     """
-    block = None
-    mutex: QMutex = QMutex()
 
-    def atomicSwap(self, block):
-        with QMutexLocker(self.mutex):
-            oldBlock = self.block
-            self.block = block
-        return oldBlock
+    def __init__(self, maxsize: int, onKick: Callable = None) -> None:
+        super().__init__(maxsize)
+        self.onKick = onKick
+
+    def put(self, item, block=True, timeout=None):
+        if self.full() and (self.onKick is not None):
+            self.onKick(self.get())  # Discard last item.
+        super().put(item, block=block, timeout=timeout)
