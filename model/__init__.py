@@ -1,1 +1,1 @@
-from .oscilloscope import OscilloscopeModel
+from .model import OscilloscopeModel

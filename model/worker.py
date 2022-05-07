@@ -2,7 +2,7 @@ import time
 from dataclasses import dataclass, field
 
 from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
-from PyQt5.QtCore import QObject, QThread, QTimer, pyqtSignal
+from PyQt5.QtCore import QObject, QTimer, pyqtSignal
 
 from .utils import Pool, LeakQueue
 
@@ -24,7 +24,7 @@ class WorkerConfig:
     )
 
 
-class ModelSharedState:
+class WorkerSharedState:
     def __init__(self, config: WorkerConfig) -> None:
         self.config = config
         self.pool = Pool(20, DataBlock)
@@ -34,7 +34,7 @@ class ModelSharedState:
 class MPSDataWorker(QObject):
     dataReady = pyqtSignal(list)
 
-    def __init__(self, state: ModelSharedState):
+    def __init__(self, state: WorkerSharedState):
         super().__init__()
 
         self.config = state.config
@@ -62,6 +62,7 @@ class MPSDataWorker(QObject):
         block = self.pool.alloc()
 
         # TODO: read data to block.buffer
+        self.card.data_in()  # Mock.
         block.buffer = [time.time()]
 
         self.queue.put(block)
@@ -77,7 +78,7 @@ class MPSDataWorker(QObject):
 class PostProcessWorker(QObject):
     dataReady = pyqtSignal(list)
 
-    def __init__(self, state: ModelSharedState, frameRate: int = 24):
+    def __init__(self, state: WorkerSharedState, frameRate: int = 24):
         super().__init__()
 
         self.timeoutMs = 1000 / frameRate
@@ -104,45 +105,3 @@ class PostProcessWorker(QObject):
 
     def updateConfig(self, config):
         print("Processor config updated.")
-
-
-class OscilloscopeModel(QObject):
-    """MPS Oscilloscope's model."""
-    updateConfig = pyqtSignal(WorkerConfig)
-    dataReady = pyqtSignal(list)
-
-    def __init__(self):
-        super().__init__()
-        sharedState = ModelSharedState(
-            config=WorkerConfig()
-        )
-        self.dataWorker = MPSDataWorker(sharedState)
-        self.dataWorkerThread = self._moveToThread(self.dataWorker)
-
-        self.processor = PostProcessWorker(sharedState, frameRate=60)
-        self.processorThread = self._moveToThread(self.processor)
-
-        self._connectSignals()
-
-    def _connectSignals(self):
-        self.dataWorkerThread.started.connect(self.dataWorker.start)
-        self.processorThread.started.connect(self.processor.start)
-
-        # Signal from workers.
-        self.processor.dataReady.connect(self._dataReady)
-
-        # To workers.
-        self.updateConfig.connect(self.dataWorker.updateConfig)
-        self.updateConfig.connect(self.processor.updateConfig)
-
-    def _moveToThread(self, object: QObject) -> QThread:
-        thread = QThread()
-        object.moveToThread(thread)
-        return thread
-
-    def _dataReady(self, data):
-        self.dataReady.emit(data)
-
-    def startWorker(self):
-        self.dataWorkerThread.start()
-        self.processorThread.start()

@@ -1,10 +1,8 @@
 from tkinter import W
 from typing import Callable
-from dataclasses import dataclass
 
 
 from queue import Queue
-from PyQt5.QtCore import QMutex, QMutexLocker
 
 
 class Pool:
@@ -33,5 +31,6 @@ class LeakQueue(Queue):
 
     def put(self, item, block=True, timeout=None):
         if self.full() and (self.onKick is not None):
-            self.onKick(self.get())  # Discard last item.
+            # Use _get(): Discard last item, without notifying other threads.
+            self.onKick(self._get())
         super().put(item, block=block, timeout=timeout)
