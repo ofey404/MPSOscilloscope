@@ -1,6 +1,8 @@
 from ctypes import c_ushort
 import logging
+import typing
 from dataclasses import dataclass
+from .trigger import EdgeTrigger
 
 from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
 from PyQt5.QtCore import QObject, QTimer, pyqtSignal
@@ -95,6 +97,7 @@ class PostProcessWorker(QObject):
         super().__init__()
 
         self.timeoutMs = 1000 / frameRate
+        self.trigger = EdgeTrigger()
 
     def start(self):
         self.poller = QTimer()
@@ -104,14 +107,25 @@ class PostProcessWorker(QObject):
 
     def process(self):
         logger.info("Processor working.")
+
+        # Trigger
+        while True:
+            volt = self._getVoltDataFromQueue()
+            index = self.trigger.triggeredIndex(volt)
+            if index is None:
+                continue
+            break
+
+        self.dataReady.emit(volt[index:])
+
+    def _getVoltDataFromQueue(self) -> typing.List[float]:
         block = GLOBAL_STATE.leakQueue.get()
 
         # Do copy manually, since PyQt object is never auto copied in signals.
         volt = [GLOBAL_CARD.to_volt(dataPoint) for dataPoint in block.buffer]
-        self.dataReady.emit(volt)
-
         # Return block to memory pool.
         GLOBAL_STATE.pool.retire(block)
+        return volt
 
     def stop(self):
         print("stopped!")
