@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
 from PyQt5.QtCore import QObject, QTimer, pyqtSignal
-from numpy import block
 
 from .utils import Pool, LeakQueue
 
@@ -27,7 +26,7 @@ class DataBlock:
 class WorkerSharedState:
     def __init__(self, queueSize=20, workerNumber=1) -> None:
         self.pool = Pool(queueSize+workerNumber, DataBlock)
-        self.queue = LeakQueue(maxsize=queueSize, onKick=self.pool.retire)
+        self.leakQueue = LeakQueue(maxsize=queueSize, onKick=self.pool.retire)
 
 
 # Global States.
@@ -74,15 +73,15 @@ class MPSDataWorker(QObject):
         print("dataIn!")
         block = GLOBAL_STATE.pool.alloc()
 
-        # TODO: read data to block.buffer
-        GLOBAL_CARD._data_into_buffer(block.buffer)  # Mock.
-        GLOBAL_STATE.queue.put(block)
+        GLOBAL_CARD._data_into_buffer(block.buffer)
+        GLOBAL_STATE.leakQueue.put(block)
 
     def readData(self):
         data = [0, 1]
         self.dataReady.emit(data)
 
     def updateConfig(self, config):
+        """DataWorker must be paused while updating card info."""
         print("Config updated.")
 
 
@@ -101,7 +100,7 @@ class PostProcessWorker(QObject):
 
     def process(self):
         print("Processor working.")
-        block = GLOBAL_STATE.queue.get()
+        block = GLOBAL_STATE.leakQueue.get()
 
         # Do copy manually, since PyQt object is never auto copied in signals.
         volt = [GLOBAL_CARD.to_volt(dataPoint) for dataPoint in block.buffer]

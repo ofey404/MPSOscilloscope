@@ -1,7 +1,7 @@
 import imp
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 
-from .worker import WorkerSharedState, MPSDataWorker, PostProcessWorker, initWorkerGlobalInfo
+from .worker import MPSDataWorker, PostProcessWorker, initWorkerGlobalInfo
 
 
 class OscilloscopeModel(QObject):
