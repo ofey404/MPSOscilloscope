@@ -1,23 +1,22 @@
 import imp
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 
-from .worker import WorkerConfig, WorkerSharedState, MPSDataWorker, PostProcessWorker
+from .worker import WorkerSharedState, MPSDataWorker, PostProcessWorker, initWorkerGlobalInfo
 
 
 class OscilloscopeModel(QObject):
     """MPS Oscilloscope's model."""
-    updateConfig = pyqtSignal(WorkerConfig)
+    updateConfig = pyqtSignal(int)
     dataReady = pyqtSignal(list)
 
     def __init__(self):
         super().__init__()
-        sharedState = WorkerSharedState(
-            config=WorkerConfig()
-        )
-        self.dataWorker = MPSDataWorker(sharedState)
+        initWorkerGlobalInfo()
+
+        self.dataWorker = MPSDataWorker()
         self.dataWorkerThread = self._moveToThread(self.dataWorker)
 
-        self.processor = PostProcessWorker(sharedState, frameRate=60)
+        self.processor = PostProcessWorker(frameRate=60)
         self.processorThread = self._moveToThread(self.processor)
 
         self._connectSignals()

@@ -1,50 +1,65 @@
-import time
-from dataclasses import dataclass, field
+from ctypes import c_ushort
+from dataclasses import dataclass
 
 from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
 from PyQt5.QtCore import QObject, QTimer, pyqtSignal
+from numpy import block
 
 from .utils import Pool, LeakQueue
 
 
+DEVICE_NUMBER = 0
+
+PARAMETER = MPS060602Para(
+    ADChannel=ADChannelMode.in1,
+    ADSampleRate=10000,
+    Gain=PGAAmpRate.range_10V,
+)
+
+BUFFER_SIZE: int = 2048
+
+
 @dataclass
 class DataBlock:
-    buffer: list = field(default_factory=list)
-
-
-@dataclass
-class WorkerConfig:
-    deviceNumber: int = 0
-    bufferSize: int = 2048
-    settingChanged: bool = False
-    parameter: MPS060602Para = MPS060602Para(
-        ADChannel=ADChannelMode.in1,
-        ADSampleRate=10000,
-        Gain=PGAAmpRate.range_10V,
-    )
+    buffer = (c_ushort * BUFFER_SIZE)()
 
 
 class WorkerSharedState:
-    def __init__(self, config: WorkerConfig) -> None:
-        self.config = config
-        self.pool = Pool(20, DataBlock)
-        self.queue = LeakQueue(maxsize=19, onKick=self.pool.retire)
+    def __init__(self, queueSize=20, workerNumber=1) -> None:
+        self.pool = Pool(queueSize+workerNumber, DataBlock)
+        self.queue = LeakQueue(maxsize=queueSize, onKick=self.pool.retire)
+
+
+# Global States.
+GLOBAL_CARD: MPS060602 = None
+GLOBAL_STATE: WorkerSharedState = None
+
+
+def initWorkerGlobalInfo():
+    _initGlobalCard()
+    _initWorkerGlobalState()
+
+
+def _initGlobalCard():
+    global GLOBAL_CARD
+    GLOBAL_CARD = MPS060602(
+        device_number=DEVICE_NUMBER,
+        para=PARAMETER,
+        buffer_size=BUFFER_SIZE
+    )
+    GLOBAL_CARD.start()
+
+
+def _initWorkerGlobalState():
+    global GLOBAL_STATE
+    GLOBAL_STATE = WorkerSharedState()
 
 
 class MPSDataWorker(QObject):
     dataReady = pyqtSignal(list)
 
-    def __init__(self, state: WorkerSharedState):
+    def __init__(self):
         super().__init__()
-
-        self.config = state.config
-        self.card = MPS060602(
-            device_number=self.config.deviceNumber,
-            para=self.config.parameter,
-            buffer_size=self.config.bufferSize
-        )
-        self.pool = state.pool
-        self.queue = state.queue
 
     def start(self):
         # https://stackoverflow.com/questions/68163578/stopping-an-infinite-loop-in-a-worker-thread-in-pyqt5-the-simplest-way
@@ -52,20 +67,16 @@ class MPSDataWorker(QObject):
         self.poller.timeout.connect(self.dataIn)
         self.poller.start(0)
 
-        self.card.start()
-
     def stop(self):
         print("stopped!")
 
     def dataIn(self):
         print("dataIn!")
-        block = self.pool.alloc()
+        block = GLOBAL_STATE.pool.alloc()
 
         # TODO: read data to block.buffer
-        self.card.data_in()  # Mock.
-        block.buffer = [time.time()]
-
-        self.queue.put(block)
+        GLOBAL_CARD._data_into_buffer(block.buffer)  # Mock.
+        GLOBAL_STATE.queue.put(block)
 
     def readData(self):
         data = [0, 1]
@@ -78,12 +89,10 @@ class MPSDataWorker(QObject):
 class PostProcessWorker(QObject):
     dataReady = pyqtSignal(list)
 
-    def __init__(self, state: WorkerSharedState, frameRate: int = 24):
+    def __init__(self, frameRate: int = 24):
         super().__init__()
 
         self.timeoutMs = 1000 / frameRate
-        self.queue = state.queue
-        self.pool = state.pool
 
     def start(self):
         self.poller = QTimer()
@@ -92,13 +101,14 @@ class PostProcessWorker(QObject):
 
     def process(self):
         print("Processor working.")
-        block = self.queue.get()
+        block = GLOBAL_STATE.queue.get()
 
         # Do copy manually, since PyQt object is never auto copied in signals.
-        self.dataReady.emit(block.buffer.copy())
+        volt = [GLOBAL_CARD.to_volt(dataPoint) for dataPoint in block.buffer]
+        self.dataReady.emit(volt)
 
         # Return block to memory pool.
-        self.pool.retire(block)
+        GLOBAL_STATE.pool.retire(block)
 
     def stop(self):
         print("stopped!")
