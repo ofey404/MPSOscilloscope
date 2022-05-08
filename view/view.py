@@ -17,7 +17,7 @@ matplotlib.use("Qt5Agg")
 logger = logging.getLogger(__name__)
 
 
-class CustomFigCanvas(FigureCanvas, TimedAnimation):
+class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
     def __init__(self):
         print('Matplotlib Version:', matplotlib.__version__)
 
@@ -52,7 +52,7 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
     def _init_draw(self):
         pass
 
-    def addData(self, value):
+    def updateData(self, value):
         self.y = value
 
     def adjustTrigger(self, volt):
@@ -86,22 +86,18 @@ class OscilloscopeUi(QMainWindow):
         self.mainwindow = MainWindow()
         self.mainwindow.setupUi(self)
 
-        self.canvas = CustomFigCanvas()
+        self.display = OscilloscopeDisplay()
 
         # containing_layout = placeholder.parent().layout()
         # containing_layout.replaceWidget(placeholder, self.canvas)
-        self._replaceWidget(self.mainwindow.plotPlaceHolder, self.canvas)
+        self._replaceWidget(self.mainwindow.plotPlaceHolder, self.display)
 
     def _replaceWidget(self, placeholder: QWidget, new: QWidget):
         containing_layout = placeholder.parent().layout()
         containing_layout.replaceWidget(placeholder, new)
 
     def setDisplayWaveform(self, data):
-        pass
-
-    def displayWaveform(self):
-        """Get display's waveform"""
-        pass
+        self.display.updateData(data)
 
     def clearDisplay(self):
-        pass
+        self.display.y = []

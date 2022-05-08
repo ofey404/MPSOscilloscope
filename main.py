@@ -23,10 +23,10 @@ class OscilloscopeCtrl:
     def _connectSignals(self):
         model, view = self.model, self.view
 
-        model.dataReady.connect(view.canvas.addData)
+        model.dataReady.connect(view.display.updateData)
 
         model.configUpdated.connect(
-            lambda config: view.canvas.adjustTrigger(config.processor.triggerVolt)
+            lambda config: view.display.adjustTrigger(config.processor.triggerVolt)
         )
         view.mainwindow.actionDisplay.triggered.connect(model._changeTrigger)
 
