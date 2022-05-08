@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE QtCreatorProject>
-<!-- Written by QtCreator 7.0.0, 2022-05-04T23:32:54. -->
+<!-- Written by QtCreator 7.0.0, 2022-05-08T14:39:18. -->
 <qtcreator>
  <data>
   <variable>EnvironmentId</variable>
@@ -136,11 +136,11 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/mainwindow.py</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/mainwindow.py</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/mainwindow.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/view.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/view.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/view.py</value>
     <value type="QString" key="PythonEditor.RunConfiguation.Interpreter">{52500999-6dd6-4ff9-bc83-f5ac5dfbaedb}</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Script">C:\Users\ofey_\Code\GraduateProject\MPSOscilloscope\mainwindow.py</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">C:\Users\ofey_\Code\GraduateProject\MPSOscilloscope\view.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
@@ -154,10 +154,11 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/view.py</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/view.py</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/view.py</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Script">C:\Users\ofey_\Code\GraduateProject\MPSOscilloscope\view.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/README.md</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/README.md</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/README.md</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Interpreter">{52500999-6dd6-4ff9-bc83-f5ac5dfbaedb}</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">C:\Users\ofey_\Code\GraduateProject\MPSOscilloscope\README.md</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
@@ -171,15 +172,15 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/model.py</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/model.py</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/model.py</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Script">C:\Users\ofey_\Code\GraduateProject\MPSOscilloscope\model.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/ui/mainwindow.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/ui/mainwindow.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/ui/mainwindow.py</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">C:\Users\ofey_\Code\GraduateProject\MPSOscilloscope\ui\mainwindow.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/ui</value>
    </valuemap>
    <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.4">
     <value type="bool" key="Analyzer.Perf.Settings.UseGlobalSettings">true</value>
@@ -188,34 +189,17 @@
     <valuelist type="QVariantList" key="CustomOutputParsers"/>
     <value type="int" key="PE.EnvironmentAspect.Base">2</value>
     <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/README.md</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/README.md</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/README.md</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Script">C:\Users\ofey_\Code\GraduateProject\MPSOscilloscope\README.md</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/ui/displayscreen.py</value>
+    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/ui/displayscreen.py</value>
+    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/ui/displayscreen.py</value>
+    <value type="QString" key="PythonEditor.RunConfiguation.Script">C:\Users\ofey_\Code\GraduateProject\MPSOscilloscope\ui\displayscreen.py</value>
     <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
     <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
     <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope</value>
+    <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/ui</value>
    </valuemap>
-   <valuemap type="QVariantMap" key="ProjectExplorer.Target.RunConfiguration.5">
-    <value type="bool" key="Analyzer.Perf.Settings.UseGlobalSettings">true</value>
-    <value type="bool" key="Analyzer.QmlProfiler.Settings.UseGlobalSettings">true</value>
-    <value type="bool" key="Analyzer.Valgrind.Settings.UseGlobalSettings">true</value>
-    <valuelist type="QVariantList" key="CustomOutputParsers"/>
-    <value type="int" key="PE.EnvironmentAspect.Base">2</value>
-    <valuelist type="QVariantList" key="PE.EnvironmentAspect.Changes"/>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.DisplayName">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/displayscreen.py</value>
-    <value type="QString" key="ProjectExplorer.ProjectConfiguration.Id">PythonEditor.RunConfiguration.C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/displayscreen.py</value>
-    <value type="QString" key="ProjectExplorer.RunConfiguration.BuildKey">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope/displayscreen.py</value>
-    <value type="QString" key="PythonEditor.RunConfiguation.Script">C:\Users\ofey_\Code\GraduateProject\MPSOscilloscope\displayscreen.py</value>
-    <value type="bool" key="RunConfiguration.UseCppDebugger">false</value>
-    <value type="bool" key="RunConfiguration.UseCppDebuggerAuto">true</value>
-    <value type="bool" key="RunConfiguration.UseQmlDebugger">false</value>
-    <value type="bool" key="RunConfiguration.UseQmlDebuggerAuto">true</value>
-    <value type="QString" key="RunConfiguration.WorkingDirectory.default">C:/Users/ofey_/Code/GraduateProject/MPSOscilloscope</value>
-   </valuemap>
-   <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">6</value>
+   <value type="qlonglong" key="ProjectExplorer.Target.RunConfigurationCount">5</value>
   </valuemap>
  </data>
  <data>

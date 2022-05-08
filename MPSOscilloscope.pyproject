@@ -3,8 +3,6 @@
         "main.py",
         "ui/mainwindow.py",
         "ui/mainwindow.ui",
-        "ui/displayscreen.py",
-        "ui/displayscreen.ui",
         "view.py",
         "README.md"
     ]

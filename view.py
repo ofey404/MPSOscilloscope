@@ -7,7 +7,6 @@ from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 from PyQt5.QtWidgets import QMainWindow, QWidget
 
-from ui.displayscreen import Ui_Form as DisplayScreen
 from ui.mainwindow import Ui_MainWindow as MainWindow
 from model.worker import BUFFER_SIZE
 import logging
@@ -87,25 +86,15 @@ class OscilloscopeUi(QMainWindow):
         self.mainwindow = MainWindow()
         self.mainwindow.setupUi(self)
 
-        page1 = QWidget()
-
-        displayScreen = DisplayScreen()
-        displayScreen.setupUi(page1)
-
-        placeholder = displayScreen.plotPlaceHolder
         self.canvas = CustomFigCanvas()
 
+        # containing_layout = placeholder.parent().layout()
+        # containing_layout.replaceWidget(placeholder, self.canvas)
+        self._replaceWidget(self.mainwindow.plotPlaceHolder, self.canvas)
+
+    def _replaceWidget(self, placeholder: QWidget, new: QWidget):
         containing_layout = placeholder.parent().layout()
-        containing_layout.replaceWidget(placeholder, self.canvas)
-
-        self.mainwindow.display.addWidget(page1)
-        self.mainwindow.display.setCurrentWidget(page1)
-
-        page2 = QWidget()
-        self.mainwindow.display.addWidget(page2)
-
-    def switchToPage(self, index):
-        self.mainwindow.display.setCurrentIndex(index)
+        containing_layout.replaceWidget(placeholder, new)
 
     def setDisplayWaveform(self, data):
         pass

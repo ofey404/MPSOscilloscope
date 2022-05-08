@@ -68,8 +68,9 @@ class DataWorkerConfig:
 class MPSDataWorker(QObject):
     configUpdated = pyqtSignal(DataWorkerConfig)
 
-    def __init__(self):
+    def __init__(self, config: DataWorkerConfig):
         super().__init__()
+        self.config = config
 
     def start(self):
         # https://stackoverflow.com/questions/68163578/stopping-an-infinite-loop-in-a-worker-thread-in-pyqt5-the-simplest-way
@@ -77,9 +78,6 @@ class MPSDataWorker(QObject):
         self.poller.timeout.connect(self.dataIn)
         self.poller.start(0)
         logger.info(f"Data worker started.")
-
-    def stop(self):
-        print("stopped!")
 
     def dataIn(self):
         block = GLOBAL_STATE.pool.alloc()
@@ -100,23 +98,22 @@ class MPSDataWorker(QObject):
 @dataclass
 class ProcessorConfig:
     triggerVolt: float = None
+    timeoutMs: int = None
 
 
 class PostProcessWorker(QObject):
     dataReady = pyqtSignal(list)
     configUpdated = pyqtSignal(ProcessorConfig)
 
-    def __init__(self, frameRate: int = 24):
+    def __init__(self, config: ProcessorConfig):
         super().__init__()
-        self.config = ProcessorConfig(triggerVolt=0)
-
-        self.timeoutMs = 1000 / frameRate
+        self.config = config
         self._configure(self.config)
 
     def start(self):
         self.poller = QTimer()
         self.poller.timeout.connect(self.process)
-        self.poller.start(self.timeoutMs)
+        self.poller.start(self.config.timeoutMs)
         logger.info(f"Post process worker started.")
 
     def process(self):
@@ -137,9 +134,6 @@ class PostProcessWorker(QObject):
         # Return block to memory pool.
         GLOBAL_STATE.pool.retire(block)
         return volt
-
-    def stop(self):
-        print("stopped!")
 
     def _configure(self, config: ProcessorConfig):
         if config.triggerVolt is not None:

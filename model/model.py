@@ -29,13 +29,13 @@ class OscilloscopeModel(QObject):
 
         self.config = ModelConfig(
             dataWorker=DataWorkerConfig(),
-            processor=ProcessorConfig(triggerVolt=0)
+            processor=ProcessorConfig(triggerVolt=0, timeoutMs=1000 / 60)
         )
 
-        self.dataWorker = MPSDataWorker()
+        self.dataWorker = MPSDataWorker(self.config.dataWorker)
         self.dataWorkerThread = self._moveToThread(self.dataWorker)
 
-        self.processor = PostProcessWorker(frameRate=60)
+        self.processor = PostProcessWorker(self.config.processor)
         self.processorThread = self._moveToThread(self.processor)
 
         self._connectSignals()
