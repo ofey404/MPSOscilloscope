@@ -2,6 +2,7 @@ from ctypes import c_ushort
 import logging
 import typing
 from dataclasses import dataclass
+
 from .trigger import EdgeTrigger
 
 from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
@@ -59,8 +60,13 @@ def _initWorkerGlobalState():
     GLOBAL_STATE = WorkerSharedState()
 
 
+@dataclass
+class DataWorkerConfig:
+    pass
+
+
 class MPSDataWorker(QObject):
-    dataReady = pyqtSignal(list)
+    configUpdated = pyqtSignal(DataWorkerConfig)
 
     def __init__(self):
         super().__init__()
@@ -81,23 +87,31 @@ class MPSDataWorker(QObject):
         GLOBAL_CARD._data_into_buffer(block.buffer)
         GLOBAL_STATE.leakQueue.put(block)
 
-    def readData(self):
-        data = [0, 1]
-        self.dataReady.emit(data)
+    def _configure(self, config: DataWorkerConfig):
+        ...
 
-    def updateConfig(self, config):
+    def updateConfig(self, config: DataWorkerConfig):
         """DataWorker must be paused while updating card info."""
         print("Config updated.")
+        self._configure(config)
+        self.configUpdated.emit()
+
+
+@dataclass
+class ProcessorConfig:
+    triggerVolt: float = None
 
 
 class PostProcessWorker(QObject):
     dataReady = pyqtSignal(list)
+    configUpdated = pyqtSignal(ProcessorConfig)
 
     def __init__(self, frameRate: int = 24):
         super().__init__()
+        self.config = ProcessorConfig(triggerVolt=0)
 
         self.timeoutMs = 1000 / frameRate
-        self.trigger = EdgeTrigger()
+        self._configure(self.config)
 
     def start(self):
         self.poller = QTimer()
@@ -106,9 +120,6 @@ class PostProcessWorker(QObject):
         logger.info(f"Post process worker started.")
 
     def process(self):
-        logger.info("Processor working.")
-
-        # Trigger
         while True:
             volt = self._getVoltDataFromQueue()
             index = self.trigger.triggeredIndex(volt)
@@ -130,5 +141,12 @@ class PostProcessWorker(QObject):
     def stop(self):
         print("stopped!")
 
-    def updateConfig(self, config):
-        print("Processor config updated.")
+    def _configure(self, config: ProcessorConfig):
+        if config.triggerVolt is not None:
+            self.config.triggerVolt = config.triggerVolt
+            self.trigger = EdgeTrigger(volt=config.triggerVolt)
+
+    def updateConfig(self, config: ProcessorConfig):
+        self._configure(config)
+        logger.info("Processor config updated.")
+        self.configUpdated.emit(self.config)

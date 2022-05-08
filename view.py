@@ -23,9 +23,10 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         print('Matplotlib Version:', matplotlib.__version__)
 
         # The data
-        self.xlim = BUFFER_SIZE
-        self.n = np.linspace(0, self.xlim - 1, self.xlim)
+        self.xlim = BUFFER_SIZE // 2
+        self.n = np.linspace(0, BUFFER_SIZE - 1, BUFFER_SIZE)
         self.y = (self.n * 0.0) + 50
+        self.trigger = 0
 
         # The window
         self.fig = Figure(figsize=(5, 5), dpi=100)
@@ -34,8 +35,11 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         # self.ax1 settings
         self.ax1.set_xlabel('time')
         self.ax1.set_ylabel('raw data')
-        self.line1 = Line2D([], [], color='blue')
-        self.ax1.add_line(self.line1)
+        self.dataLine = Line2D([], [], color='blue')
+        self.triggerLine = Line2D([], [], color='red')
+
+        self.ax1.add_line(self.dataLine)
+        self.ax1.add_line(self.triggerLine)
         self.ax1.set_xlim(0, self.xlim - 1)
         self.ax1.set_ylim(-1, 1)
 
@@ -44,17 +48,16 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
         logger.info("View inited.")
 
     def new_frame_seq(self):
-        return iter(range(self.n.size))
+        return iter(range(self.n.size + 20))
 
     def _init_draw(self):
-        lines = [self.line1, ]
-        for l in lines:
-            l.set_data([], [])
+        pass
 
     def addData(self, value):
-        # self.addedData.append(value)
-        # print(f"data added, {value}")
         self.y = value
+
+    def adjustTrigger(self, volt):
+        self.trigger = volt
 
     def _step(self, *args):
         # Extends the _step() method for the TimedAnimation class.
@@ -67,11 +70,10 @@ class CustomFigCanvas(FigureCanvas, TimedAnimation):
             pass
 
     def _draw_frame(self, framedata):
-        margin = 2
-
-        self.line1.set_data(
+        self.dataLine.set_data(
             self.n[0:len(self.y)], self.y)
-        self._drawn_artists = [self.line1, ]
+        self.triggerLine.set_data([0, BUFFER_SIZE], [self.trigger, self.trigger])
+        self._drawn_artists = [self.dataLine, self.triggerLine]
         for l in self._drawn_artists:
             l.set_animated(True)
 

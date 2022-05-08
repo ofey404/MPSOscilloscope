@@ -16,16 +16,19 @@ class OscilloscopeCtrl:
         self.view = view
 
         self._connectSignals()
-        model.startWorker()
+        model.start()
 
         logger.info("Controller inited.")
 
     def _connectSignals(self):
-        self.view.mainwindow.actionDisplay.triggered.connect(
-            lambda: self.model.readData.emit())
+        model, view = self.model, self.view
 
-        self.model.dataReady.connect(self.view.canvas.addData)
-        # self.model.worker.dataReady.connect(self.view.canvas.addData)
+        model.dataReady.connect(view.canvas.addData)
+
+        model.configUpdated.connect(
+            lambda config: view.canvas.adjustTrigger(config.processor.triggerVolt)
+        )
+        view.mainwindow.actionDisplay.triggered.connect(model._changeTrigger)
 
 
 def main(argv):
