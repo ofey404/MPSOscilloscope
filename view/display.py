@@ -28,15 +28,18 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         self.n = np.linspace(0, BUFFER_SIZE - 1, BUFFER_SIZE)
         self.y = (self.n * 0.0) + 50
         self.trigger = 0
+        self.nextTrigger = 0
 
         # The window
         self.fig, self.ax = self._init_fig()
 
         self.dataLine = Line2D([], [], color='blue')
         self.triggerLine = Line2D([], [], color='red')
+        self.nextTriggerLine = Line2D([], [], color='red', linestyle="--")
 
         self.ax.add_line(self.dataLine)
         self.ax.add_line(self.triggerLine)
+        self.ax.add_line(self.nextTriggerLine)
 
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=50, blit=True)
@@ -47,6 +50,9 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
     def adjustTrigger(self, volt):
         self.trigger = volt
+
+    def adjustNextTrigger(self, volt):
+        self.nextTrigger = volt
 
     def updateConfig(self, config: DisplayConfig):
         ...
@@ -87,6 +93,8 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
             self.n[0:len(self.y)], self.y)
         self.triggerLine.set_data(
             [0, BUFFER_SIZE], [self.trigger, self.trigger])
-        self._drawn_artists = [self.dataLine, self.triggerLine]
+        self.nextTriggerLine.set_data(
+            [0, BUFFER_SIZE], [self.nextTrigger, self.nextTrigger])
+        self._drawn_artists = [self.dataLine, self.triggerLine, self.nextTriggerLine]
         for l in self._drawn_artists:
             l.set_animated(True)

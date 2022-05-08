@@ -3,8 +3,8 @@ import logging
 from attr import dataclass
 
 from model import ModelConfig, ProcessorConfig
-from PyQt5.QtCore import pyqtSignal, QTimer
-from PyQt5.QtWidgets import QMainWindow, QWidget
+from PyQt5.QtCore import pyqtSignal, QTimer, QObject
+from PyQt5.QtWidgets import QMainWindow, QWidget, QSlider
 from ui.mainwindow import Ui_MainWindow as MainWindow
 
 from .display import OscilloscopeDisplay
@@ -17,6 +17,31 @@ class UIConfig:
     pendingOpTimeoutMs: int = 1000
 
 
+class DelayedSliderWrapper(QObject):
+    stoppedForTimeout = pyqtSignal(int)
+
+    def __init__(self, slider: QSlider, timeoutMs: int = 500):
+        super().__init__()
+        self.slider = slider
+        self.timer = QTimer()
+        self.moving = False
+        self._connectSignals()
+        self.lastSliderValue = self.slider.value()
+        self.timer.start(timeoutMs)
+
+    def _connectSignals(self):
+        self.timer.timeout.connect(self._checkSliderStopped)
+
+    def _checkSliderStopped(self):
+        if self.moving:
+            if self.lastSliderValue == self.slider.value():
+                self.moving = False
+                self.stoppedForTimeout.emit(self.lastSliderValue)
+        else:
+            if self.lastSliderValue != self.slider.value():
+                self.moving = True
+        self.lastSliderValue = self.slider.value()
+
 class OscilloscopeUi(QMainWindow):
     """MPS Oscilloscope's view (GUI)."""
     newModelConfig = pyqtSignal(ModelConfig)
@@ -27,18 +52,13 @@ class OscilloscopeUi(QMainWindow):
 
         self.config = UIConfig()
         self.mainwindow, self.display = self._setupUI()
-        self.timer = QTimer()
+        self.timeoutSlider = DelayedSliderWrapper(
+            self.mainwindow.triggerSlider)
         self._connectSignals()
-        self.timer.start(self.config.pendingOpTimeoutMs)
-
-        self._recordSliderValue()
 
     def _replaceWidget(self, placeholder: QWidget, new: QWidget):
         containing_layout = placeholder.parent().layout()
         containing_layout.replaceWidget(placeholder, new)
-
-    def _recordSliderValue(self):
-        self.lastSliderValue = self.mainwindow.triggerSlider.value()
 
     def updateData(self, data):
         self.display.updateData(data)
@@ -53,13 +73,6 @@ class OscilloscopeUi(QMainWindow):
         self._replaceWidget(mainwindow.displayPlaceHolder, display)
         return mainwindow, display
 
-    def _applyPendingOps(self):
-        sliderStopped = (self.lastSliderValue ==
-                         self.mainwindow.triggerSlider.value())
-        sliderChanged = (self.display.trigger != self.lastSliderValue)
-        if sliderChanged and sliderStopped:
-            self.display.adjustTrigger(volt=(self.lastSliderValue - 50) / 100)
-
     def debugAction(self):
         self.newModelConfig.emit(ModelConfig(
             processor=ProcessorConfig(triggerVolt=0.1)))
@@ -67,5 +80,9 @@ class OscilloscopeUi(QMainWindow):
 
     def _connectSignals(self):
         self.mainwindow.actionDebug.triggered.connect(self.debugAction)
-        self.mainwindow.triggerSlider.valueChanged.connect(self._recordSliderValue)
-        self.timer.timeout.connect(self._applyPendingOps)
+        self.timeoutSlider.slider.valueChanged.connect(
+            lambda value: self.display.adjustNextTrigger((value - 50) / 100)
+        )
+        self.timeoutSlider.stoppedForTimeout.connect(
+            lambda value: self.display.adjustTrigger((value - 50) / 100)
+        )
