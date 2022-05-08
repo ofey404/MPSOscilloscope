@@ -16,7 +16,7 @@ DEVICE_NUMBER = 0
 
 PARAMETER = MPS060602Para(
     ADChannel=ADChannelMode.in1,
-    ADSampleRate=10000,
+    ADSampleRate=450000,
     Gain=PGAAmpRate.range_10V,
 )
 
@@ -90,7 +90,7 @@ class MPSDataWorker(QObject):
 
     def updateConfig(self, config: DataWorkerConfig):
         """DataWorker must be paused while updating card info."""
-        print("Config updated.")
+        logger.info("DataWorker config updated.")
         self._configure(config)
         self.configUpdated.emit()
 

@@ -35,7 +35,8 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         self.dataLine = Line2D([], [], color='blue')
         self.triggerLine = Line2D([], [], color='red')
-        self.nextTriggerDashedLine = Line2D([], [], color='red', linestyle="--")
+        self.nextTriggerDashedLine = Line2D(
+            [], [], color='red', linestyle="--")
 
         self.ax.add_line(self.dataLine)
         self.ax.add_line(self.triggerLine)
@@ -78,16 +79,6 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
     def _init_draw(self):
         pass
 
-    def _step(self, *args):
-        # Extends the _step() method for the TimedAnimation class.
-        try:
-            TimedAnimation._step(self, *args)
-        except Exception as e:
-            self.abc += 1
-            print(str(self.abc))
-            TimedAnimation._stop(self)
-            pass
-
     def _draw_frame(self, framedata):
         self.dataLine.set_data(
             self.n[0:len(self.y)], self.y)
@@ -95,6 +86,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
             [0, BUFFER_SIZE], [self.trigger, self.trigger])
         self.nextTriggerDashedLine.set_data(
             [0, BUFFER_SIZE], [self.nextTriggerIndicator, self.nextTriggerIndicator])
-        self._drawn_artists = [self.dataLine, self.triggerLine, self.nextTriggerDashedLine]
+        self._drawn_artists = [self.dataLine,
+                               self.triggerLine, self.nextTriggerDashedLine]
         for l in self._drawn_artists:
             l.set_animated(True)
