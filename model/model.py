@@ -29,7 +29,7 @@ class OscilloscopeModel(QObject):
 
         self.config = ModelConfig(
             dataWorker=DataWorkerConfig(),
-            processor=ProcessorConfig(triggerVolt=0, timeoutMs=1000 / 60)
+            processor=ProcessorConfig(triggerVolt=0, timeoutMs=1000 / 60, triggerRetryNum=5)
         )
 
         self.dataWorker = MPSDataWorker(self.config.dataWorker)

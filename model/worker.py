@@ -99,6 +99,7 @@ class MPSDataWorker(QObject):
 class ProcessorConfig:
     triggerVolt: float = None
     timeoutMs: int = None
+    triggerRetryNum: int = None
 
 
 class PostProcessWorker(QObject):
@@ -117,14 +118,16 @@ class PostProcessWorker(QObject):
         logger.info(f"Post process worker started.")
 
     def process(self):
-        while True:
+        for _ in range(self.config.triggerRetryNum):
             volt = self._getVoltDataFromQueue()
             index = self.trigger.triggeredIndex(volt)
             if (index is None) or (index > BUFFER_SIZE / 2):
                 continue
-            break
+            self.dataReady.emit(volt[index:])
+            return
 
-        self.dataReady.emit(volt[index:])
+        # Trigger failed, emit the whole waveform.
+        self.dataReady.emit(volt)
 
     def _getVoltDataFromQueue(self) -> typing.List[float]:
         block = GLOBAL_STATE.leakQueue.get()

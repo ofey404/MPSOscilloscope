@@ -20,7 +20,7 @@ class UIConfig:
 class DelayedSliderWrapper(QObject):
     stoppedForTimeout = pyqtSignal(int)
 
-    def __init__(self, slider: QSlider, timeoutMs: int = 500):
+    def __init__(self, slider: QSlider, timeoutMs: int = 100):
         super().__init__()
         self.slider = slider
         self.timer = QTimer()
@@ -42,6 +42,7 @@ class DelayedSliderWrapper(QObject):
                 self.moving = True
         self.lastSliderValue = self.slider.value()
 
+
 class OscilloscopeUi(QMainWindow):
     """MPS Oscilloscope's view (GUI)."""
     newModelConfig = pyqtSignal(ModelConfig)
@@ -52,7 +53,7 @@ class OscilloscopeUi(QMainWindow):
 
         self.config = UIConfig()
         self.mainwindow, self.display = self._setupUI()
-        self.timeoutSlider = DelayedSliderWrapper(
+        self.trigger = DelayedSliderWrapper(
             self.mainwindow.triggerSlider)
         self._connectSignals()
 
@@ -78,11 +79,16 @@ class OscilloscopeUi(QMainWindow):
             processor=ProcessorConfig(triggerVolt=0.1)))
         logger.info("Debug action triggered")
 
+    def adjustTrigger(self):
+        triggerVolt = (self.trigger.slider.value() - 50) / 100
+        self.newModelConfig.emit(ModelConfig(
+            processor=ProcessorConfig(triggerVolt=triggerVolt)))
+        self.display.adjustTrigger(volt=triggerVolt)
+
     def _connectSignals(self):
         self.mainwindow.actionDebug.triggered.connect(self.debugAction)
-        self.timeoutSlider.slider.valueChanged.connect(
-            lambda value: self.display.adjustNextTrigger((value - 50) / 100)
+        self.trigger.slider.valueChanged.connect(
+            lambda value: self.display.adjustNextTriggerIndicator(
+                (value - 50) / 100)
         )
-        self.timeoutSlider.stoppedForTimeout.connect(
-            lambda value: self.display.adjustTrigger((value - 50) / 100)
-        )
+        self.trigger.stoppedForTimeout.connect(self.adjustTrigger)
