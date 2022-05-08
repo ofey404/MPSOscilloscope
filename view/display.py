@@ -48,6 +48,9 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
     def adjustTrigger(self, volt):
         self.trigger = volt
 
+    def updateConfig(self, config: DisplayConfig):
+        ...
+
     # ============================================================
     #                  Internal Methods
     # ============================================================

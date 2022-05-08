@@ -21,6 +21,7 @@ class Ui_MainWindow(object):
         self.gridLayout = QtWidgets.QGridLayout(self.centralwidget)
         self.gridLayout.setObjectName("gridLayout")
         self.triggerSlider = QtWidgets.QSlider(self.centralwidget)
+        self.triggerSlider.setProperty("value", 50)
         self.triggerSlider.setOrientation(QtCore.Qt.Vertical)
         self.triggerSlider.setObjectName("triggerSlider")
         self.gridLayout.addWidget(self.triggerSlider, 1, 1, 1, 1)
