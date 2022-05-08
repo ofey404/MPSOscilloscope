@@ -17,6 +17,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class UIConfig:
     pendingOpTimeoutMs: int = 1000
+    configPanelVisible: bool = True
 
 
 class OscilloscopeUi(QMainWindow):
@@ -29,6 +30,7 @@ class OscilloscopeUi(QMainWindow):
 
         self.config = UIConfig()
         self.mainwindow, self.display = self._setupUI()
+        self.savedUiState = dict()
         self.trigger = DelayedSliderWrapper(
             self.mainwindow.triggerSlider)
         self._connectSignals()
@@ -58,13 +60,27 @@ class OscilloscopeUi(QMainWindow):
 
     def _connectSignals(self):
         self.mainwindow.actionDebug.triggered.connect(self.debugAction)
+        self.mainwindow.actionToggleConfigPanel.triggered.connect(self._toggleConfigPanel)
         self.trigger.slider.valueChanged.connect(
             lambda value: self.display.adjustNextTriggerIndicator(
                 (value - 50) / 100)
         )
         self.trigger.stoppedForTimeout.connect(self.adjustTrigger)
 
+    def _toggleConfigPanel(self):
+        if self.config.configPanelVisible:
+            self.savedUiState["configPanel"] = self.mainwindow.configSplitter.saveState()
+            self.mainwindow.configSplitter.moveSplitter(0, 1) 
+            self.config.configPanelVisible = False
+        else:
+            state = self.savedUiState.get("configPanel")
+            if state:
+                self.mainwindow.configSplitter.restoreState(state)
+            else:
+                self.mainwindow.configSplitter.moveSplitter(256, 1) 
+            self.config.configPanelVisible = True
+
+    
     def debugAction(self):
-        self.newModelConfig.emit(ModelConfig(
-            processor=ProcessorConfig(triggerVolt=0.1)))
+        print(self.mainwindow.configSplitter.saveState())
         logger.info("Debug action triggered")
