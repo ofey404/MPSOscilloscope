@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1536</width>
-    <height>1024</height>
+    <width>1500</width>
+    <height>1000</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -21,8 +21,8 @@
     </size>
    </property>
    <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0">
-     <widget class="QSplitter" name="configSplitter">
+    <item row="0" column="1">
+     <widget class="QSplitter" name="leftPanelSplitter">
       <property name="orientation">
        <enum>Qt::Horizontal</enum>
       </property>
@@ -35,12 +35,12 @@
        </property>
        <property name="maximumSize">
         <size>
-         <width>16777215</width>
+         <width>256</width>
          <height>16777215</height>
         </size>
        </property>
        <property name="currentIndex">
-        <number>1</number>
+        <number>0</number>
        </property>
        <property name="movable">
         <bool>true</bool>
@@ -68,54 +68,124 @@
         </attribute>
        </widget>
       </widget>
-      <widget class="QWidget" name="horizontalLayoutWidget">
-       <layout class="QGridLayout" name="displayLayout">
-        <item row="1" column="2">
-         <widget class="QSlider" name="triggerSlider">
-          <property name="value">
-           <number>50</number>
-          </property>
+      <widget class="QWidget" name="horizontalWidget" native="true">
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QSplitter" name="bottomPanelSplitter">
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QLabel" name="displayPlaceHolder">
-          <property name="text">
-           <string/>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QScrollBar" name="verticalScrollBar">
-          <property name="orientation">
-           <enum>Qt::Vertical</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QScrollBar" name="horizontalScrollBar">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2">
-         <widget class="QLabel" name="triggerSliderLabel">
-          <property name="text">
-           <string>trigger</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QLabel" name="displayTitle">
-          <property name="text">
-           <string>Waveform of Input 1</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
+          <widget class="QWidget" name="gridLayoutWidget">
+           <layout class="QGridLayout" name="displayGridLayout">
+            <item row="1" column="0">
+             <widget class="QLabel" name="displayPlaceHolder">
+              <property name="text">
+               <string>TextLabel</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="1">
+             <widget class="QSlider" name="triggerSlider">
+              <property name="value">
+               <number>50</number>
+              </property>
+              <property name="orientation">
+               <enum>Qt::Vertical</enum>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QTabWidget" name="tabWidget">
+           <property name="tabPosition">
+            <enum>QTabWidget::North</enum>
+           </property>
+           <property name="currentIndex">
+            <number>1</number>
+           </property>
+           <widget class="QWidget" name="controlTab">
+            <attribute name="title">
+             <string>Tab 1</string>
+            </attribute>
+            <layout class="QHBoxLayout" name="horizontalLayout_3">
+             <item>
+              <widget class="QScrollArea" name="scrollArea">
+               <property name="widgetResizable">
+                <bool>true</bool>
+               </property>
+               <widget class="QWidget" name="scrollAreaWidgetContents">
+                <property name="geometry">
+                 <rect>
+                  <x>0</x>
+                  <y>0</y>
+                  <width>1336</width>
+                  <height>380</height>
+                 </rect>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_3">
+                 <item>
+                  <widget class="QPushButton" name="pushButton_2">
+                   <property name="text">
+                    <string>PushButton</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_3">
+                   <property name="text">
+                    <string>PushButton</string>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pushButton_4">
+                   <property name="text">
+                    <string>PushButton</string>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </widget>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+           <widget class="QWidget" name="logTab">
+            <attribute name="title">
+             <string>Tab 2</string>
+            </attribute>
+            <layout class="QHBoxLayout" name="horizontalLayout_4">
+             <item>
+              <widget class="QPlainTextEdit" name="plainTextEdit">
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+               <property name="plainText">
+                <string>Test</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QVBoxLayout" name="verticalLayout_4">
+               <item>
+                <widget class="QPushButton" name="pushButton_6">
+                 <property name="text">
+                  <string>PushButton</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="pushButton_5">
+                 <property name="text">
+                  <string>PushButton</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </widget>
+          </widget>
          </widget>
         </item>
        </layout>
@@ -129,7 +199,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1536</width>
+     <width>1500</width>
      <height>17</height>
     </rect>
    </property>
@@ -149,7 +219,7 @@
     <property name="title">
      <string>Options</string>
     </property>
-    <addaction name="actionPreferences_2"/>
+    <addaction name="actionPreferences"/>
     <addaction name="actionOpen_config_file"/>
    </widget>
    <addaction name="menuFile"/>
@@ -174,6 +244,7 @@
     <bool>false</bool>
    </attribute>
    <addaction name="actionToggleConfigPanel"/>
+   <addaction name="actionToggleControlPanel"/>
    <addaction name="actionDebug"/>
   </widget>
   <action name="actionNew">
@@ -207,19 +278,14 @@
     <string>Preferences</string>
    </property>
   </action>
-  <action name="actionPreferences_2">
-   <property name="text">
-    <string>Preferences</string>
-   </property>
-  </action>
-  <action name="actionConfig_file_path">
-   <property name="text">
-    <string>Config file path</string>
-   </property>
-  </action>
   <action name="actionOpen_config_file">
    <property name="text">
     <string>Open config file</string>
+   </property>
+  </action>
+  <action name="actionToggleControlPanel">
+   <property name="text">
+    <string>Control Panel</string>
    </property>
   </action>
  </widget>

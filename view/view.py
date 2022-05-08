@@ -3,8 +3,8 @@ import logging
 from attr import dataclass
 
 from model import ModelConfig, ProcessorConfig
-from PyQt5.QtCore import pyqtSignal, QTimer, QObject
-from PyQt5.QtWidgets import QMainWindow, QWidget, QSlider
+from PyQt5.QtCore import pyqtSignal
+from PyQt5.QtWidgets import QMainWindow, QWidget, QSplitter
 from ui.mainwindow import Ui_MainWindow as MainWindow
 
 from view.display import OscilloscopeDisplay
@@ -17,7 +17,8 @@ logger = logging.getLogger(__name__)
 @dataclass
 class UIConfig:
     pendingOpTimeoutMs: int = 1000
-    configPanelVisible: bool = True
+    leftPanelVisible: bool = True
+    bottomPanelVisible: bool = True
 
 
 class OscilloscopeUi(QMainWindow):
@@ -60,27 +61,47 @@ class OscilloscopeUi(QMainWindow):
 
     def _connectSignals(self):
         self.mainwindow.actionDebug.triggered.connect(self.debugAction)
-        self.mainwindow.actionToggleConfigPanel.triggered.connect(self._toggleConfigPanel)
+        self.mainwindow.actionToggleConfigPanel.triggered.connect(
+            self._toggleLeftPanel)
+        self.mainwindow.actionToggleControlPanel.triggered.connect(
+            self._toggleBottomPanel)
         self.trigger.slider.valueChanged.connect(
             lambda value: self.display.adjustNextTriggerIndicator(
                 (value - 50) / 100)
         )
         self.trigger.stoppedForTimeout.connect(self.adjustTrigger)
 
-    def _toggleConfigPanel(self):
-        if self.config.configPanelVisible:
-            self.savedUiState["configPanel"] = self.mainwindow.configSplitter.saveState()
-            self.mainwindow.configSplitter.moveSplitter(0, 1) 
-            self.config.configPanelVisible = False
+    def _toggleLeftPanel(self):
+        if self.config.leftPanelVisible:
+            self.savedUiState["leftPanel"] = self.mainwindow.leftPanelSplitter.saveState(
+            )
+            self.mainwindow.leftPanelSplitter.moveSplitter(0, 1)
+            self.config.leftPanelVisible = False
         else:
-            state = self.savedUiState.get("configPanel")
+            state = self.savedUiState.get("leftPanel")
             if state:
-                self.mainwindow.configSplitter.restoreState(state)
+                self.mainwindow.leftPanelSplitter.restoreState(state)
             else:
-                self.mainwindow.configSplitter.moveSplitter(256, 1) 
-            self.config.configPanelVisible = True
+                self.mainwindow.leftPanelSplitter.moveSplitter(256, 1)
+            self.config.leftPanelVisible = True
 
-    
+    def _toggleBottomPanel(self):
+        if self.config.bottomPanelVisible:
+            self.savedUiState["bottomPanel"] = self.mainwindow.bottomPanelSplitter.saveState(
+            )
+            screenBottomPos = self.mainwindow.bottomPanelSplitter.getRange(1)[
+                1]
+            self.mainwindow.bottomPanelSplitter.moveSplitter(
+                screenBottomPos, 1)
+            self.config.bottomPanelVisible = False
+        else:
+            state = self.savedUiState.get("bottomPanel")
+            if state:
+                self.mainwindow.bottomPanelSplitter.restoreState(state)
+            else:
+                self.mainwindow.bottomPanelSplitter.moveSplitter(512, 1)
+            self.config.bottomPanelVisible = True
+
     def debugAction(self):
-        print(self.mainwindow.configSplitter.saveState())
+        print(self.mainwindow.leftPanelSplitter.saveState())
         logger.info("Debug action triggered")
