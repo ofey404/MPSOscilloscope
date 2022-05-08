@@ -3,12 +3,12 @@ import logging
 import typing
 from dataclasses import dataclass
 
-from .trigger import EdgeTrigger
+from model.trigger import EdgeTrigger
 
 from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
 from PyQt5.QtCore import QObject, QTimer, pyqtSignal
 
-from .utils import Pool, LeakQueue
+from utils import Pool, LeakQueue
 
 logger = logging.getLogger(__name__)
 

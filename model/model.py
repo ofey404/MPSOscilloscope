@@ -1,7 +1,7 @@
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from attr import dataclass
 
-from .worker import DataWorkerConfig, MPSDataWorker, PostProcessWorker, ProcessorConfig, initWorkerGlobalInfo
+from model.worker import DataWorkerConfig, MPSDataWorker, PostProcessWorker, ProcessorConfig, initWorkerGlobalInfo
 import logging
 
 

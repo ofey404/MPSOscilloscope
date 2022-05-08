@@ -79,7 +79,7 @@
    <attribute name="toolBarBreak">
     <bool>false</bool>
    </attribute>
-   <addaction name="actionDisplay"/>
+   <addaction name="actionDebug"/>
   </widget>
   <action name="actionNew">
    <property name="text">
@@ -91,12 +91,12 @@
     <string>Zoom</string>
    </property>
   </action>
-  <action name="actionDisplay">
+  <action name="actionDebug">
    <property name="text">
-    <string>Display (Debug)</string>
+    <string>Debug</string>
    </property>
    <property name="toolTip">
-    <string>Display for Developer to test.</string>
+    <string>Debug action</string>
    </property>
   </action>
  </widget>

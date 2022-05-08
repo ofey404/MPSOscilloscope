@@ -1,9 +1,7 @@
-from PyQt5.QtWidgets import QApplication
 import logging
 
 from model import OscilloscopeModel
 from view import OscilloscopeUi
-
 
 logger = logging.getLogger(__name__)
 
@@ -17,30 +15,11 @@ class OscilloscopeCtrl:
 
         self._connectSignals()
         model.start()
-
         logger.info("Controller inited.")
 
     def _connectSignals(self):
         model, view = self.model, self.view
 
         model.dataReady.connect(view.updateData)
-        model.configUpdated.connect(view.newModelConfigArrived)
+        model.configUpdated.connect(view.updateByModelConfig)
         view.newModelConfig.connect(model.updateConfig)
-
-
-def main(argv):
-    logging.basicConfig(level=logging.INFO)
-    app = QApplication(argv)
-
-    # Init MVC.
-    view = OscilloscopeUi()
-    view.show()
-    model = OscilloscopeModel()
-    OscilloscopeCtrl(model, view)
-
-    sys.exit(app.exec_())
-
-
-if __name__ == "__main__":
-    import sys
-    main(sys.argv)
