@@ -23,22 +23,21 @@ class OscilloscopeCtrl:
     def _connectSignals(self):
         model, view = self.model, self.view
 
-        model.dataReady.connect(view.display.updateData)
-
-        model.configUpdated.connect(
-            lambda config: view.display.adjustTrigger(config.processor.triggerVolt)
-        )
-        view.mainwindow.actionDisplay.triggered.connect(model._changeTrigger)
+        model.dataReady.connect(view.updateData)
+        model.configUpdated.connect(view.newModelConfigArrived)
+        view.newModelConfig.connect(model.updateConfig)
 
 
 def main(argv):
     logging.basicConfig(level=logging.INFO)
-
     app = QApplication(argv)
+
+    # Init MVC.
     view = OscilloscopeUi()
     view.show()
     model = OscilloscopeModel()
     OscilloscopeCtrl(model, view)
+
     sys.exit(app.exec_())
 
 

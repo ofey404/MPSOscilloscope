@@ -61,8 +61,8 @@ class OscilloscopeModel(QObject):
         return thread
 
     def _changeTrigger(self):
-        self.config.processor = ProcessorConfig(triggerVolt=0.1)
-        self._configProcessor.emit(self.config.processor)
+        self.updateConfig(ModelConfig(
+            processor=ProcessorConfig(triggerVolt=0.1)))
 
     def updateConfig(self, config: ModelConfig):
         if config.dataWorker is not None:

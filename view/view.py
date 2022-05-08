@@ -6,9 +6,12 @@ from matplotlib.backends.backend_qt5agg import \
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
 from PyQt5.QtWidgets import QMainWindow, QWidget
+from PyQt5.QtCore import pyqtSignal
+from model import ModelConfig
 
 from ui.mainwindow import Ui_MainWindow as MainWindow
 from model.worker import BUFFER_SIZE
+from model import ProcessorConfig
 import logging
 
 matplotlib.use("Qt5Agg")
@@ -71,7 +74,8 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
     def _draw_frame(self, framedata):
         self.dataLine.set_data(
             self.n[0:len(self.y)], self.y)
-        self.triggerLine.set_data([0, BUFFER_SIZE], [self.trigger, self.trigger])
+        self.triggerLine.set_data(
+            [0, BUFFER_SIZE], [self.trigger, self.trigger])
         self._drawn_artists = [self.dataLine, self.triggerLine]
         for l in self._drawn_artists:
             l.set_animated(True)
@@ -79,6 +83,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
 class OscilloscopeUi(QMainWindow):
     """MPS Oscilloscope's view (GUI)."""
+    newModelConfig = pyqtSignal(ModelConfig)
 
     def __init__(self) -> None:
         """View initializer."""
@@ -87,17 +92,27 @@ class OscilloscopeUi(QMainWindow):
         self.mainwindow.setupUi(self)
 
         self.display = OscilloscopeDisplay()
-
-        # containing_layout = placeholder.parent().layout()
-        # containing_layout.replaceWidget(placeholder, self.canvas)
-        self._replaceWidget(self.mainwindow.plotPlaceHolder, self.display)
+        self._replaceWidget(self.mainwindow.displayPlaceHolder, self.display)
+        self._connectSignals()
 
     def _replaceWidget(self, placeholder: QWidget, new: QWidget):
         containing_layout = placeholder.parent().layout()
         containing_layout.replaceWidget(placeholder, new)
 
-    def setDisplayWaveform(self, data):
+    def updateData(self, data):
         self.display.updateData(data)
+
+    def newModelConfigArrived(self, config: ModelConfig):
+        self.display.adjustTrigger(config.processor.triggerVolt)
 
     def clearDisplay(self):
         self.display.y = []
+
+    def debugAction(self):
+        self.newModelConfig.emit(ModelConfig(
+            processor=ProcessorConfig(triggerVolt=0.1)))
+        logger.info("Debug action triggered")
+
+    def _connectSignals(self):
+        self.mainwindow.actionDisplay.triggered.connect(self.debugAction)
+
