@@ -51,6 +51,7 @@ class OscilloscopeUi(QMainWindow):
         mainwindow.setupUi(self)
         display = OscilloscopeDisplay()
         _replaceWidget(mainwindow.displayPlaceHolder, display)
+
         return mainwindow, display
 
     def adjustTrigger(self):
@@ -102,6 +103,12 @@ class OscilloscopeUi(QMainWindow):
                 self.mainwindow.bottomPanelSplitter.moveSplitter(512, 1)
             self.config.bottomPanelVisible = True
 
+    # FIXME: set bottom panel size here, an temporary solution.
+    def _temporaryUiFix(self):
+        screenBottomPos = self.mainwindow.bottomPanelSplitter.getRange(1)[
+            1]
+        self.mainwindow.bottomPanelSplitter.moveSplitter(
+            screenBottomPos - 500, 1)
+
     def debugAction(self):
-        print(self.mainwindow.leftPanelSplitter.saveState())
         logger.info("Debug action triggered")

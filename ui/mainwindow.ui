@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1500</width>
-    <height>1000</height>
+    <height>1500</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -72,40 +72,132 @@
        <layout class="QGridLayout" name="gridLayout_4">
         <item row="0" column="0">
          <widget class="QSplitter" name="bottomPanelSplitter">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
           <widget class="QWidget" name="gridLayoutWidget">
-           <layout class="QGridLayout" name="displayGridLayout">
-            <item row="1" column="0">
-             <widget class="QLabel" name="displayPlaceHolder">
-              <property name="text">
-               <string>TextLabel</string>
-              </property>
-             </widget>
-            </item>
-            <item row="1" column="1">
-             <widget class="QSlider" name="triggerSlider">
-              <property name="value">
-               <number>50</number>
-              </property>
-              <property name="orientation">
-               <enum>Qt::Vertical</enum>
-              </property>
-             </widget>
+           <layout class="QHBoxLayout" name="horizontalLayout_5">
+            <item>
+             <layout class="QVBoxLayout" name="verticalLayout_5">
+              <item>
+               <layout class="QGridLayout" name="gridLayout_2">
+                <item row="1" column="1">
+                 <widget class="QLabel" name="displayPlaceHolder">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="baseSize">
+                   <size>
+                    <width>0</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QScrollBar" name="displayHorizontalScrollBar">
+                  <property name="orientation">
+                   <enum>Qt::Horizontal</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="2">
+                 <widget class="QSlider" name="triggerSlider">
+                  <property name="value">
+                   <number>50</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QScrollBar" name="displayVerticalScrollBar">
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLabel" name="displayTitle">
+                  <property name="text">
+                   <string>Waveform Title</string>
+                  </property>
+                  <property name="alignment">
+                   <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+              <item>
+               <layout class="QHBoxLayout" name="horizontalLayout_6">
+                <item>
+                 <widget class="QPushButton" name="zoomOutButton">
+                  <property name="text">
+                   <string>Zoom Out (-)</string>
+                  </property>
+                 </widget>
+                </item>
+                <item>
+                 <widget class="QPushButton" name="zoomInButton">
+                  <property name="text">
+                   <string>Zoom In (+)</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </item>
+             </layout>
             </item>
            </layout>
           </widget>
           <widget class="QTabWidget" name="tabWidget">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="minimumSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>16777215</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="baseSize">
+            <size>
+             <width>0</width>
+             <height>0</height>
+            </size>
+           </property>
            <property name="tabPosition">
             <enum>QTabWidget::North</enum>
            </property>
            <property name="currentIndex">
-            <number>1</number>
+            <number>0</number>
            </property>
            <widget class="QWidget" name="controlTab">
             <attribute name="title">
-             <string>Tab 1</string>
+             <string>Basic Analysis</string>
             </attribute>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
@@ -119,17 +211,10 @@
                   <x>0</x>
                   <y>0</y>
                   <width>1336</width>
-                  <height>380</height>
+                  <height>988</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_3">
-                 <item>
-                  <widget class="QPushButton" name="pushButton_2">
-                   <property name="text">
-                    <string>PushButton</string>
-                   </property>
-                  </widget>
-                 </item>
                  <item>
                   <widget class="QPushButton" name="pushButton_3">
                    <property name="text">
@@ -152,7 +237,7 @@
            </widget>
            <widget class="QWidget" name="logTab">
             <attribute name="title">
-             <string>Tab 2</string>
+             <string>Log</string>
             </attribute>
             <layout class="QHBoxLayout" name="horizontalLayout_4">
              <item>
@@ -285,7 +370,7 @@
   </action>
   <action name="actionToggleControlPanel">
    <property name="text">
-    <string>Control Panel</string>
+    <string>Analysis Panel</string>
    </property>
   </action>
  </widget>
