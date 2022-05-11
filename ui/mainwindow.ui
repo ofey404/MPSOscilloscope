@@ -106,6 +106,23 @@
                   </property>
                  </widget>
                 </item>
+                <item row="0" column="2">
+                 <widget class="QLabel" name="label_3">
+                  <property name="text">
+                   <string>&lt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QScrollBar" name="displayVerticalScrollBar">
+                  <property name="pageStep">
+                   <number>99</number>
+                  </property>
+                  <property name="orientation">
+                   <enum>Qt::Vertical</enum>
+                  </property>
+                 </widget>
+                </item>
                 <item row="2" column="1">
                  <widget class="QScrollBar" name="displayHorizontalScrollBar">
                   <property name="minimum">
@@ -132,16 +149,6 @@
                   </property>
                  </widget>
                 </item>
-                <item row="1" column="0">
-                 <widget class="QScrollBar" name="displayVerticalScrollBar">
-                  <property name="pageStep">
-                   <number>99</number>
-                  </property>
-                  <property name="orientation">
-                   <enum>Qt::Vertical</enum>
-                  </property>
-                 </widget>
-                </item>
                 <item row="0" column="1">
                  <widget class="QLabel" name="displayTitle">
                   <property name="text">
@@ -149,13 +156,6 @@
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
-                  </property>
-                 </widget>
-                </item>
-                <item row="0" column="2">
-                 <widget class="QLabel" name="label_3">
-                  <property name="text">
-                   <string>&lt;</string>
                   </property>
                  </widget>
                 </item>
@@ -248,11 +248,59 @@
                  </layout>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="zoomInButton">
-                  <property name="text">
-                   <string>Zoom In (+)</string>
-                  </property>
-                 </widget>
+                 <layout class="QVBoxLayout" name="verticalLayout_7">
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_7">
+                    <item>
+                     <widget class="QLabel" name="label_4">
+                      <property name="text">
+                       <string>Right Slider Control:</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QComboBox" name="comboBox">
+                      <item>
+                       <property name="text">
+                        <string>Trigger</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Cursor 1</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Cursor 2</string>
+                       </property>
+                      </item>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_8">
+                    <item>
+                     <widget class="QLabel" name="label_5">
+                      <property name="text">
+                       <string>Current Voltage Level</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLCDNumber" name="lcdNumber"/>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="zoomInButton">
+                    <property name="text">
+                     <string>Toggle Visibility</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
                 </item>
                </layout>
               </item>

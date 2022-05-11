@@ -10,7 +10,7 @@ from ui.mainwindow import Ui_MainWindow as MainWindow
 from view.display import OscilloscopeDisplay, DisplayConfig
 from view.internalControllers.displayZoomControl import DisplayZoomControl
 from view.utils import ScrollBarStepConverter
-from view.internalControllers.triggerSliderControl import DelayedSliderWrapper
+from view.internalControllers.rightSliderControl import DelayedSliderWrapper
 
 
 logger = logging.getLogger(__name__)
