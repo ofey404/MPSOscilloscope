@@ -137,3 +137,4 @@ class OscilloscopeUi(QMainWindow):
 
     def debugAction(self):
         logger.info("Debug action triggered")
+        self.display.toggleTriggerLine()

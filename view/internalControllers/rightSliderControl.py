@@ -35,10 +35,12 @@ class RightSliderControl(QObject):
         self.slider.valueChanged.connect(
             self._onSliderValueChanged
         )
+        self.sliderVisibilityToggler.clicked.connect(self.display.toggleTriggerLine)
 
     def _requestModelTriggerChange(self, _):
         triggerVolt = self._triggerVolt()
         self.display.updateTrigger(volt=triggerVolt)
+        self.sliderVoltageDisplay.display(triggerVolt)
         self.triggerSelected.emit(triggerVolt)
 
     def _onSliderValueChanged(self, _):

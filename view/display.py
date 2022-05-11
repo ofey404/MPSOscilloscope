@@ -21,6 +21,8 @@ class DisplayConfig:
     dataStepTimeMs = 1 / AD_SAMPLE_RATE * 1000
     timeLimMs = (0, dataStepTimeMs * dataPointCount)
 
+    triggerLineVisible = True
+
 
 class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
     def __init__(self, config: DisplayConfig):
@@ -106,6 +108,9 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         )
         self.draw()
 
+    def toggleTriggerLine(self):
+        self.config.triggerLineVisible = not self.config.triggerLineVisible
+
     # ============================================================
     #                  Internal Methods
     # ============================================================
@@ -147,10 +152,14 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
             self.n[0:len(self.y)], self.y)
 
         # Draw horizontal lines for trigger.
-        self.triggerLine.set_data(
-            self.xlim(), [self.trigger] * 2)
-        self.nextTriggerDashedLine.set_data(
-            self.xlim(), [self.nextTriggerIndicator] * 2)
+        if self.config.triggerLineVisible:
+            self.triggerLine.set_data(
+                self.xlim(), [self.trigger] * 2)
+            self.nextTriggerDashedLine.set_data(
+                self.xlim(), [self.nextTriggerIndicator] * 2)
+        else:
+            self.triggerLine.set_data([], [])
+            self.nextTriggerDashedLine.set_data([], [])
 
         self._drawn_artists = [self.dataLine,
                                self.triggerLine, self.nextTriggerDashedLine]

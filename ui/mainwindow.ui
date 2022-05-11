@@ -274,7 +274,7 @@
                     <item>
                      <widget class="QLabel" name="label_4">
                       <property name="text">
-                       <string>Right Slider Control:</string>
+                       <string>Right Slider Controls</string>
                       </property>
                      </widget>
                     </item>
@@ -304,7 +304,7 @@
                     <item>
                      <widget class="QLabel" name="label_5">
                       <property name="text">
-                       <string>Current Voltage Level</string>
+                       <string>Voltage Level</string>
                       </property>
                      </widget>
                     </item>
