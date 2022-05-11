@@ -289,12 +289,16 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLCDNumber" name="sliderVoltageDisplayer"/>
+                     <widget class="QLCDNumber" name="sliderVoltageDisplay">
+                      <property name="smallDecimalPoint">
+                       <bool>false</bool>
+                      </property>
+                     </widget>
                     </item>
                    </layout>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="toggleSliderVisibility">
+                   <widget class="QPushButton" name="sliderVisibilityToggler">
                     <property name="text">
                      <string>Toggle Visibility</string>
                     </property>

@@ -1,5 +1,5 @@
 from PyQt5.QtCore import pyqtSignal, QTimer, QObject
-from PyQt5.QtWidgets import QSlider
+from PyQt5.QtWidgets import QSlider, QComboBox, QLCDNumber, QPushButton
 
 from view.display import OscilloscopeDisplay
 
@@ -11,12 +11,20 @@ class RightSliderControl(QObject):
     def __init__(self,
                  display: OscilloscopeDisplay,
                  slider: QSlider,
+                 sliderSelector: QComboBox,
+                 sliderVoltageDisplay: QLCDNumber,
+                 sliderVisibilityToggler: QPushButton,
                  ) -> None:
         super().__init__()
         self.display = display
         self.slider = slider
+        self.sliderSelector = sliderSelector
+        self.sliderVoltageDisplay = sliderVoltageDisplay
+        self.sliderVisibilityToggler = sliderVisibilityToggler
+
         self.delayedSliderWrapper = DelayedSliderWrapper(slider)
         self._connectSignals()
+
 
     # ============================================================
     #                  Internal Methods

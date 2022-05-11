@@ -10,7 +10,7 @@ from ui.mainwindow import Ui_MainWindow as MainWindow
 from view.display import OscilloscopeDisplay, DisplayConfig
 from view.internalControllers.displayZoomControl import DisplayZoomControl
 from view.utils import ScrollBarStepConverter
-from view.internalControllers.rightSliderControl import DelayedSliderWrapper, RightSliderControl
+from view.internalControllers.rightSliderControl import RightSliderControl
 
 
 logger = logging.getLogger(__name__)
@@ -53,6 +53,9 @@ class OscilloscopeUi(QMainWindow):
         self.rightSliderControl = RightSliderControl(
             display=self.display,
             slider=self.mainwindow.triggerSlider,
+            sliderSelector=self.mainwindow.rightSliderSelector,
+            sliderVoltageDisplay=self.mainwindow.sliderVoltageDisplay,
+            sliderVisibilityToggler=self.mainwindow.sliderVisibilityToggler,
         )
 
         self._connectSignals()
@@ -131,8 +134,7 @@ class OscilloscopeUi(QMainWindow):
             self.config.bottomPanelVisible = True
 
     # FIXME: set bottom panel size here, an temporary solution.
-    #        Call it after view.show()
-
+    #        Call after view.show()
     def _temporaryUiFix(self):
         screenBottomPos = self.mainwindow.bottomPanelSplitter.getRange(1)[
             1]
