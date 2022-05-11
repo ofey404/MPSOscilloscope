@@ -259,7 +259,7 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QComboBox" name="comboBox">
+                     <widget class="QComboBox" name="rightSliderSelector">
                       <item>
                        <property name="text">
                         <string>Trigger</string>
@@ -289,12 +289,12 @@
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLCDNumber" name="lcdNumber"/>
+                     <widget class="QLCDNumber" name="sliderVoltageDisplayer"/>
                     </item>
                    </layout>
                   </item>
                   <item>
-                   <widget class="QPushButton" name="zoomInButton">
+                   <widget class="QPushButton" name="toggleSliderVisibility">
                     <property name="text">
                      <string>Toggle Visibility</string>
                     </property>

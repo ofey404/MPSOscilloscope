@@ -14,6 +14,7 @@ An oscilloscope built upon MPS060602 and PyQt5.
 - [x] Integrate MPS060602 backend.
 - [x] Build the trigger functionality.
 - [x] Add zoom functionality.
+- [ ] More slider control.
 - [ ] Configuration panel.
 - [ ] Analysis panel.
 - [ ] Cursor panel

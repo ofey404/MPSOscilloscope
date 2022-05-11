@@ -10,7 +10,7 @@ from ui.mainwindow import Ui_MainWindow as MainWindow
 from view.display import OscilloscopeDisplay, DisplayConfig
 from view.internalControllers.displayZoomControl import DisplayZoomControl
 from view.utils import ScrollBarStepConverter
-from view.internalControllers.rightSliderControl import DelayedSliderWrapper
+from view.internalControllers.rightSliderControl import DelayedSliderWrapper, RightSliderControl
 
 
 logger = logging.getLogger(__name__)
@@ -50,8 +50,10 @@ class OscilloscopeUi(QMainWindow):
             zoomOutButtonY=self.mainwindow.voltageZoomOut,
         )
 
-        self.triggerSliderControl = DelayedSliderWrapper(
-            self.mainwindow.triggerSlider)
+        self.rightSliderControl = RightSliderControl(
+            display=self.display,
+            slider=self.mainwindow.triggerSlider,
+        )
 
         self._connectSignals()
 
@@ -61,8 +63,8 @@ class OscilloscopeUi(QMainWindow):
     def updateByModelConfig(self, config: ModelConfig):
         self.display.updateTrigger(config.processor.triggerVolt)
 
-    def adjustTrigger(self):
-        triggerVolt = (self.triggerSliderControl.slider.value() - 50) / 100
+    def adjustTrigger(self, percentage):
+        triggerVolt = percentage - 0.5
         self.newModelConfig.emit(ModelConfig(
             processor=ProcessorConfig(triggerVolt=triggerVolt)))
         self.display.updateTrigger(volt=triggerVolt)
@@ -89,11 +91,13 @@ class OscilloscopeUi(QMainWindow):
             self._toggleLeftPanel)
         self.mainwindow.actionToggleControlPanel.triggered.connect(
             self._toggleBottomPanel)
-        self.triggerSliderControl.slider.valueChanged.connect(
-            lambda value: self.display.updateNextTriggerIndicator(
-                (value - 50) / 100)
+
+        self.rightSliderControl.sliderPercentChanged.connect(
+            lambda percent: self.display.updateNextTriggerIndicator(
+                percent - 0.5)
         )
-        self.triggerSliderControl.stoppedForTimeout.connect(self.adjustTrigger)
+        self.rightSliderControl.triggerMovedAndStoppedForDelay.connect(
+            self.adjustTrigger)
 
     def _toggleLeftPanel(self):
         if self.config.leftPanelVisible:
