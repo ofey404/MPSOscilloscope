@@ -8,8 +8,9 @@ from PyQt5.QtWidgets import QMainWindow, QWidget
 from ui.mainwindow import Ui_MainWindow as MainWindow
 
 from view.display import OscilloscopeDisplay, DisplayConfig
-from view.displayZoomControl import DisplayZoomControl
-from view.utils import DelayedSliderWrapper, ScrollBarStepConverter
+from view.internalControllers.displayZoomControl import DisplayZoomControl
+from view.utils import ScrollBarStepConverter
+from view.internalControllers.triggerSliderControl import DelayedSliderWrapper
 
 
 logger = logging.getLogger(__name__)
@@ -49,7 +50,7 @@ class OscilloscopeUi(QMainWindow):
             zoomOutButtonY=self.mainwindow.voltageZoomOut,
         )
 
-        self.triggerControl = DelayedSliderWrapper(
+        self.triggerSliderControl = DelayedSliderWrapper(
             self.mainwindow.triggerSlider)
 
         self._connectSignals()
@@ -61,7 +62,7 @@ class OscilloscopeUi(QMainWindow):
         self.display.updateTrigger(config.processor.triggerVolt)
 
     def adjustTrigger(self):
-        triggerVolt = (self.triggerControl.slider.value() - 50) / 100
+        triggerVolt = (self.triggerSliderControl.slider.value() - 50) / 100
         self.newModelConfig.emit(ModelConfig(
             processor=ProcessorConfig(triggerVolt=triggerVolt)))
         self.display.updateTrigger(volt=triggerVolt)
@@ -88,11 +89,11 @@ class OscilloscopeUi(QMainWindow):
             self._toggleLeftPanel)
         self.mainwindow.actionToggleControlPanel.triggered.connect(
             self._toggleBottomPanel)
-        self.triggerControl.slider.valueChanged.connect(
+        self.triggerSliderControl.slider.valueChanged.connect(
             lambda value: self.display.updateNextTriggerIndicator(
                 (value - 50) / 100)
         )
-        self.triggerControl.stoppedForTimeout.connect(self.adjustTrigger)
+        self.triggerSliderControl.stoppedForTimeout.connect(self.adjustTrigger)
 
     def _toggleLeftPanel(self):
         if self.config.leftPanelVisible:

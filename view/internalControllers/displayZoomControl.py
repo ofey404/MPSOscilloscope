@@ -67,6 +67,8 @@ class DisplayZoomControl:
         self.zoomOutButtonX.clicked.connect(self._zoomOutXBySpinBox)
 
         # Display follow the scroll bar.
+        # FIXME: Use `valueChanged` may cause serious performance issue.
+        #        Since it repaint the display each step during slide.
         self.scrollBarX.valueChanged.connect(self._scrollToIntX)
         self.scrollBarY.valueChanged.connect(self._scrollToIntY)
 
