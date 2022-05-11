@@ -66,11 +66,9 @@ class OscilloscopeUi(QMainWindow):
     def updateByModelConfig(self, config: ModelConfig):
         self.display.updateTrigger(config.processor.triggerVolt)
 
-    def adjustTrigger(self, percentage):
-        triggerVolt = percentage - 0.5
+    def adjustTrigger(self, triggerVolt):
         self.newModelConfig.emit(ModelConfig(
             processor=ProcessorConfig(triggerVolt=triggerVolt)))
-        self.display.updateTrigger(volt=triggerVolt)
 
     # ============================================================
     #                  Internal Methods
@@ -95,11 +93,7 @@ class OscilloscopeUi(QMainWindow):
         self.mainwindow.actionToggleControlPanel.triggered.connect(
             self._toggleBottomPanel)
 
-        self.rightSliderControl.sliderPercentChanged.connect(
-            lambda percent: self.display.updateNextTriggerIndicator(
-                percent - 0.5)
-        )
-        self.rightSliderControl.triggerMovedAndStoppedForDelay.connect(
+        self.rightSliderControl.triggerSelected.connect(
             self.adjustTrigger)
 
     def _toggleLeftPanel(self):

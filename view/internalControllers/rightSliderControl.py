@@ -5,7 +5,7 @@ from view.display import OscilloscopeDisplay
 
 
 class RightSliderControl(QObject):
-    triggerMovedAndStoppedForDelay = pyqtSignal(float)
+    triggerSelected = pyqtSignal(float)
     sliderPercentChanged = pyqtSignal(float)
 
     def __init__(self,
@@ -25,28 +25,31 @@ class RightSliderControl(QObject):
         self.delayedSliderWrapper = DelayedSliderWrapper(slider)
         self._connectSignals()
 
-
     # ============================================================
     #                  Internal Methods
     # ============================================================
 
     def _connectSignals(self):
         self.delayedSliderWrapper.stoppedForTimeout.connect(
-            self._reportTriggerStopped)
+            self._requestModelTriggerChange)
         self.slider.valueChanged.connect(
-            self._reportSliderMove
+            self._onSliderValueChanged
         )
 
-    def _reportTriggerStopped(self, _):
-        self._reportSliderPercentage(self.triggerMovedAndStoppedForDelay)
+    def _requestModelTriggerChange(self, _):
+        triggerVolt = self._triggerVolt()
+        self.display.updateTrigger(volt=triggerVolt)
+        self.triggerSelected.emit(triggerVolt)
 
-    def _reportSliderMove(self, _):
-        self._reportSliderPercentage(self.sliderPercentChanged)
+    def _onSliderValueChanged(self, _):
+        self.display.updateNextTriggerIndicator(self._triggerVolt())
 
-    def _reportSliderPercentage(self, signal: pyqtSignal):
-        signal.emit(
-            self.slider.value() / (self.slider.maximum() - self.slider.minimum())
-        )
+    def _sliderPercentage(self):
+        return self.slider.value() / (self.slider.maximum() - self.slider.minimum())
+
+    def _triggerVolt(self):
+        low, high = self.display.ylim()
+        return low + self._sliderPercentage() * (high - low)
 
 
 class DelayedSliderWrapper(QObject):
