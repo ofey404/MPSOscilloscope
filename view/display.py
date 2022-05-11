@@ -16,15 +16,20 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class DisplayConfig:
-    drawTrigger: bool = None
+    maxXLim = (0, BUFFER_SIZE // 2)
+    maxYLim = (-1, 1)
 
 
 class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
-    def __init__(self):
+    def __init__(self, config: DisplayConfig):
         logger.info(f"Matplotlib Version: {matplotlib.__version__}")
 
+        self.config = config
+
+        self.xlims = list(self.config.maxXLim)
+        self.ylim = list(self.config.maxYLim)
+
         # The data
-        self.xlim = BUFFER_SIZE // 2
         self.n = np.linspace(0, BUFFER_SIZE - 1, BUFFER_SIZE)
         self.y = (self.n * 0.0) + 50
         self.trigger = 0
@@ -59,22 +64,44 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         ...
 
     def zoomY(self, value):
-        """If value > 0 zoom in else zoom out."""
-        bottom = self.ax.get_ylim()[0] + value
-        top = self.ax.get_ylim()[1] - value
-        self.ax.set_ylim(bottom, top)
+        newLim = self._moveLim(
+            lim=self.ax.get_ylim(),
+            value=value,
+            max=self.config.maxYLim,
+        )
+        self.ax.set_ylim(*newLim)
         self.draw()
 
+        logger.info(
+            f"Zoom in on Y axis with value {value}, new lim is {newLim}.")
+
     def zoomX(self, value):
-        """If value > 0 zoom in else zoom out."""
-        left = self.ax.get_xlim()[0] + value
-        right = self.ax.get_xlim()[1] - value
-        self.ax.set_xlim(left, right)
+        newLim = self._moveLim(
+            lim=self.ax.get_xlim(),
+            value=value,
+            max=self.config.maxXLim,
+        )
+        self.ax.set_xlim(*newLim)
         self.draw()
+
+        logger.info(
+            f"Zoom in on X axis with value {value}, new lim is {newLim}.")
 
     # ============================================================
     #                  Internal Methods
     # ============================================================
+
+    def _moveLim(self, lim, value, max):
+        """If value > 0 zoom in else zoom out."""
+        left, right = lim
+        leftMax, rightMax = max
+        newLeft = left + value
+        newLeft = newLeft if newLeft >= leftMax else leftMax
+
+        newRight = right - value
+        newRight = newRight if newRight <= rightMax else rightMax
+
+        return (newLeft, newRight)
 
     def _init_fig(self):
         fig = Figure(figsize=(5, 5), dpi=100)
@@ -82,7 +109,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         ax.set_xlabel('time')
         ax.set_ylabel('voltage')
-        ax.set_xlim(0, self.xlim - 1)
+        ax.set_xlim(*self.xlims)
         ax.set_ylim(-1, 1)
 
         return fig, ax
@@ -99,9 +126,9 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         # Draw horizontal lines for trigger.
         self.triggerLine.set_data(
-            [0, self.xlim], [self.trigger] * 2)
+            self.xlims, [self.trigger] * 2)
         self.nextTriggerDashedLine.set_data(
-            [0, self.xlim], [self.nextTriggerIndicator] * 2)
+            self.xlims, [self.nextTriggerIndicator] * 2)
 
         self._drawn_artists = [self.dataLine,
                                self.triggerLine, self.nextTriggerDashedLine]

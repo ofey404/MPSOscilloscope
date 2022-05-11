@@ -7,7 +7,7 @@ from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QMainWindow, QWidget, QSplitter
 from ui.mainwindow import Ui_MainWindow as MainWindow
 
-from view.display import OscilloscopeDisplay
+from view.display import OscilloscopeDisplay, DisplayConfig
 from view.utils import DelayedSliderWrapper
 
 
@@ -59,7 +59,7 @@ class OscilloscopeUi(QMainWindow):
 
         mainwindow = MainWindow()
         mainwindow.setupUi(self)
-        display = OscilloscopeDisplay()
+        display = OscilloscopeDisplay(DisplayConfig())
         _replaceWidget(mainwindow.displayPlaceHolder, display)
 
         return mainwindow, display
@@ -89,7 +89,7 @@ class OscilloscopeUi(QMainWindow):
 
     def _zoomOutYBySpinBox(self):
         self._zoomYBySpinBox(zoomIn=False)
-        
+
     def _zoomInXBySpinBox(self):
         self._zoomXBySpinBox(zoomIn=True)
 
@@ -101,7 +101,6 @@ class OscilloscopeUi(QMainWindow):
         if not zoomIn:
             value = - value
         self.display.zoomY(value)
-        logger.info(f"Zoom in on Y axis by {value}.")
 
     def _zoomXBySpinBox(self, zoomIn: bool):
         value = self.mainwindow.timeZoomValue.value()
