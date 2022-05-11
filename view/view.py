@@ -54,8 +54,11 @@ class OscilloscopeUi(QMainWindow):
             display=self.display,
             slider=self.mainwindow.triggerSlider,
             sliderSelector=self.mainwindow.rightSliderSelector,
-            sliderVoltageDisplay=self.mainwindow.sliderVoltageDisplay,
             sliderVisibilityToggler=self.mainwindow.sliderVisibilityToggler,
+            valueSpinBox1=self.mainwindow.rightSliderValueSpinBox1,
+            valueSpinBox2=self.mainwindow.rightSliderValueSpinBox2,
+            valueTitle1=self.mainwindow.rightSliderValueTitle1,
+            valueTitle2=self.mainwindow.rightSliderValueTitle2,
         )
 
         self._connectSignals()

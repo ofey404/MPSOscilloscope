@@ -1,5 +1,5 @@
 from PyQt5.QtCore import pyqtSignal, QTimer, QObject
-from PyQt5.QtWidgets import QSlider, QComboBox, QLCDNumber, QPushButton
+from PyQt5.QtWidgets import QSlider, QComboBox, QLabel, QPushButton, QSpinBox
 
 from view.display import OscilloscopeDisplay
 
@@ -12,15 +12,21 @@ class RightSliderControl(QObject):
                  display: OscilloscopeDisplay,
                  slider: QSlider,
                  sliderSelector: QComboBox,
-                 sliderVoltageDisplay: QLCDNumber,
                  sliderVisibilityToggler: QPushButton,
+                 valueSpinBox1: QSpinBox,
+                 valueTitle1: QLabel,
+                 valueSpinBox2: QSpinBox,
+                 valueTitle2: QLabel,
                  ) -> None:
         super().__init__()
         self.display = display
         self.slider = slider
         self.sliderSelector = sliderSelector
-        self.sliderVoltageDisplay = sliderVoltageDisplay
         self.sliderVisibilityToggler = sliderVisibilityToggler
+        self.valueSpinBox1 = valueSpinBox1
+        self.valueTitle1 = valueTitle1
+        self.valueSpinBox2 = valueSpinBox2
+        self.valueTitle2 = valueTitle2
 
         self.delayedSliderWrapper = DelayedSliderWrapper(slider)
         self._connectSignals()
@@ -35,12 +41,13 @@ class RightSliderControl(QObject):
         self.slider.valueChanged.connect(
             self._onSliderValueChanged
         )
-        self.sliderVisibilityToggler.clicked.connect(self.display.toggleTriggerLine)
+        self.sliderVisibilityToggler.clicked.connect(
+            self.display.toggleTriggerLine)
 
     def _requestModelTriggerChange(self, _):
         triggerVolt = self._triggerVolt()
         self.display.updateTrigger(volt=triggerVolt)
-        self.sliderVoltageDisplay.display(triggerVolt)
+        self.valueSpinBox1.setValue(triggerVolt)
         self.triggerSelected.emit(triggerVolt)
 
     def _onSliderValueChanged(self, _):

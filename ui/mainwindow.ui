@@ -302,16 +302,52 @@
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_8">
                     <item>
-                     <widget class="QLabel" name="label_5">
+                     <widget class="QLabel" name="rightSliderValueTitle1">
                       <property name="text">
-                       <string>Voltage Level</string>
+                       <string>Value Title 1</string>
                       </property>
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLCDNumber" name="sliderVoltageDisplay">
-                      <property name="smallDecimalPoint">
-                       <bool>false</bool>
+                     <widget class="QDoubleSpinBox" name="rightSliderValueSpinBox1">
+                      <property name="decimals">
+                       <number>4</number>
+                      </property>
+                      <property name="minimum">
+                       <double>-9999999.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>999999.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_9">
+                    <item>
+                     <widget class="QLabel" name="rightSliderValueTitle2">
+                      <property name="text">
+                       <string>Value Title 2</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="rightSliderValueSpinBox2">
+                      <property name="decimals">
+                       <number>4</number>
+                      </property>
+                      <property name="minimum">
+                       <double>-99999999.000000000000000</double>
+                      </property>
+                      <property name="maximum">
+                       <double>99999999.000000000000000</double>
+                      </property>
+                      <property name="singleStep">
+                       <double>0.010000000000000</double>
                       </property>
                      </widget>
                     </item>
