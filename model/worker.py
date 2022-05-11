@@ -14,13 +14,14 @@ logger = logging.getLogger(__name__)
 
 DEVICE_NUMBER = 0
 
+AD_SAMPLE_RATE=450000
+BUFFER_SIZE: int = 2048
+
 PARAMETER = MPS060602Para(
     ADChannel=ADChannelMode.in1,
-    ADSampleRate=450000,
+    ADSampleRate=AD_SAMPLE_RATE,
     Gain=PGAAmpRate.range_10V,
 )
-
-BUFFER_SIZE: int = 2048
 
 
 @dataclass

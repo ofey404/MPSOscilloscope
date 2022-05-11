@@ -166,6 +166,16 @@
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout">
                   <item>
+                   <widget class="QLabel" name="label_7">
+                    <property name="text">
+                     <string>Y Axis</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
                    <widget class="QPushButton" name="voltageZoomIn">
                     <property name="text">
                      <string>Zoom In (+)</string>
@@ -208,6 +218,16 @@
                 <item>
                  <layout class="QVBoxLayout" name="verticalLayout_6">
                   <item>
+                   <widget class="QLabel" name="label_6">
+                    <property name="text">
+                     <string>X Axis</string>
+                    </property>
+                    <property name="alignment">
+                     <set>Qt::AlignCenter</set>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
                    <widget class="QPushButton" name="timeZoomIn">
                     <property name="text">
                      <string>Zoom In (+)</string>
@@ -226,7 +246,7 @@
                     <item>
                      <widget class="QLabel" name="label_2">
                       <property name="text">
-                       <string>Step (Data point)</string>
+                       <string>Step (ms)</string>
                       </property>
                       <property name="alignment">
                        <set>Qt::AlignCenter</set>
@@ -236,10 +256,10 @@
                     <item>
                      <widget class="QDoubleSpinBox" name="timeZoomValue">
                       <property name="decimals">
-                       <number>0</number>
+                       <number>4</number>
                       </property>
                       <property name="value">
-                       <double>50.000000000000000</double>
+                       <double>0.050000000000000</double>
                       </property>
                      </widget>
                     </item>
@@ -262,7 +282,7 @@
                      <widget class="QComboBox" name="rightSliderSelector">
                       <item>
                        <property name="text">
-                        <string>Trigger</string>
+                        <string>Trigger (Red)</string>
                        </property>
                       </item>
                       <item>

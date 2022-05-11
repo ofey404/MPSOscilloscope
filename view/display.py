@@ -8,7 +8,7 @@ from matplotlib.backends.backend_qt5agg import \
     FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
-from model.worker import BUFFER_SIZE
+from model.worker import AD_SAMPLE_RATE, BUFFER_SIZE
 
 matplotlib.use("Qt5Agg")
 logger = logging.getLogger(__name__)
@@ -16,8 +16,10 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class DisplayConfig:
-    maxXLim = (0, BUFFER_SIZE // 2)
-    maxYLim = (-1, 1)
+    dataPointCount = BUFFER_SIZE // 2
+    voltageLim = (-1, 1)
+    dataStepTimeMs = 1 / AD_SAMPLE_RATE * 1000
+    timeLimMs = (0, dataStepTimeMs * dataPointCount)
 
 
 class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
@@ -26,8 +28,10 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         self.config = config
 
-        # The data
-        self.n = np.linspace(0, BUFFER_SIZE - 1, BUFFER_SIZE)
+        # 2 times longer than minimal data length passed by trigger.
+        self.n = np.linspace(
+            0, self.config.timeLimMs[1] * 2, self.config.dataPointCount * 2 + 1)
+
         self.y = (self.n * 0.0) + 50
         self.trigger = 0
         self.nextTriggerIndicator = 0
@@ -64,13 +68,13 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         self.nextTriggerIndicator = volt
 
     def updateConfig(self, config: DisplayConfig):
-        ...
+        self.config = config
 
     def zoomY(self, value):
         newLim = self._moveLim(
             lim=self.ax.get_ylim(),
             value=value,
-            max=self.config.maxYLim,
+            max=self.config.voltageLim,
         )
         self.ax.set_ylim(*newLim)
         self.draw()
@@ -82,7 +86,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         newLim = self._moveLim(
             lim=self.ax.get_xlim(),
             value=value,
-            max=self.config.maxXLim,
+            max=self.config.timeLimMs,
         )
         self.ax.set_xlim(*newLim)
         self.draw()
@@ -125,10 +129,10 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         fig = Figure(figsize=(5, 5), dpi=100)
         ax = fig.add_subplot(111)
 
-        ax.set_xlabel('time')
+        ax.set_xlabel('time (ms)')
         ax.set_ylabel('voltage')
-        ax.set_xlim(*self.config.maxXLim)
-        ax.set_ylim(-1, 1)
+        ax.set_xlim(*self.config.timeLimMs)
+        ax.set_ylim(*self.config.voltageLim)
 
         return fig, ax
 
