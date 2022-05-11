@@ -88,8 +88,11 @@ class OscilloscopeUi(QMainWindow):
         # Zoom on X.
         self.mainwindow.timeZoomIn.clicked.connect(self._zoomInXBySpinBox)
         self.mainwindow.timeZoomOut.clicked.connect(self._zoomOutXBySpinBox)
-        self.mainwindow.displayHorizontalScrollBar.valueChanged.connect(
-            self.display.scrollX)
+        self.mainwindow.displayHorizontalScrollBar.valueChanged.connect(lambda i:
+            self.display.scrollToX(self.scrollBarConverter.intStepValueToFloat(i, self.display.config.maxXLim)))
+
+        self.mainwindow.displayVerticalScrollBar.valueChanged.connect(lambda i:
+            self.display.scrollToY(self.scrollBarConverter.intStepValueToFloat(i, self.display.config.maxYLim)))
 
     def _zoomInYBySpinBox(self):
         self._zoomYBySpinBox(zoomIn=True)

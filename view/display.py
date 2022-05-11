@@ -90,15 +90,24 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         logger.info(
             f"Zoom in on X axis by value {value}, new lim is {newLim}.")
 
-    def scrollY(self, value):
-        ...
+    def scrollToY(self, newBottom):
+        self.ax.set_ylim(
+            self._moveLimTo(self.ylim(), newBottom)
+        )
+        self.draw()
 
-    def scrollX(self, value):
-        print(value)
+    def scrollToX(self, newLeft):
+        self.ax.set_xlim(
+            self._moveLimTo(self.xlim(), newLeft)
+        )
+        self.draw()
 
     # ============================================================
     #                  Internal Methods
     # ============================================================
+
+    def _moveLimTo(self, lim, newLeft):
+        return (newLeft, newLeft + lim[1] - lim[0])
 
     def _moveLim(self, lim, value, max):
         """If value > 0 zoom in else zoom out."""
