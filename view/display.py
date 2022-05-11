@@ -26,9 +26,6 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         self.config = config
 
-        self.xlims = list(self.config.maxXLim)
-        self.ylim = list(self.config.maxYLim)
-
         # The data
         self.n = np.linspace(0, BUFFER_SIZE - 1, BUFFER_SIZE)
         self.y = (self.n * 0.0) + 50
@@ -50,6 +47,12 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=50, blit=True)
         logger.info("View inited.")
+
+    def xlim(self):
+        return self.ax.get_xlim()
+
+    def ylim(self):
+        return self.ax.get_ylim()
 
     def updateData(self, value):
         self.y = value
@@ -73,7 +76,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         self.draw()
 
         logger.info(
-            f"Zoom in on Y axis with value {value}, new lim is {newLim}.")
+            f"Zoom in on Y axis by value {value}, new lim is {newLim}.")
 
     def zoomX(self, value):
         newLim = self._moveLim(
@@ -85,7 +88,13 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         self.draw()
 
         logger.info(
-            f"Zoom in on X axis with value {value}, new lim is {newLim}.")
+            f"Zoom in on X axis by value {value}, new lim is {newLim}.")
+
+    def scrollY(self, value):
+        ...
+
+    def scrollX(self, value):
+        print(value)
 
     # ============================================================
     #                  Internal Methods
@@ -109,7 +118,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         ax.set_xlabel('time')
         ax.set_ylabel('voltage')
-        ax.set_xlim(*self.xlims)
+        ax.set_xlim(*self.config.maxXLim)
         ax.set_ylim(-1, 1)
 
         return fig, ax
@@ -126,9 +135,9 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         # Draw horizontal lines for trigger.
         self.triggerLine.set_data(
-            self.xlims, [self.trigger] * 2)
+            self.xlim(), [self.trigger] * 2)
         self.nextTriggerDashedLine.set_data(
-            self.xlims, [self.nextTriggerIndicator] * 2)
+            self.xlim(), [self.nextTriggerIndicator] * 2)
 
         self._drawn_artists = [self.dataLine,
                                self.triggerLine, self.nextTriggerDashedLine]

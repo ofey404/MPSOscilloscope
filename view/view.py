@@ -8,7 +8,7 @@ from PyQt5.QtWidgets import QMainWindow, QWidget, QSplitter
 from ui.mainwindow import Ui_MainWindow as MainWindow
 
 from view.display import OscilloscopeDisplay, DisplayConfig
-from view.utils import DelayedSliderWrapper
+from view.utils import DelayedSliderWrapper, ScrollBarStepConverter
 
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,12 @@ class OscilloscopeUi(QMainWindow):
 
         self.config = UIConfig()
         self.mainwindow, self.display = self._setupUI()
+
         self.savedUiState = dict()
+
+        self.scrollBarConverter = ScrollBarStepConverter()
+        self._repaintAllScrollBar()
+
         self.trigger = DelayedSliderWrapper(
             self.mainwindow.triggerSlider)
         self._connectSignals()
@@ -83,6 +88,8 @@ class OscilloscopeUi(QMainWindow):
         # Zoom on X.
         self.mainwindow.timeZoomIn.clicked.connect(self._zoomInXBySpinBox)
         self.mainwindow.timeZoomOut.clicked.connect(self._zoomOutXBySpinBox)
+        self.mainwindow.displayHorizontalScrollBar.valueChanged.connect(
+            self.display.scrollX)
 
     def _zoomInYBySpinBox(self):
         self._zoomYBySpinBox(zoomIn=True)
@@ -101,12 +108,15 @@ class OscilloscopeUi(QMainWindow):
         if not zoomIn:
             value = - value
         self.display.zoomY(value)
+        self._repaintAllScrollBar()
 
     def _zoomXBySpinBox(self, zoomIn: bool):
         value = self.mainwindow.timeZoomValue.value()
         if not zoomIn:
             value = - value
         self.display.zoomX(value)
+        self._repaintAllScrollBar()
+
         logger.info(f"Zoom in on X axis by {value}.")
 
     def _toggleLeftPanel(self):
@@ -139,6 +149,32 @@ class OscilloscopeUi(QMainWindow):
             else:
                 self.mainwindow.bottomPanelSplitter.moveSplitter(512, 1)
             self.config.bottomPanelVisible = True
+
+    def _repaintAllScrollBar(self):
+        def rawRepaint(bar, lim, maxLim, value):
+            pageStep = lim[1] - lim[0]
+            bar.setMinimum(maxLim[0])
+            bar.setMaximum(maxLim[1]-pageStep)
+            bar.setPageStep(pageStep)
+            bar.setValue(value)
+
+        def convertToFixedIntAndPaint(bar, lim, maxLim):
+            lim, maxLim = self.scrollBarConverter.limFloatToInt(lim, maxLim)
+            rawRepaint(
+                bar, lim, maxLim, value=lim[0]
+            )
+
+        convertToFixedIntAndPaint(
+            bar=self.mainwindow.displayHorizontalScrollBar,
+            lim=self.display.xlim(),
+            maxLim=self.display.config.maxXLim,
+        )
+
+        convertToFixedIntAndPaint(
+            bar=self.mainwindow.displayVerticalScrollBar,
+            lim=self.display.ylim(),
+            maxLim=self.display.config.maxYLim,
+        )
 
     # FIXME: set bottom panel size here, an temporary solution.
     #        Call it after view.show()

@@ -108,6 +108,15 @@
                 </item>
                 <item row="2" column="1">
                  <widget class="QScrollBar" name="displayHorizontalScrollBar">
+                  <property name="minimum">
+                   <number>0</number>
+                  </property>
+                  <property name="maximum">
+                   <number>100</number>
+                  </property>
+                  <property name="pageStep">
+                   <number>99</number>
+                  </property>
                   <property name="orientation">
                    <enum>Qt::Horizontal</enum>
                   </property>
@@ -125,6 +134,9 @@
                 </item>
                 <item row="1" column="0">
                  <widget class="QScrollBar" name="displayVerticalScrollBar">
+                  <property name="pageStep">
+                   <number>99</number>
+                  </property>
                   <property name="orientation">
                    <enum>Qt::Vertical</enum>
                   </property>
@@ -137,6 +149,13 @@
                   </property>
                   <property name="alignment">
                    <set>Qt::AlignCenter</set>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="2">
+                 <widget class="QLabel" name="label_3">
+                  <property name="text">
+                   <string>&lt;</string>
                   </property>
                  </widget>
                 </item>
