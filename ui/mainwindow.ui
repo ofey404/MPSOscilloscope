@@ -145,11 +145,88 @@
               <item>
                <layout class="QHBoxLayout" name="horizontalLayout_6">
                 <item>
-                 <widget class="QPushButton" name="zoomOutButton">
-                  <property name="text">
-                   <string>Zoom Out (-)</string>
-                  </property>
-                 </widget>
+                 <layout class="QVBoxLayout" name="verticalLayout">
+                  <item>
+                   <widget class="QPushButton" name="voltageZoomIn">
+                    <property name="text">
+                     <string>Zoom In (+)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="voltageZoomOut">
+                    <property name="text">
+                     <string>Zoom Out (-)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout">
+                    <item>
+                     <widget class="QLabel" name="label">
+                      <property name="text">
+                       <string>Step (Volt)</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="voltageZoomValue">
+                      <property name="decimals">
+                       <number>4</number>
+                      </property>
+                      <property name="value">
+                       <double>0.100000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
+                </item>
+                <item>
+                 <layout class="QVBoxLayout" name="verticalLayout_6">
+                  <item>
+                   <widget class="QPushButton" name="timeZoomIn">
+                    <property name="text">
+                     <string>Zoom In (+)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QPushButton" name="timeZoomOut">
+                    <property name="text">
+                     <string>Zoom Out (-)</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <layout class="QHBoxLayout" name="horizontalLayout_2">
+                    <item>
+                     <widget class="QLabel" name="label_2">
+                      <property name="text">
+                       <string>Step (Data point)</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QDoubleSpinBox" name="timeZoomValue">
+                      <property name="decimals">
+                       <number>0</number>
+                      </property>
+                      <property name="value">
+                       <double>50.000000000000000</double>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </item>
+                 </layout>
                 </item>
                 <item>
                  <widget class="QPushButton" name="zoomInButton">
@@ -210,8 +287,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>1336</width>
-                  <height>988</height>
+                  <width>1199</width>
+                  <height>828</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_3">

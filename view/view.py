@@ -40,7 +40,17 @@ class OscilloscopeUi(QMainWindow):
         self.display.updateData(data)
 
     def updateByModelConfig(self, config: ModelConfig):
-        self.display.adjustTrigger(config.processor.triggerVolt)
+        self.display.updateTrigger(config.processor.triggerVolt)
+
+    def adjustTrigger(self):
+        triggerVolt = (self.trigger.slider.value() - 50) / 100
+        self.newModelConfig.emit(ModelConfig(
+            processor=ProcessorConfig(triggerVolt=triggerVolt)))
+        self.display.updateTrigger(volt=triggerVolt)
+
+    # ============================================================
+    #                  Internal Methods
+    # ============================================================
 
     def _setupUI(self):
         def _replaceWidget(placeholder: QWidget, new: QWidget):
@@ -54,12 +64,6 @@ class OscilloscopeUi(QMainWindow):
 
         return mainwindow, display
 
-    def adjustTrigger(self):
-        triggerVolt = (self.trigger.slider.value() - 50) / 100
-        self.newModelConfig.emit(ModelConfig(
-            processor=ProcessorConfig(triggerVolt=triggerVolt)))
-        self.display.adjustTrigger(volt=triggerVolt)
-
     def _connectSignals(self):
         self.mainwindow.actionDebug.triggered.connect(self.debugAction)
         self.mainwindow.actionToggleConfigPanel.triggered.connect(
@@ -67,10 +71,44 @@ class OscilloscopeUi(QMainWindow):
         self.mainwindow.actionToggleControlPanel.triggered.connect(
             self._toggleBottomPanel)
         self.trigger.slider.valueChanged.connect(
-            lambda value: self.display.adjustNextTriggerIndicator(
+            lambda value: self.display.updateNextTriggerIndicator(
                 (value - 50) / 100)
         )
         self.trigger.stoppedForTimeout.connect(self.adjustTrigger)
+
+        # Zoom on Y.
+        self.mainwindow.voltageZoomIn.clicked.connect(self._zoomInYBySpinBox)
+        self.mainwindow.voltageZoomOut.clicked.connect(self._zoomOutYBySpinBox)
+
+        # Zoom on X.
+        self.mainwindow.timeZoomIn.clicked.connect(self._zoomInXBySpinBox)
+        self.mainwindow.timeZoomOut.clicked.connect(self._zoomOutXBySpinBox)
+
+    def _zoomInYBySpinBox(self):
+        self._zoomYBySpinBox(zoomIn=True)
+
+    def _zoomOutYBySpinBox(self):
+        self._zoomYBySpinBox(zoomIn=False)
+        
+    def _zoomInXBySpinBox(self):
+        self._zoomXBySpinBox(zoomIn=True)
+
+    def _zoomOutXBySpinBox(self):
+        self._zoomXBySpinBox(zoomIn=False)
+
+    def _zoomYBySpinBox(self, zoomIn: bool):
+        value = self.mainwindow.voltageZoomValue.value()
+        if not zoomIn:
+            value = - value
+        self.display.zoomY(value)
+        logger.info(f"Zoom in on Y axis by {value}.")
+
+    def _zoomXBySpinBox(self, zoomIn: bool):
+        value = self.mainwindow.timeZoomValue.value()
+        if not zoomIn:
+            value = - value
+        self.display.zoomX(value)
+        logger.info(f"Zoom in on X axis by {value}.")
 
     def _toggleLeftPanel(self):
         if self.config.leftPanelVisible:
@@ -104,6 +142,7 @@ class OscilloscopeUi(QMainWindow):
             self.config.bottomPanelVisible = True
 
     # FIXME: set bottom panel size here, an temporary solution.
+    #        Call it after view.show()
     def _temporaryUiFix(self):
         screenBottomPos = self.mainwindow.bottomPanelSplitter.getRange(1)[
             1]

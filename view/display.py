@@ -49,14 +49,28 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
     def updateData(self, value):
         self.y = value
 
-    def adjustTrigger(self, volt):
+    def updateTrigger(self, volt):
         self.trigger = volt
 
-    def adjustNextTriggerIndicator(self, volt):
+    def updateNextTriggerIndicator(self, volt):
         self.nextTriggerIndicator = volt
 
     def updateConfig(self, config: DisplayConfig):
         ...
+
+    def zoomY(self, value):
+        """If value > 0 zoom in else zoom out."""
+        bottom = self.ax.get_ylim()[0] + value
+        top = self.ax.get_ylim()[1] - value
+        self.ax.set_ylim(bottom, top)
+        self.draw()
+
+    def zoomX(self, value):
+        """If value > 0 zoom in else zoom out."""
+        left = self.ax.get_xlim()[0] + value
+        right = self.ax.get_xlim()[1] - value
+        self.ax.set_xlim(left, right)
+        self.draw()
 
     # ============================================================
     #                  Internal Methods
@@ -67,7 +81,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         ax = fig.add_subplot(111)
 
         ax.set_xlabel('time')
-        ax.set_ylabel('raw data')
+        ax.set_ylabel('voltage')
         ax.set_xlim(0, self.xlim - 1)
         ax.set_ylim(-1, 1)
 
@@ -82,10 +96,13 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
     def _draw_frame(self, framedata):
         self.dataLine.set_data(
             self.n[0:len(self.y)], self.y)
+
+        # Draw horizontal lines for trigger.
         self.triggerLine.set_data(
-            [0, BUFFER_SIZE], [self.trigger, self.trigger])
+            [0, self.xlim], [self.trigger] * 2)
         self.nextTriggerDashedLine.set_data(
-            [0, BUFFER_SIZE], [self.nextTriggerIndicator, self.nextTriggerIndicator])
+            [0, self.xlim], [self.nextTriggerIndicator] * 2)
+
         self._drawn_artists = [self.dataLine,
                                self.triggerLine, self.nextTriggerDashedLine]
         for l in self._drawn_artists:
