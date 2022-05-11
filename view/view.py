@@ -4,10 +4,11 @@ from attr import dataclass
 
 from model import ModelConfig, ProcessorConfig
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QMainWindow, QWidget, QSplitter
+from PyQt5.QtWidgets import QMainWindow, QWidget
 from ui.mainwindow import Ui_MainWindow as MainWindow
 
 from view.display import OscilloscopeDisplay, DisplayConfig
+from view.displayZoomControl import DisplayZoomControl
 from view.utils import DelayedSliderWrapper, ScrollBarStepConverter
 
 
@@ -35,10 +36,22 @@ class OscilloscopeUi(QMainWindow):
         self.savedUiState = dict()
 
         self.scrollBarConverter = ScrollBarStepConverter()
-        self._repaintAllScrollBar()
 
-        self.trigger = DelayedSliderWrapper(
+        self.displayZoomControl = DisplayZoomControl(
+            display=self.display,
+            scrollBarX=self.mainwindow.displayHorizontalScrollBar,
+            scrollBarY=self.mainwindow.displayVerticalScrollBar,
+            zoomSpinBoxX=self.mainwindow.timeZoomValue,
+            zoomInButtonX=self.mainwindow.timeZoomIn,
+            zoomOutButtonX=self.mainwindow.timeZoomOut,
+            zoomSpinBoxY=self.mainwindow.voltageZoomValue,
+            zoomInButtonY=self.mainwindow.voltageZoomIn,
+            zoomOutButtonY=self.mainwindow.voltageZoomOut,
+        )
+
+        self.triggerControl = DelayedSliderWrapper(
             self.mainwindow.triggerSlider)
+
         self._connectSignals()
 
     def updateData(self, data):
@@ -48,7 +61,7 @@ class OscilloscopeUi(QMainWindow):
         self.display.updateTrigger(config.processor.triggerVolt)
 
     def adjustTrigger(self):
-        triggerVolt = (self.trigger.slider.value() - 50) / 100
+        triggerVolt = (self.triggerControl.slider.value() - 50) / 100
         self.newModelConfig.emit(ModelConfig(
             processor=ProcessorConfig(triggerVolt=triggerVolt)))
         self.display.updateTrigger(volt=triggerVolt)
@@ -75,52 +88,11 @@ class OscilloscopeUi(QMainWindow):
             self._toggleLeftPanel)
         self.mainwindow.actionToggleControlPanel.triggered.connect(
             self._toggleBottomPanel)
-        self.trigger.slider.valueChanged.connect(
+        self.triggerControl.slider.valueChanged.connect(
             lambda value: self.display.updateNextTriggerIndicator(
                 (value - 50) / 100)
         )
-        self.trigger.stoppedForTimeout.connect(self.adjustTrigger)
-
-        # Zoom on Y.
-        self.mainwindow.voltageZoomIn.clicked.connect(self._zoomInYBySpinBox)
-        self.mainwindow.voltageZoomOut.clicked.connect(self._zoomOutYBySpinBox)
-
-        # Zoom on X.
-        self.mainwindow.timeZoomIn.clicked.connect(self._zoomInXBySpinBox)
-        self.mainwindow.timeZoomOut.clicked.connect(self._zoomOutXBySpinBox)
-        self.mainwindow.displayHorizontalScrollBar.valueChanged.connect(lambda i:
-            self.display.scrollToX(self.scrollBarConverter.intStepValueToFloat(i, self.display.config.maxXLim)))
-
-        self.mainwindow.displayVerticalScrollBar.valueChanged.connect(lambda i:
-            self.display.scrollToY(self.scrollBarConverter.intStepValueToFloat(i, self.display.config.maxYLim)))
-
-    def _zoomInYBySpinBox(self):
-        self._zoomYBySpinBox(zoomIn=True)
-
-    def _zoomOutYBySpinBox(self):
-        self._zoomYBySpinBox(zoomIn=False)
-
-    def _zoomInXBySpinBox(self):
-        self._zoomXBySpinBox(zoomIn=True)
-
-    def _zoomOutXBySpinBox(self):
-        self._zoomXBySpinBox(zoomIn=False)
-
-    def _zoomYBySpinBox(self, zoomIn: bool):
-        value = self.mainwindow.voltageZoomValue.value()
-        if not zoomIn:
-            value = - value
-        self.display.zoomY(value)
-        self._repaintAllScrollBar()
-
-    def _zoomXBySpinBox(self, zoomIn: bool):
-        value = self.mainwindow.timeZoomValue.value()
-        if not zoomIn:
-            value = - value
-        self.display.zoomX(value)
-        self._repaintAllScrollBar()
-
-        logger.info(f"Zoom in on X axis by {value}.")
+        self.triggerControl.stoppedForTimeout.connect(self.adjustTrigger)
 
     def _toggleLeftPanel(self):
         if self.config.leftPanelVisible:
@@ -153,34 +125,9 @@ class OscilloscopeUi(QMainWindow):
                 self.mainwindow.bottomPanelSplitter.moveSplitter(512, 1)
             self.config.bottomPanelVisible = True
 
-    def _repaintAllScrollBar(self):
-        def rawRepaint(bar, lim, maxLim, value):
-            pageStep = lim[1] - lim[0]
-            bar.setMinimum(maxLim[0])
-            bar.setMaximum(maxLim[1]-pageStep)
-            bar.setPageStep(pageStep)
-            bar.setValue(value)
-
-        def convertToFixedIntAndPaint(bar, lim, maxLim):
-            lim, maxLim = self.scrollBarConverter.limFloatToInt(lim, maxLim)
-            rawRepaint(
-                bar, lim, maxLim, value=lim[0]
-            )
-
-        convertToFixedIntAndPaint(
-            bar=self.mainwindow.displayHorizontalScrollBar,
-            lim=self.display.xlim(),
-            maxLim=self.display.config.maxXLim,
-        )
-
-        convertToFixedIntAndPaint(
-            bar=self.mainwindow.displayVerticalScrollBar,
-            lim=self.display.ylim(),
-            maxLim=self.display.config.maxYLim,
-        )
-
     # FIXME: set bottom panel size here, an temporary solution.
     #        Call it after view.show()
+
     def _temporaryUiFix(self):
         screenBottomPos = self.mainwindow.bottomPanelSplitter.getRange(1)[
             1]
