@@ -9,7 +9,7 @@ from matplotlib.backends.backend_qt5agg import \
     FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
-from model.worker import AD_SAMPLE_RATE, BUFFER_SIZE
+from model.defaults import AD_SAMPLE_RATE, BUFFER_SIZE
 
 matplotlib.use("Qt5Agg")
 logger = logging.getLogger(__name__)

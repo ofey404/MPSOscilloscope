@@ -69,7 +69,9 @@ class OscilloscopeUi(QMainWindow):
         self.display.updateData(data)
 
     def updateByModelConfig(self, config: ModelConfig):
-        self.display.updateTrigger(config.processor.triggerVolt)
+        if config.processor is not None:
+            if config.processor.triggerVolt is not None:
+                self.display.updateTrigger(config.processor.triggerVolt)
 
     # ============================================================
     #                  Internal Methods

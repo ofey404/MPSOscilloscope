@@ -10,60 +10,31 @@ from PyQt5.QtCore import QObject, QTimer, pyqtSignal
 
 from utils import Pool, LeakQueue
 
+
 logger = logging.getLogger(__name__)
 
-DEVICE_NUMBER = 0
 
-AD_SAMPLE_RATE=450000
-BUFFER_SIZE: int = 2048
-
-PARAMETER = MPS060602Para(
-    ADChannel=ADChannelMode.in1,
-    ADSampleRate=AD_SAMPLE_RATE,
-    Gain=PGAAmpRate.range_10V,
-)
-
-
-@dataclass
 class DataBlock:
-    buffer = (c_ushort * BUFFER_SIZE)()
-
-
-class WorkerSharedState:
-    def __init__(self, queueSize=20, workerNumber=1) -> None:
-        self.pool = Pool(queueSize+workerNumber, DataBlock)
-        self.leakQueue = LeakQueue(maxsize=queueSize, onKick=self.pool.retire)
-
-
-# Global States.
-GLOBAL_CARD: MPS060602 = None
-GLOBAL_STATE: WorkerSharedState = None
-
-
-def initWorkerGlobalInfo():
-    _initGlobalCard()
-    _initWorkerGlobalState()
-
-
-def _initGlobalCard():
-    global GLOBAL_CARD
-    GLOBAL_CARD = MPS060602(
-        device_number=DEVICE_NUMBER,
-        para=PARAMETER,
-        buffer_size=BUFFER_SIZE
-    )
-    GLOBAL_CARD.start()
-    logger.info("MPS060602 card started.")
-
-
-def _initWorkerGlobalState():
-    global GLOBAL_STATE
-    GLOBAL_STATE = WorkerSharedState()
+    def __init__(self, bufferSize) -> None:
+        self.buffer = (c_ushort * bufferSize)()
 
 
 @dataclass
 class DataWorkerConfig:
-    pass
+    deviceNumber: int = None
+    ADSampleRate: int = None
+    bufferSize: int = None
+    MPSParameter: MPS060602Para = None
+
+
+class WorkerSharedState:
+    def __init__(self, card: MPS060602, config: DataWorkerConfig, queueSize=20, workerNumber=1) -> None:
+        self.card = card
+        self.config = config
+
+        def blockInitializer(): return DataBlock(self.config.bufferSize)
+        self.pool = Pool(queueSize+workerNumber, blockInitializer)
+        self.leakQueue = LeakQueue(maxsize=queueSize, onKick=self.pool.retire)
 
 
 class MPSDataWorker(QObject):
@@ -72,19 +43,27 @@ class MPSDataWorker(QObject):
     def __init__(self, config: DataWorkerConfig):
         super().__init__()
         self.config = config
+        self.card = MPS060602(
+            device_number=self.config.deviceNumber,
+            para=self.config.MPSParameter,
+            buffer_size=self.config.bufferSize,
+        )
+        self.sharedState = WorkerSharedState(
+            card=self.card, config=self.config)
 
     def start(self):
         # https://stackoverflow.com/questions/68163578/stopping-an-infinite-loop-in-a-worker-thread-in-pyqt5-the-simplest-way
         self.poller = QTimer()
         self.poller.timeout.connect(self.dataIn)
         self.poller.start(0)
+        self.card.start()
         logger.info(f"Data worker started.")
 
     def dataIn(self):
-        block = GLOBAL_STATE.pool.alloc()
+        block = self.sharedState.pool.alloc()
 
-        GLOBAL_CARD._data_into_buffer(block.buffer)
-        GLOBAL_STATE.leakQueue.put(block)
+        self.card._data_into_buffer(block.buffer)
+        self.sharedState.leakQueue.put(block)
 
     def _configure(self, config: DataWorkerConfig):
         ...
@@ -107,9 +86,10 @@ class PostProcessWorker(QObject):
     dataReady = pyqtSignal(list)
     configUpdated = pyqtSignal(ProcessorConfig)
 
-    def __init__(self, config: ProcessorConfig):
+    def __init__(self, config: ProcessorConfig, workerSharedState: WorkerSharedState):
         super().__init__()
         self.config = config
+        self.sharedState = workerSharedState
         self._configure(self.config)
 
     def start(self):
@@ -122,7 +102,7 @@ class PostProcessWorker(QObject):
         for _ in range(self.config.triggerRetryNum):
             volt = self._getVoltDataFromQueue()
             index = self.trigger.triggeredIndex(volt)
-            if (index is None) or (index > BUFFER_SIZE / 2):
+            if (index is None) or (index > self.sharedState.config.bufferSize / 2):
                 continue
             self.dataReady.emit(volt[index:])
             return
@@ -131,18 +111,28 @@ class PostProcessWorker(QObject):
         self.dataReady.emit(volt)
 
     def _getVoltDataFromQueue(self) -> typing.List[float]:
-        block = GLOBAL_STATE.leakQueue.get()
+        block = self.sharedState.leakQueue.get()
 
         # Do copy manually, since PyQt object is never auto copied in signals.
-        volt = [GLOBAL_CARD.to_volt(dataPoint) for dataPoint in block.buffer]
+        volt = [self.sharedState.card.to_volt(
+            dataPoint) for dataPoint in block.buffer]
         # Return block to memory pool.
-        GLOBAL_STATE.pool.retire(block)
+        self.sharedState.pool.retire(block)
         return volt
 
     def _configure(self, config: ProcessorConfig):
         if config.triggerVolt is not None:
             self.config.triggerVolt = config.triggerVolt
             self.trigger = EdgeTrigger(volt=config.triggerVolt)
+        if config.triggerRetryNum is not None:
+            self.config.triggerRetryNum = config.triggerRetryNum
+        if config.timeoutMs is not None:
+            self.config.timeoutMs = config.timeoutMs
+            try:
+                self.poller
+                self.poller.setInterval(self.config.timeoutMs)
+            except AttributeError:
+                pass
 
     def updateConfig(self, config: ProcessorConfig):
         self._configure(config)

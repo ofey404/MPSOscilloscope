@@ -1,8 +1,9 @@
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from attr import dataclass
 
-from model.worker import DataWorkerConfig, MPSDataWorker, PostProcessWorker, ProcessorConfig, initWorkerGlobalInfo
+from model.worker import DataWorkerConfig, MPSDataWorker, PostProcessWorker, ProcessorConfig
 import logging
+from model.defaults import *
 
 
 logger = logging.getLogger(__name__)
@@ -25,17 +26,24 @@ class OscilloscopeModel(QObject):
 
     def __init__(self):
         super().__init__()
-        initWorkerGlobalInfo()
 
         self.config = ModelConfig(
-            dataWorker=DataWorkerConfig(),
-            processor=ProcessorConfig(triggerVolt=0, timeoutMs=1000 / 60, triggerRetryNum=5)
+            dataWorker=DataWorkerConfig(
+                deviceNumber=DEVICE_NUMBER,
+                ADSampleRate=AD_SAMPLE_RATE,
+                bufferSize=BUFFER_SIZE,
+                MPSParameter=PARAMETER
+            ),
+            processor=ProcessorConfig(
+                triggerVolt=0, timeoutMs=1000 / 60, triggerRetryNum=5)
         )
 
         self.dataWorker = MPSDataWorker(self.config.dataWorker)
         self.dataWorkerThread = self._moveToThread(self.dataWorker)
 
-        self.processor = PostProcessWorker(self.config.processor)
+        sharedState = self.dataWorker.sharedState
+
+        self.processor = PostProcessWorker(self.config.processor, sharedState)
         self.processorThread = self._moveToThread(self.processor)
 
         self._connectSignals()
