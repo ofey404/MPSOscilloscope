@@ -1,4 +1,5 @@
 from tkinter import W
+import typing
 from PyQt5.QtCore import pyqtSignal, QTimer, QObject
 from PyQt5.QtWidgets import QSlider, QComboBox, QLabel, QPushButton, QSpinBox
 from dataclasses import dataclass
@@ -8,18 +9,20 @@ from view.display import OscilloscopeDisplay
 
 @dataclass
 class TriggerControlInfo:
-    title1: str = "Trigger / V"
-    title2: str = "/"
-    sliderValue: int = 50
+    titles = [
+        "Trigger / V",
+        "/",
+    ]
+    sliderPercentage = 0.5
 
     def onStoppedForTimeout(self, control: "RightSliderControl"):
         triggerVolt = control._currentSliderVolt()
         control.display.updateTrigger(volt=triggerVolt)
-        control.valueSpinBox1.setValue(triggerVolt)
+        control.allValueSpinBox[0].setValue(triggerVolt)
         control.triggerSelected.emit(triggerVolt)
 
     def _onSliderValueChanged(self, control: "RightSliderControl"):
-        self.sliderValue = control.slider.value()
+        self.sliderPercentage = control._sliderPercentage()
 
         control.display.updateNextTriggerIndicator(
             control._currentSliderVolt())
@@ -31,19 +34,22 @@ class TriggerControlInfo:
 @dataclass
 class CursorControlInfo:
     indexThisCursor: int = 0
-    title1: str = "Cursor 1 (Solid line) / V "
-    title2: str = "Cursor 2 (Dashed line) / V"
-    sliderValue: int = 50
+    titles = [
+        "Cursor 1 (Solid line) / V ",
+        "Cursor 2 (Dashed line) / V",
+    ]
+    sliderPercentage = 0.5
 
     def onStoppedForTimeout(self, control: "RightSliderControl"):
         pass
 
     def _onSliderValueChanged(self, control: "RightSliderControl"):
-        self.sliderValue = control.slider.value()
+        self.sliderPercentage = control._sliderPercentage()
 
         cursorVolt = control._currentSliderVolt()
         control.allValueSpinBox[self.indexThisCursor].setValue(cursorVolt)
-        control.display.updateCursor(self.indexThisCursor, control._currentSliderVolt())
+        control.display.updateCursor(
+            self.indexThisCursor, control._currentSliderVolt())
 
     def _onToggleSliderVisibility(self, control: "RightSliderControl"):
         control.display.toggleCursorLine(self.indexThisCursor)
@@ -83,10 +89,6 @@ class RightSliderControl(QObject):
         self.sliderVisibilityToggler = sliderVisibilityToggler
         self.allValueSpinBox = [valueSpinBox1, valueSpinBox2]
         self.allValueTitle = [valueTitle1, valueTitle2]
-        self.valueSpinBox1 = valueSpinBox1
-        self.valueTitle1 = valueTitle1
-        self.valueSpinBox2 = valueSpinBox2
-        self.valueTitle2 = valueTitle2
 
         self.delayedSliderWrapper = DelayedSliderWrapper(slider)
         self._connectSignals()
@@ -115,9 +117,11 @@ class RightSliderControl(QObject):
         self.currentController = self.controlInfoList[index]
 
         c = self.currentController
-        self.valueTitle1.setText(c.title1)
-        self.valueTitle2.setText(c.title2)
-        self.slider.setValue(c.sliderValue)
+        for i, title in enumerate(self.allValueTitle):
+            title.setText(c.titles[i])
+        sliderValue = (self.slider.minimum() + 
+                        (self.slider.maximum() - self.slider.minimum()) * c.sliderPercentage)
+        self.slider.setValue(sliderValue)
 
     def _onStoppedForTimeout(self, _):
         self.currentController.onStoppedForTimeout(self)
