@@ -56,12 +56,38 @@ class CursorControlInfo:
 
 
 @dataclass
+class VerticalCursorControlInfo:
+    indexThisCursor: int = 0
+    titles = [
+        "Cursor 1 (Solid line) / ms ",
+        "Cursor 2 (Dashed line) / ms",
+    ]
+    sliderPercentage = 0.5
+
+    def onStoppedForTimeout(self, control: "RightSliderControl"):
+        pass
+
+    def _onSliderValueChanged(self, control: "RightSliderControl"):
+        self.sliderPercentage = control._sliderPercentage()
+
+        cursorMs = control._currentSliderTimeMs()
+        control.allValueSpinBox[self.indexThisCursor].setValue(cursorMs)
+        control.display.updateVerticalCursor(
+            self.indexThisCursor, cursorMs)
+
+    def _onToggleSliderVisibility(self, control: "RightSliderControl"):
+        control.display.toggleVerticalCursorLine(self.indexThisCursor)
+
+
+@dataclass
 class RightSliderControlConfig:
     # Same order as in the sliderSelector.
     controlInfoList = [
         TriggerControlInfo(),
         CursorControlInfo(indexThisCursor=0),
         CursorControlInfo(indexThisCursor=1),
+        VerticalCursorControlInfo(indexThisCursor=0),
+        VerticalCursorControlInfo(indexThisCursor=1),
     ]
 
 
@@ -119,8 +145,8 @@ class RightSliderControl(QObject):
         c = self.currentController
         for i, title in enumerate(self.allValueTitle):
             title.setText(c.titles[i])
-        sliderValue = (self.slider.minimum() + 
-                        (self.slider.maximum() - self.slider.minimum()) * c.sliderPercentage)
+        sliderValue = (self.slider.minimum() +
+                       (self.slider.maximum() - self.slider.minimum()) * c.sliderPercentage)
         self.slider.setValue(sliderValue)
 
     def _onStoppedForTimeout(self, _):
@@ -137,6 +163,10 @@ class RightSliderControl(QObject):
 
     def _currentSliderVolt(self):
         low, high = self.display.ylim()
+        return low + self._sliderPercentage() * (high - low)
+
+    def _currentSliderTimeMs(self):
+        low, high = self.display.xlim()
         return low + self._sliderPercentage() * (high - low)
 
 

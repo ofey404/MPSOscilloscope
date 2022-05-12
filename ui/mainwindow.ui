@@ -298,6 +298,16 @@
                         <string>Cursor 2</string>
                        </property>
                       </item>
+                      <item>
+                       <property name="text">
+                        <string>Vertical Cursor 1</string>
+                       </property>
+                      </item>
+                      <item>
+                       <property name="text">
+                        <string>Vertical Cursor 2</string>
+                       </property>
+                      </item>
                      </widget>
                     </item>
                    </layout>

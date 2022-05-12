@@ -1,4 +1,5 @@
 import logging
+from tkinter import W
 
 import matplotlib
 import numpy as np
@@ -27,6 +28,25 @@ class DisplayConfig:
 
     cursorVisible = [False, False]
     cursorVoltage = [0, 0]
+
+    verticalCursorVisible = [False, False]
+    verticalCursorTime = [timeLimMs[1] / 2, ] * 2
+
+
+class VerticalLine(Line2D):
+    def __init__(self, yLim, x=None, **kwargs) -> None:
+        super().__init__([x, x], yLim, **kwargs)
+        self.yLim = yLim
+        if x is not None:
+            self.x = x
+
+    def set_x(self, x=None):
+        if x is not None:
+            self.x = x
+        self.set_data([self.x, ] * 2, self.yLim)
+
+    def set_invisible(self):
+        self.set_data([], [])
 
 
 class HorizontalLine(Line2D):
@@ -78,7 +98,13 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
                 xLim=self.config.timeLimMs, color='green', linestyle="--"),
         ]
 
-        for line in self.cursorLines:
+        self.verticalCursorLines = [
+            VerticalLine(yLim=self.config.voltageLim, color='green'),
+            VerticalLine(yLim=self.config.voltageLim,
+                         color='green', linestyle="--"),
+        ]
+
+        for line in [*self.cursorLines, *self.verticalCursorLines]:
             self.ax.add_line(line)
 
         FigureCanvas.__init__(self, self.fig)
@@ -99,6 +125,9 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
     def updateCursor(self, index, volt):
         self.config.cursorVoltage[index] = volt
+
+    def updateVerticalCursor(self, index, timeMs):
+        self.config.verticalCursorTime[index] = timeMs
 
     def updateNextTriggerIndicator(self, volt):
         self.config.nextTriggerIndicator = volt
@@ -147,6 +176,9 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
     def toggleCursorLine(self, index):
         self.config.cursorVisible[index] = not self.config.cursorVisible[index]
+
+    def toggleVerticalCursorLine(self, index):
+        self.config.verticalCursorVisible[index] = not self.config.verticalCursorVisible[index]
 
     # ============================================================
     #                  Internal Methods
@@ -202,7 +234,20 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
             else:
                 self.cursorLines[i].set_invisible()
 
-        self._drawn_artists = [self.dataLine,
-                               self.triggerLine, self.nextTriggerDashedLine, *self.cursorLines]
+        for i, verticalCursorVisible in enumerate(self.config.verticalCursorVisible):
+            if verticalCursorVisible:
+                self.verticalCursorLines[i].set_x(
+                    self.config.verticalCursorTime[i])
+            else:
+                self.verticalCursorLines[i].set_invisible()
+
+        self._drawn_artists = [
+            self.dataLine,
+            self.triggerLine,
+            self.nextTriggerDashedLine,
+            *self.cursorLines,
+            *self.verticalCursorLines
+        ]
+
         for l in self._drawn_artists:
             l.set_animated(True)
