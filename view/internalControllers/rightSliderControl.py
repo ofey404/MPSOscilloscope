@@ -14,8 +14,13 @@ class TriggerControlInfo:
         "/",
     ]
     sliderPercentage = 0.5
+    firstVisit: bool = True
 
-    def onStoppedForTimeout(self, control: "RightSliderControl"):
+    def _onFirstVisited(self, control: "RightSliderControl"):
+        if not control.display.config.triggerLineVisible:
+            control.display.toggleTriggerLine()
+
+    def _onStoppedForTimeout(self, control: "RightSliderControl"):
         triggerVolt = control._currentSliderVolt()
         control.display.updateTrigger(volt=triggerVolt)
         control.allValueSpinBox[0].setValue(triggerVolt)
@@ -39,8 +44,13 @@ class CursorControlInfo:
         "Cursor 2 (Dashed line) / V",
     ]
     sliderPercentage = 0.5
+    firstVisit = True
 
-    def onStoppedForTimeout(self, control: "RightSliderControl"):
+    def _onFirstVisited(self, control: "RightSliderControl"):
+        if not control.display.config.cursorVisible[self.indexThisCursor]:
+            control.display.toggleCursorLine(self.indexThisCursor)
+
+    def _onStoppedForTimeout(self, control: "RightSliderControl"):
         pass
 
     def _onSliderValueChanged(self, control: "RightSliderControl"):
@@ -63,8 +73,13 @@ class VerticalCursorControlInfo:
         "Cursor 2 (Dashed line) / ms",
     ]
     sliderPercentage = 0.5
+    firstVisit = True
 
-    def onStoppedForTimeout(self, control: "RightSliderControl"):
+    def _onFirstVisited(self, control: "RightSliderControl"):
+        if not control.display.config.verticalCursorVisible[self.indexThisCursor]:
+            control.display.toggleVerticalCursorLine(self.indexThisCursor)
+
+    def _onStoppedForTimeout(self, control: "RightSliderControl"):
         pass
 
     def _onSliderValueChanged(self, control: "RightSliderControl"):
@@ -142,6 +157,10 @@ class RightSliderControl(QObject):
     def _setControllerTo(self, index):
         self.currentController = self.controlInfoList[index]
 
+        if self.currentController.firstVisit:
+            self.currentController._onFirstVisited(self)
+            self.currentController.firstVisit = False
+
         c = self.currentController
         for i, title in enumerate(self.allValueTitle):
             title.setText(c.titles[i])
@@ -150,7 +169,7 @@ class RightSliderControl(QObject):
         self.slider.setValue(sliderValue)
 
     def _onStoppedForTimeout(self, _):
-        self.currentController.onStoppedForTimeout(self)
+        self.currentController._onStoppedForTimeout(self)
 
     def _onSliderValueChanged(self, _):
         self.currentController._onSliderValueChanged(self)
