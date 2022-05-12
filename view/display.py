@@ -22,6 +22,27 @@ class DisplayConfig:
     timeLimMs = (0, dataStepTimeMs * dataPointCount)
 
     triggerLineVisible = True
+    trigger = 0
+    nextTriggerIndicator = 0
+
+    cursorVisible = [False, False]
+    cursorVoltage = [0, 0]
+
+
+class HorizontalLine(Line2D):
+    def __init__(self, xLim, y=None, **kwargs) -> None:
+        super().__init__(xLim, [y, y], **kwargs)
+        self.xLim = xLim
+        if y is not None:
+            self.y = y
+
+    def set_y(self, y=None):
+        if y is not None:
+            self.y = y
+        self.set_data(self.xLim, [self.y, ] * 2)
+
+    def set_invisible(self):
+        self.set_data([], [])
 
 
 class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
@@ -33,23 +54,32 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         # 2 times longer than minimal data length passed by trigger.
         self.n = np.linspace(
             0, self.config.timeLimMs[1] * 2, self.config.dataPointCount * 2 + 1)
-
         self.y = (self.n * 0.0) + 50
-        self.trigger = 0
-        self.nextTriggerIndicator = 0
 
         # The window
         self.fig, self.ax = self._init_fig()
 
-        self.dataLine = Line2D([], [], color='blue')
-
-        self.triggerLine = Line2D([], [], color='red')
-        self.nextTriggerDashedLine = Line2D(
-            [], [], color='red', linestyle="--")
-
+        self.dataLine = HorizontalLine(
+            xLim=self.config.timeLimMs, color='blue')
         self.ax.add_line(self.dataLine)
+
+        self.triggerLine = HorizontalLine(
+            xLim=self.config.timeLimMs, color='red')
         self.ax.add_line(self.triggerLine)
+
+        self.nextTriggerDashedLine = HorizontalLine(
+            xLim=self.config.timeLimMs, color='red', linestyle="--")
         self.ax.add_line(self.nextTriggerDashedLine)
+
+        self.cursorLines = [
+            HorizontalLine(
+                xLim=self.config.timeLimMs, color='green'),
+            HorizontalLine(
+                xLim=self.config.timeLimMs, color='green', linestyle="--"),
+        ]
+
+        for line in self.cursorLines:
+            self.ax.add_line(line)
 
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=50, blit=True)
@@ -65,10 +95,13 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         self.y = value
 
     def updateTrigger(self, volt):
-        self.trigger = volt
+        self.config.trigger = volt
+
+    def updateCursor(self, index, volt):
+        self.config.cursorVoltage[index] = volt
 
     def updateNextTriggerIndicator(self, volt):
-        self.nextTriggerIndicator = volt
+        self.config.nextTriggerIndicator = volt
 
     def updateConfig(self, config: DisplayConfig):
         self.config = config
@@ -112,6 +145,9 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
     def toggleTriggerLine(self):
         self.config.triggerLineVisible = not self.config.triggerLineVisible
 
+    def toggleCursorLine(self, index):
+        self.config.cursorVisible[index] = not self.config.cursorVisible[index]
+
     # ============================================================
     #                  Internal Methods
     # ============================================================
@@ -154,15 +190,19 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         # Draw horizontal lines for trigger.
         if self.config.triggerLineVisible:
-            self.triggerLine.set_data(
-                self.xlim(), [self.trigger] * 2)
-            self.nextTriggerDashedLine.set_data(
-                self.xlim(), [self.nextTriggerIndicator] * 2)
+            self.triggerLine.set_y(self.config.trigger)
+            self.nextTriggerDashedLine.set_y(self.config.nextTriggerIndicator)
         else:
-            self.triggerLine.set_data([], [])
-            self.nextTriggerDashedLine.set_data([], [])
+            self.triggerLine.set_invisible()
+            self.nextTriggerDashedLine.set_invisible()
+
+        for i, cursorVisible in enumerate(self.config.cursorVisible):
+            if cursorVisible:
+                self.cursorLines[i].set_y(self.config.cursorVoltage[i])
+            else:
+                self.cursorLines[i].set_invisible()
 
         self._drawn_artists = [self.dataLine,
-                               self.triggerLine, self.nextTriggerDashedLine]
+                               self.triggerLine, self.nextTriggerDashedLine, *self.cursorLines]
         for l in self._drawn_artists:
             l.set_animated(True)
