@@ -132,8 +132,13 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
     def updateNextTriggerIndicator(self, volt):
         self.config.nextTriggerIndicator = volt
 
-    def updateConfig(self, config: DisplayConfig):
-        self.config = config
+    def resetZoomY(self):
+        self.ax.set_ylim(self.config.voltageLim)
+        self.draw()
+
+    def resetZoomX(self):
+        self.ax.set_xlim(self.config.timeLimMs)
+        self.draw()
 
     def zoomY(self, value):
         newLim = self._moveLim(

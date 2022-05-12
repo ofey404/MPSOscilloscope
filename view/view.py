@@ -48,6 +48,8 @@ class OscilloscopeUi(QMainWindow):
             zoomSpinBoxY=self.mainwindow.voltageZoomValue,
             zoomInButtonY=self.mainwindow.voltageZoomIn,
             zoomOutButtonY=self.mainwindow.voltageZoomOut,
+            zoomResetButtonX=self.mainwindow.timeZoomReset,
+            zoomResetButtonY=self.mainwindow.voltageZoomReset,
         )
 
         self.rightSliderControl = RightSliderControl(

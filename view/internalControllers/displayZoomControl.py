@@ -14,6 +14,8 @@ class DisplayZoomControl:
                  zoomInButtonY: QPushButton,
                  zoomOutButtonX: QPushButton,
                  zoomOutButtonY: QPushButton,
+                 zoomResetButtonX: QPushButton,
+                 zoomResetButtonY: QPushButton,
                  ) -> None:
 
         self.display = display
@@ -26,6 +28,8 @@ class DisplayZoomControl:
         self.zoomInButtonY = zoomInButtonY
         self.zoomOutButtonX = zoomOutButtonX
         self.zoomOutButtonY = zoomOutButtonY
+        self.zoomResetButtonX = zoomResetButtonX
+        self.zoomResetButtonY = zoomResetButtonY
 
         self.repaintAllScrollBar()
         self._connectSignals()
@@ -63,14 +67,24 @@ class DisplayZoomControl:
     def _connectSignals(self):
         self.zoomInButtonY.clicked.connect(self._zoomInYBySpinBox)
         self.zoomOutButtonY.clicked.connect(self._zoomOutYBySpinBox)
+        self.zoomResetButtonY.clicked.connect(self._resetZoomY)
         self.zoomInButtonX.clicked.connect(self._zoomInXBySpinBox)
         self.zoomOutButtonX.clicked.connect(self._zoomOutXBySpinBox)
+        self.zoomResetButtonX.clicked.connect(self._resetZoomX)
 
         # Display follow the scroll bar.
         # FIXME: Use `valueChanged` may cause serious performance issue.
         #        Since it repaint the display each step during slide.
         self.scrollBarX.valueChanged.connect(self._scrollToIntX)
         self.scrollBarY.valueChanged.connect(self._scrollToIntY)
+
+    def _resetZoomY(self):
+        self.display.resetZoomY()
+        self.repaintAllScrollBar()
+
+    def _resetZoomX(self):
+        self.display.resetZoomX()
+        self.repaintAllScrollBar()
 
     def _scrollToIntY(self, i):
         intY = self.scrollBarConverter.intStepValueToFloat(
