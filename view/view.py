@@ -69,10 +69,6 @@ class OscilloscopeUi(QMainWindow):
     def updateByModelConfig(self, config: ModelConfig):
         self.display.updateTrigger(config.processor.triggerVolt)
 
-    def adjustTrigger(self, triggerVolt):
-        self.newModelConfig.emit(ModelConfig(
-            processor=ProcessorConfig(triggerVolt=triggerVolt)))
-
     # ============================================================
     #                  Internal Methods
     # ============================================================
@@ -97,7 +93,11 @@ class OscilloscopeUi(QMainWindow):
             self._toggleBottomPanel)
 
         self.rightSliderControl.triggerSelected.connect(
-            self.adjustTrigger)
+            self._adjustTrigger)
+
+    def _adjustTrigger(self, triggerVolt):
+        self.newModelConfig.emit(ModelConfig(
+            processor=ProcessorConfig(triggerVolt=triggerVolt)))
 
     def _toggleLeftPanel(self):
         if self.config.leftPanelVisible:

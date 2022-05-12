@@ -42,6 +42,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         self.fig, self.ax = self._init_fig()
 
         self.dataLine = Line2D([], [], color='blue')
+
         self.triggerLine = Line2D([], [], color='red')
         self.nextTriggerDashedLine = Line2D(
             [], [], color='red', linestyle="--")

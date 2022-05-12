@@ -1,7 +1,31 @@
 from PyQt5.QtCore import pyqtSignal, QTimer, QObject
 from PyQt5.QtWidgets import QSlider, QComboBox, QLabel, QPushButton, QSpinBox
+from dataclasses import dataclass
 
 from view.display import OscilloscopeDisplay
+
+
+@dataclass
+class TriggerControlInfo:
+    title1 = ""
+    title2 = ""
+    sliderValue = 0
+
+    def updateValueSpinBox1(self, control: "RightSliderControl"):
+        ...
+
+    def updateValueSpinBox1(self, control: "RightSliderControl"):
+        ...
+
+
+@dataclass
+class RightSliderControlConfig:
+    triggerControlInfo = TriggerControlInfo
+
+    cursor1SliderValue = 0
+    cursor2SliderValue = 0
+    horizontalCursor1SliderValue = 0
+    horizontalCursor2SliderValue = 0
 
 
 class RightSliderControl(QObject):
@@ -19,6 +43,9 @@ class RightSliderControl(QObject):
                  valueTitle2: QLabel,
                  ) -> None:
         super().__init__()
+        self.config = RightSliderControlConfig()
+        self.controlInfo = self.config.triggerControlInfo
+
         self.display = display
         self.slider = slider
         self.sliderSelector = sliderSelector
