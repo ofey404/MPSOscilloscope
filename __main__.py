@@ -16,7 +16,6 @@ def main(argv):
     # Init MVC.
     view = OscilloscopeUi()
     view.show()
-    view._temporaryUiFix()
 
     model = OscilloscopeModel()
     OscilloscopeCtrl(model, view)

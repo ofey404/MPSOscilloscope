@@ -73,6 +73,10 @@ class OscilloscopeUi(QMainWindow):
             if config.processor.triggerVolt is not None:
                 self.display.updateTrigger(config.processor.triggerVolt)
 
+    def show(self):
+        super().show()
+        self._temporaryUiFix()
+
     # ============================================================
     #                  Internal Methods
     # ============================================================

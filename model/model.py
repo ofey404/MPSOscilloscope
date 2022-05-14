@@ -30,7 +30,6 @@ class OscilloscopeModel(QObject):
         self.config = ModelConfig(
             dataWorker=DataWorkerConfig(
                 deviceNumber=DEVICE_NUMBER,
-                ADSampleRate=AD_SAMPLE_RATE,
                 bufferSize=BUFFER_SIZE,
                 MPSParameter=PARAMETER
             ),

@@ -22,7 +22,6 @@ class DataBlock:
 @dataclass
 class DataWorkerConfig:
     deviceNumber: int = None
-    ADSampleRate: int = None
     bufferSize: int = None
     MPSParameter: MPS060602Para = None
 
@@ -66,7 +65,30 @@ class MPSDataWorker(QObject):
         self.sharedState.leakQueue.put(block)
 
     def _configure(self, config: DataWorkerConfig):
-        ...
+        shouldRestart = False
+        if config.bufferSize is not None:
+            self.config.bufferSize = config.bufferSize
+            shouldRestart = True
+
+        if config.deviceNumber is not None:
+            self.config.deviceNumber = config.deviceNumber
+            shouldRestart = True
+
+        if config.MPSParameter is not None:
+            self.config.MPSParameter = config.MPSParameter
+            self.card.configure(self.config.MPSParameter)
+
+        if shouldRestart:
+            self._restartCard(
+                device_number=self.config.deviceNumber,
+                para=self.config.MPSParameter,
+                buffer_size=self.config.bufferSize,
+            )
+
+    def _restartCard(self, **kwargs):
+        self.card.suspend()
+        self.card.close()
+        self.card = MPS060602(**kwargs)
 
     def updateConfig(self, config: DataWorkerConfig):
         """DataWorker must be paused while updating card info."""
