@@ -1,15 +1,16 @@
 import logging
 from tkinter import W
+from typing import List
 
 import matplotlib
 import numpy as np
-from attr import dataclass
 from matplotlib.animation import TimedAnimation
 from matplotlib.backends.backend_qt5agg import \
     FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
-from model.defaults import AD_SAMPLE_RATE, BUFFER_SIZE
+from model.defaults import AD_SAMPLE_RATE, MAX_BUFFER_SIZE
+from dataclasses import dataclass, field
 
 matplotlib.use("Qt5Agg")
 logger = logging.getLogger(__name__)
@@ -17,19 +18,18 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class DisplayConfig:
-    dataPointCount = BUFFER_SIZE // 2
-    voltageLim = (-1, 1)
-    dataStepTimeMs = 1 / AD_SAMPLE_RATE * 1000
+    dataPointCount: int = MAX_BUFFER_SIZE // 2
+    voltageLim: tuple = (-1, 1)
+    dataStepTimeMs: float = 1 / AD_SAMPLE_RATE * 1000
 
-    triggerLineVisible = True
-    trigger = 0
-    nextTriggerIndicator = 0
+    triggerLineVisible: bool = True
+    trigger: float = 0
+    nextTriggerIndicator: float = 0
 
-    cursorVisible = [False, False]
-    cursorVoltage = [0, 0]
-
-    verticalCursorVisible = [False, False]
-    verticalCursorTime = [0, 0]
+    cursorVisible: List = field(default_factory=lambda: [False, False])
+    cursorVoltage: List = field(default_factory=lambda: [0, 0])
+    verticalCursorVisible: List = field(default_factory=lambda: [False, False])
+    verticalCursorTime: List = field(default_factory=lambda: [0, 0])
 
     def timeLimMs(self):
         return (0, self.dataStepTimeMs * self.dataPointCount)
