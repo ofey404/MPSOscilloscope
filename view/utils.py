@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from PyQt5.QtWidgets import QMessageBox
 
 
 @dataclass
@@ -21,3 +21,11 @@ class ScrollBarStepConverter:
     def intStepValueToFloat(self, intStepValue, maxlim):
         maxRange = maxlim[1] - maxlim[0]
         return (intStepValue / self.maxStep) * maxRange + maxlim[0]
+
+def showError(info: str):
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Critical)
+    msg.setText("Error")
+    msg.setInformativeText(info)
+    msg.setWindowTitle("Error")
+    msg.exec_()

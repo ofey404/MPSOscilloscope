@@ -11,6 +11,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class ModelConfig:
+    """None fields would be ignored by all users."""
     dataWorker: DataWorkerConfig = None
     processor: ProcessorConfig = None
 

@@ -23,7 +23,6 @@ class DataBlock:
 class DataWorkerConfig:
     deviceNumber: int = None
     bufferSize: int = None
-    MPSParameter: MPS060602Para = None
     ADChannel: ADChannelMode = None
     ADSampleRate: int = None
     Gain: PGAAmpRate = None
@@ -34,8 +33,10 @@ class WorkerSharedState:
         self.card = card
         self.config = config
 
+        self.poolSize = queueSize+workerNumber
         def blockInitializer(): return DataBlock(self.config.bufferSize)
-        self.pool = Pool(queueSize+workerNumber, blockInitializer)
+        def doResizeIfShould(block): return block
+        self.pool = Pool(self.poolSize, blockInitializer, doResizeIfShould)
         self.leakQueue = LeakQueue(maxsize=queueSize, onKick=self.pool.retire)
 
 
@@ -76,7 +77,14 @@ class MPSDataWorker(QObject):
         shouldConfigureCard = False
         if config.bufferSize is not None:
             self.config.bufferSize = config.bufferSize
-            shouldRestart = True
+
+            def resizeToBufferSize(block: DataBlock):
+                if len(block.buffer) != self.config.bufferSize:
+                    print("resize block!")
+                    return DataBlock(self.config.bufferSize)
+                else:
+                    return block
+            self.sharedState.pool.doResizeIfShould = resizeToBufferSize
 
         if config.deviceNumber is not None:
             self.config.deviceNumber = config.deviceNumber
@@ -103,7 +111,6 @@ class MPSDataWorker(QObject):
             self._restartCard(
                 device_number=self.config.deviceNumber,
                 para=cardParameter,
-                buffer_size=self.config.bufferSize,
             )
             logger.info("Card restarted.")
         elif shouldConfigureCard:
@@ -116,6 +123,7 @@ class MPSDataWorker(QObject):
         self.card.suspend()
         self.card.close()
         self.card = MPS060602(**kwargs)
+        self.card.start()
 
     def updateConfig(self, config: DataWorkerConfig):
         """DataWorker must be paused while updating card info."""
@@ -154,6 +162,8 @@ class PostProcessWorker(QObject):
             if (index is None) or (index > self.sharedState.config.bufferSize / 2):
                 continue
             self.dataReady.emit(volt[index:])
+            logger.debug(
+                f"Preprocess success. {self.sharedState.config.bufferSize}")
             return
 
         # Trigger failed, emit the whole waveform.

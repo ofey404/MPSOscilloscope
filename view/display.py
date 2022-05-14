@@ -40,9 +40,11 @@ class VerticalLine(Line2D):
         if x is not None:
             self.x = x
 
-    def set_x(self, x=None):
+    def set(self, x=None, yLim=None):
         if x is not None:
             self.x = x
+        if yLim is not None:
+            self.yLim = yLim
         self.set_data([self.x, ] * 2, self.yLim)
 
     def set_invisible(self):
@@ -56,9 +58,12 @@ class HorizontalLine(Line2D):
         if y is not None:
             self.y = y
 
-    def set_y(self, y=None):
+    def set(self, y=None, xLim=None):
         if y is not None:
             self.y = y
+        if xLim is not None:
+            self.xLim = xLim
+
         self.set_data(self.xLim, [self.y, ] * 2)
 
     def set_invisible(self):
@@ -125,8 +130,11 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
     def updateVoltLim(self, voltLim):
         self.config.voltageLim = voltLim
-        self.ax.set_ylim(*self.config.voltageLim)
-        self.draw()
+        self.resetZoomY()
+
+    def updateTimeLim(self, timeLim):
+        self.config.timeLimMs = timeLim
+        self.resetZoomX()
 
     def updateCursor(self, index, volt):
         self.config.cursorVoltage[index] = volt
@@ -232,22 +240,24 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         # Draw horizontal lines for trigger.
         if self.config.triggerLineVisible:
-            self.triggerLine.set_y(self.config.trigger)
-            self.nextTriggerDashedLine.set_y(self.config.nextTriggerIndicator)
+            self.triggerLine.set(self.config.trigger)
+            self.nextTriggerDashedLine.set(self.config.nextTriggerIndicator)
         else:
             self.triggerLine.set_invisible()
             self.nextTriggerDashedLine.set_invisible()
 
         for i, cursorVisible in enumerate(self.config.cursorVisible):
             if cursorVisible:
-                self.cursorLines[i].set_y(self.config.cursorVoltage[i])
+                self.cursorLines[i].set(xLim=self.config.timeLimMs,
+                                        y=self.config.cursorVoltage[i])
             else:
                 self.cursorLines[i].set_invisible()
 
         for i, verticalCursorVisible in enumerate(self.config.verticalCursorVisible):
             if verticalCursorVisible:
-                self.verticalCursorLines[i].set_x(
-                    self.config.verticalCursorTime[i])
+                self.verticalCursorLines[i].set(
+                    yLim=self.config.voltageLim,
+                    x=self.config.verticalCursorTime[i])
             else:
                 self.verticalCursorLines[i].set_invisible()
 

@@ -1,7 +1,9 @@
+import logging
 from view.display import OscilloscopeDisplay
 from view.utils import ScrollBarStepConverter
 from PyQt5.QtWidgets import QScrollBar, QDoubleSpinBox, QPushButton
 
+logger = logging.getLogger(__name__)
 
 class DisplayZoomControl:
     def __init__(self,
@@ -59,6 +61,8 @@ class DisplayZoomControl:
             lim=self.display.ylim(),
             maxLim=self.display.config.voltageLim,
         )
+
+        logger.debug("All scrollbar repainted.")
 
     # ============================================================
     #                  Internal Methods

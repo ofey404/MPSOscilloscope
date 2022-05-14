@@ -8,16 +8,19 @@ from queue import Queue
 class Pool:
     """Pre-allocated object pool."""
 
-    def __init__(self, size: int, initalizer: Callable):
+    def __init__(self, size: int, initalizer: Callable, doResizeIfShould: Callable):
         self.available = [initalizer() for _ in range(size)]
+        self.doResizeIfShould = doResizeIfShould
 
     def retire(self, block):
         self.available.append(block)
 
     def alloc(self):
         if self.available:
-            return self.available.pop()
+            block = self.available.pop()
+            return self.doResizeIfShould(block)
         raise Exception("Pool should not expire!")
+        
 
 
 class LeakQueue(Queue):

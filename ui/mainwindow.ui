@@ -87,7 +87,10 @@
              <item>
               <widget class="QLabel" name="label_12">
                <property name="text">
-                <string>Data Worker Configuration</string>
+                <string>**Data Worker Configuration**</string>
+               </property>
+               <property name="textFormat">
+                <enum>Qt::MarkdownText</enum>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>
@@ -110,34 +113,10 @@
                 </widget>
                </item>
                <item>
-                <widget class="QSpinBox" name="deviceNumberSpinBox"/>
-               </item>
-              </layout>
-             </item>
-             <item>
-              <layout class="QHBoxLayout" name="horizontalLayout_11">
-               <item>
-                <widget class="QLabel" name="label_10">
-                 <property name="text">
-                  <string>Buffer Size</string>
+                <widget class="QSpinBox" name="deviceNumberSpinBox">
+                 <property name="maximum">
+                  <number>10</number>
                  </property>
-                </widget>
-               </item>
-               <item>
-                <widget class="QComboBox" name="bufferSizeComboBox">
-                 <property name="editable">
-                  <bool>true</bool>
-                 </property>
-                 <item>
-                  <property name="text">
-                   <string>2048</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>4096</string>
-                  </property>
-                 </item>
                 </widget>
                </item>
               </layout>
@@ -177,7 +156,7 @@
                <item>
                 <widget class="QLabel" name="label_8">
                  <property name="text">
-                  <string>ADC Range</string>
+                  <string>Voltage Range</string>
                  </property>
                 </widget>
                </item>
@@ -208,6 +187,33 @@
               </layout>
              </item>
              <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_11">
+               <item>
+                <widget class="QLabel" name="label_10">
+                 <property name="text">
+                  <string>Buffer Size</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="bufferSizeSpinBox">
+                 <property name="minimum">
+                  <number>256</number>
+                 </property>
+                 <property name="maximum">
+                  <number>32768</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>256</number>
+                 </property>
+                 <property name="value">
+                  <number>2048</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
               <layout class="QHBoxLayout" name="horizontalLayout_14">
                <property name="sizeConstraint">
                 <enum>QLayout::SetDefaultConstraint</enum>
@@ -220,30 +226,53 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="sampleRateComboBox">
-                 <property name="editable">
+                <widget class="QSpinBox" name="sampleRateSpinBox">
+                 <property name="minimum">
+                  <number>1000</number>
+                 </property>
+                 <property name="maximum">
+                  <number>450000</number>
+                 </property>
+                 <property name="singleStep">
+                  <number>1000</number>
+                 </property>
+                 <property name="value">
+                  <number>450000</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QLabel" name="label_19">
+               <property name="text">
+                <string>*Calculated Fields*</string>
+               </property>
+               <property name="textFormat">
+                <enum>Qt::MarkdownText</enum>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_18">
+               <item>
+                <widget class="QLabel" name="label_18">
+                 <property name="text">
+                  <string>Time Range (ms)</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QDoubleSpinBox" name="windowTimeDoubleSpinBox">
+                 <property name="readOnly">
                   <bool>true</bool>
                  </property>
-                 <item>
-                  <property name="text">
-                   <string>450000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>200000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>100000</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>10000</string>
-                  </property>
-                 </item>
+                 <property name="decimals">
+                  <number>4</number>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -251,7 +280,10 @@
              <item>
               <widget class="QLabel" name="label_13">
                <property name="text">
-                <string>Post Processor Configuration</string>
+                <string>**Post Processor Configuration**</string>
+               </property>
+               <property name="textFormat">
+                <enum>Qt::MarkdownText</enum>
                </property>
                <property name="alignment">
                 <set>Qt::AlignCenter</set>
@@ -644,6 +676,9 @@
                     </item>
                     <item>
                      <widget class="QDoubleSpinBox" name="rightSliderValueSpinBox1">
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
                       <property name="decimals">
                        <number>4</number>
                       </property>
@@ -671,6 +706,9 @@
                     </item>
                     <item>
                      <widget class="QDoubleSpinBox" name="rightSliderValueSpinBox2">
+                      <property name="readOnly">
+                       <bool>true</bool>
+                      </property>
                       <property name="decimals">
                        <number>4</number>
                       </property>

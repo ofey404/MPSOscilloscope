@@ -68,10 +68,11 @@ class OscilloscopeUi(QMainWindow):
         self.configPanelControl = ConfigPanelControl(
             updateConfigButton=self.mainwindow.updateConfigButton,
             deviceNumberSpinBox=self.mainwindow.deviceNumberSpinBox,
-            bufferSizeComboBox=self.mainwindow.bufferSizeComboBox,
+            bufferSizeSpinBox=self.mainwindow.bufferSizeSpinBox,
             inputChannelComboBox=self.mainwindow.inputChannelComboBox,
             ADCRangeComboBox=self.mainwindow.ADCRangeComboBox,
-            sampleRateComboBox=self.mainwindow.sampleRateComboBox,
+            windowTimeDoubleSpinBox=self.mainwindow.windowTimeDoubleSpinBox,
+            sampleRateSpinBox=self.mainwindow.sampleRateSpinBox,
             frameRateComboBox=self.mainwindow.frameRateComboBox,
             retryTriggerComboBox=self.mainwindow.retryTriggerComboBox,
         )
@@ -82,10 +83,6 @@ class OscilloscopeUi(QMainWindow):
         self.display.updateData(data)
 
     def updateByModelConfig(self, config: ModelConfig):
-        if config.processor is not None:
-            if config.processor.triggerVolt is not None:
-                self.display.updateTrigger(config.processor.triggerVolt)
-
         if config.dataWorker is not None:
             if config.dataWorker.Gain is not None:
                 gain = config.dataWorker.Gain
@@ -97,18 +94,15 @@ class OscilloscopeUi(QMainWindow):
                     self.display.updateVoltLim((-2, 2))
                 if gain == mps060602.PGAAmpRate.range_1V:
                     self.display.updateVoltLim((-1, 1))
+                self.displayZoomControl.repaintAllScrollBar()
+
+        if config.processor is not None:
+            if config.processor.triggerVolt is not None:
+                self.display.updateTrigger(config.processor.triggerVolt)
 
     def show(self):
         super().show()
-        self.adjustPanel()
-
-    def adjustPanel(self):
-        screenBottomPos = self.mainwindow.bottomPanelSplitter.getRange(1)[
-            1]
-        self.mainwindow.bottomPanelSplitter.moveSplitter(
-            screenBottomPos - 500, 1)
-
-        self.mainwindow.leftPanelSplitter.moveSplitter(300, 1)
+        self._adjustPanel()
 
     # ============================================================
     #                  Internal Methods
@@ -179,3 +173,11 @@ class OscilloscopeUi(QMainWindow):
     def debugAction(self):
         logger.info("Debug action triggered")
         self.display.toggleTriggerLine()
+
+    def _adjustPanel(self):
+        screenBottomPos = self.mainwindow.bottomPanelSplitter.getRange(1)[
+            1]
+        self.mainwindow.bottomPanelSplitter.moveSplitter(
+            screenBottomPos - 500, 1)
+
+        self.mainwindow.leftPanelSplitter.moveSplitter(300, 1)
