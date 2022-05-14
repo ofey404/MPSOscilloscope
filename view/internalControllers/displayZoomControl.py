@@ -53,7 +53,7 @@ class DisplayZoomControl:
         convertToFixedIntAndPaint(
             bar=self.scrollBarX,
             lim=self.display.xlim(),
-            maxLim=self.display.config.timeLimMs,
+            maxLim=self.display.config.timeLimMs(),
         )
 
         convertToFixedIntAndPaint(
@@ -97,7 +97,7 @@ class DisplayZoomControl:
 
     def _scrollToIntX(self, i):
         intX = self.scrollBarConverter.intStepValueToFloat(
-            i, self.display.config.timeLimMs)
+            i, self.display.config.timeLimMs())
         self.display.scrollToX(intX)
 
     def _zoomInYBySpinBox(self):

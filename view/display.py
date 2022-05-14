@@ -20,7 +20,6 @@ class DisplayConfig:
     dataPointCount = BUFFER_SIZE // 2
     voltageLim = (-1, 1)
     dataStepTimeMs = 1 / AD_SAMPLE_RATE * 1000
-    timeLimMs = (0, dataStepTimeMs * dataPointCount)
 
     triggerLineVisible = True
     trigger = 0
@@ -30,7 +29,10 @@ class DisplayConfig:
     cursorVoltage = [0, 0]
 
     verticalCursorVisible = [False, False]
-    verticalCursorTime = [timeLimMs[1] / 2, ] * 2
+    verticalCursorTime = [0, 0]
+
+    def timeLimMs(self):
+        return (0, self.dataStepTimeMs * self.dataPointCount)
 
 
 class VerticalLine(Line2D):
@@ -78,29 +80,29 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         # 2 times longer than minimal data length passed by trigger.
         self.n = np.linspace(
-            0, self.config.timeLimMs[1] * 2, self.config.dataPointCount * 2 + 1)
+            0, self.config.timeLimMs()[1] * 2, self.config.dataPointCount * 2 + 1)
         self.y = (self.n * 0.0) + 50
 
         # The window
         self.fig, self.ax = self._init_fig()
 
         self.dataLine = HorizontalLine(
-            xLim=self.config.timeLimMs, color='blue')
+            xLim=self.config.timeLimMs(), color='blue')
         self.ax.add_line(self.dataLine)
 
         self.triggerLine = HorizontalLine(
-            xLim=self.config.timeLimMs, color='red')
+            xLim=self.config.timeLimMs(), color='red')
         self.ax.add_line(self.triggerLine)
 
         self.nextTriggerDashedLine = HorizontalLine(
-            xLim=self.config.timeLimMs, color='red', linestyle="--")
+            xLim=self.config.timeLimMs(), color='red', linestyle="--")
         self.ax.add_line(self.nextTriggerDashedLine)
 
         self.cursorLines = [
             HorizontalLine(
-                xLim=self.config.timeLimMs, color='green'),
+                xLim=self.config.timeLimMs(), color='green'),
             HorizontalLine(
-                xLim=self.config.timeLimMs, color='green', linestyle="--"),
+                xLim=self.config.timeLimMs(), color='green', linestyle="--"),
         ]
 
         self.verticalCursorLines = [
@@ -132,9 +134,9 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         self.config.voltageLim = voltLim
         self.resetZoomY()
 
-    def updateTimeLim(self, timeLim):
-        self.config.timeLimMs = timeLim
-        self.resetZoomX()
+    # def updateTimeLim(self, timeLim):
+    #     self.config.timeLimMs() = timeLim
+    #     self.resetZoomX()
 
     def updateCursor(self, index, volt):
         self.config.cursorVoltage[index] = volt
@@ -150,7 +152,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         self.draw()
 
     def resetZoomX(self):
-        self.ax.set_xlim(self.config.timeLimMs)
+        self.ax.set_xlim(self.config.timeLimMs())
         self.draw()
 
     def zoomY(self, value):
@@ -169,7 +171,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
         newLim = self._moveLim(
             lim=self.ax.get_xlim(),
             value=value,
-            max=self.config.timeLimMs,
+            max=self.config.timeLimMs(),
         )
         self.ax.set_xlim(*newLim)
         self.draw()
@@ -223,7 +225,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         ax.set_xlabel('time (ms)')
         ax.set_ylabel('voltage')
-        ax.set_xlim(*self.config.timeLimMs)
+        ax.set_xlim(*self.config.timeLimMs())
         ax.set_ylim(*self.config.voltageLim)
 
         return fig, ax
@@ -248,7 +250,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         for i, cursorVisible in enumerate(self.config.cursorVisible):
             if cursorVisible:
-                self.cursorLines[i].set(xLim=self.config.timeLimMs,
+                self.cursorLines[i].set(xLim=self.config.timeLimMs(),
                                         y=self.config.cursorVoltage[i])
             else:
                 self.cursorLines[i].set_invisible()
