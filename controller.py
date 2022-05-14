@@ -21,5 +21,5 @@ class OscilloscopeCtrl:
         model, view = self.model, self.view
 
         model.dataReady.connect(view.updateData)
-        model.configUpdated.connect(view.updateByModelConfig)
+        model.reportConfigToModel.connect(view.updateByModelConfig)
         view.newModelConfig.connect(model.updateConfig)

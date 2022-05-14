@@ -18,7 +18,7 @@ class ModelConfig:
 class OscilloscopeModel(QObject):
     """MPS Oscilloscope's model."""
     dataReady = pyqtSignal(list)
-    configUpdated = pyqtSignal(ModelConfig)
+    reportConfigToModel = pyqtSignal(ModelConfig)
 
     # Internal signals:
     _configDataWorker = pyqtSignal(DataWorkerConfig)
@@ -79,13 +79,15 @@ class OscilloscopeModel(QObject):
 
     def _dataWorkerConfigUpdated(self, dataWorkerConfig: DataWorkerConfig):
         self.config.dataWorker = dataWorkerConfig
-        self.configUpdated.emit(self.config)
+        self.reportConfigToModel.emit(self.config)
 
     def _processorConfigUpdated(self, processorConfig: ProcessorConfig):
         self.config.processor = processorConfig
-        self.configUpdated.emit(self.config)
+        self.reportConfigToModel.emit(self.config)
 
     def start(self):
         self.dataWorkerThread.start()
         self.processorThread.start()
+
+        self.reportConfigToModel.emit(self.config)
         logger.info("Worker threads started.")

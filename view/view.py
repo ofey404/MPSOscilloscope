@@ -1,6 +1,7 @@
 import logging
 
 from attr import dataclass
+import mps060602
 
 from model import ModelConfig, ProcessorConfig
 from PyQt5.QtCore import pyqtSignal
@@ -8,6 +9,7 @@ from PyQt5.QtWidgets import QMainWindow, QWidget
 from ui.mainwindow import Ui_MainWindow as MainWindow
 
 from view.display import OscilloscopeDisplay, DisplayConfig
+from view.internalControllers.configPanelControl import ConfigPanelControl
 from view.internalControllers.displayZoomControl import DisplayZoomControl
 from view.utils import ScrollBarStepConverter
 from view.internalControllers.rightSliderControl import RightSliderControl
@@ -63,6 +65,17 @@ class OscilloscopeUi(QMainWindow):
             valueTitle2=self.mainwindow.rightSliderValueTitle2,
         )
 
+        self.configPanelControl = ConfigPanelControl(
+            updateConfigButton=self.mainwindow.updateConfigButton,
+            deviceNumberSpinBox=self.mainwindow.deviceNumberSpinBox,
+            bufferSizeComboBox=self.mainwindow.bufferSizeComboBox,
+            inputChannelComboBox=self.mainwindow.inputChannelComboBox,
+            ADCRangeComboBox=self.mainwindow.ADCRangeComboBox,
+            sampleRateComboBox=self.mainwindow.sampleRateComboBox,
+            frameRateComboBox=self.mainwindow.frameRateComboBox,
+            retryTriggerComboBox=self.mainwindow.retryTriggerComboBox,
+        )
+
         self._connectSignals()
 
     def updateData(self, data):
@@ -73,9 +86,30 @@ class OscilloscopeUi(QMainWindow):
             if config.processor.triggerVolt is not None:
                 self.display.updateTrigger(config.processor.triggerVolt)
 
+        if config.dataWorker is not None:
+            if config.dataWorker.MPSParameter is not None:
+                if config.dataWorker.MPSParameter.Gain is not None:
+                    gain = config.dataWorker.MPSParameter.Gain
+                    if gain == mps060602.PGAAmpRate.range_10V:
+                        self.display.updateVoltLim((-10, 10))
+                    if gain == mps060602.PGAAmpRate.range_5V:
+                        self.display.updateVoltLim((-5, 5))
+                    if gain == mps060602.PGAAmpRate.range_2V:
+                        self.display.updateVoltLim((-2, 2))
+                    if gain == mps060602.PGAAmpRate.range_1V:
+                        self.display.updateVoltLim((-1, 1))
+
     def show(self):
         super().show()
-        self._temporaryUiFix()
+        self.adjustPanel()
+
+    def adjustPanel(self):
+        screenBottomPos = self.mainwindow.bottomPanelSplitter.getRange(1)[
+            1]
+        self.mainwindow.bottomPanelSplitter.moveSplitter(
+            screenBottomPos - 500, 1)
+
+        self.mainwindow.leftPanelSplitter.moveSplitter(300, 1)
 
     # ============================================================
     #                  Internal Methods
@@ -137,14 +171,6 @@ class OscilloscopeUi(QMainWindow):
             else:
                 self.mainwindow.bottomPanelSplitter.moveSplitter(512, 1)
             self.config.bottomPanelVisible = True
-
-    # FIXME: set bottom panel size here, an temporary solution.
-    #        Call after view.show()
-    def _temporaryUiFix(self):
-        screenBottomPos = self.mainwindow.bottomPanelSplitter.getRange(1)[
-            1]
-        self.mainwindow.bottomPanelSplitter.moveSplitter(
-            screenBottomPos - 500, 1)
 
     def debugAction(self):
         logger.info("Debug action triggered")

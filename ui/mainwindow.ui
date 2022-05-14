@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>MPS Oscilloscope</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="minimumSize">
@@ -78,9 +78,9 @@
               <enum>QLayout::SetMaximumSize</enum>
              </property>
              <item>
-              <widget class="QPushButton" name="updateConfig">
+              <widget class="QPushButton" name="updateConfigButton">
                <property name="text">
-                <string>Update Config</string>
+                <string>Update</string>
                </property>
               </widget>
              </item>
@@ -338,11 +338,35 @@
               </spacer>
              </item>
              <item>
-              <widget class="QPushButton" name="restartDevice">
+              <widget class="QLabel" name="label_16">
                <property name="text">
-                <string>Restart Device</string>
+                <string>Preferences</string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignCenter</set>
                </property>
               </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_17">
+               <item>
+                <widget class="QLabel" name="label_17">
+                 <property name="text">
+                  <string>Plugin Folder</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="lineEdit">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                </widget>
+               </item>
+              </layout>
              </item>
             </layout>
            </widget>
