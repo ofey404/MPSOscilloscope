@@ -126,6 +126,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
     def updateVoltLim(self, voltLim):
         self.config.voltageLim = voltLim
         self.ax.set_ylim(*self.config.voltageLim)
+        self.draw()
 
     def updateCursor(self, index, volt):
         self.config.cursorVoltage[index] = volt

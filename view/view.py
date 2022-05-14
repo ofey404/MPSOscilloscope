@@ -87,17 +87,16 @@ class OscilloscopeUi(QMainWindow):
                 self.display.updateTrigger(config.processor.triggerVolt)
 
         if config.dataWorker is not None:
-            if config.dataWorker.MPSParameter is not None:
-                if config.dataWorker.MPSParameter.Gain is not None:
-                    gain = config.dataWorker.MPSParameter.Gain
-                    if gain == mps060602.PGAAmpRate.range_10V:
-                        self.display.updateVoltLim((-10, 10))
-                    if gain == mps060602.PGAAmpRate.range_5V:
-                        self.display.updateVoltLim((-5, 5))
-                    if gain == mps060602.PGAAmpRate.range_2V:
-                        self.display.updateVoltLim((-2, 2))
-                    if gain == mps060602.PGAAmpRate.range_1V:
-                        self.display.updateVoltLim((-1, 1))
+            if config.dataWorker.Gain is not None:
+                gain = config.dataWorker.Gain
+                if gain == mps060602.PGAAmpRate.range_10V:
+                    self.display.updateVoltLim((-10, 10))
+                if gain == mps060602.PGAAmpRate.range_5V:
+                    self.display.updateVoltLim((-5, 5))
+                if gain == mps060602.PGAAmpRate.range_2V:
+                    self.display.updateVoltLim((-2, 2))
+                if gain == mps060602.PGAAmpRate.range_1V:
+                    self.display.updateVoltLim((-1, 1))
 
     def show(self):
         super().show()
@@ -137,9 +136,14 @@ class OscilloscopeUi(QMainWindow):
         self.rightSliderControl.triggerSelected.connect(
             self._adjustTrigger)
 
+        self.configPanelControl.configUpdated.connect(self._requestModelConfig)
+
     def _adjustTrigger(self, triggerVolt):
         self.newModelConfig.emit(ModelConfig(
             processor=ProcessorConfig(triggerVolt=triggerVolt)))
+
+    def _requestModelConfig(self, config: ModelConfig):
+        self.newModelConfig.emit(config)
 
     def _toggleLeftPanel(self):
         if self.config.leftPanelVisible:

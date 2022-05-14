@@ -24,6 +24,9 @@ class DataWorkerConfig:
     deviceNumber: int = None
     bufferSize: int = None
     MPSParameter: MPS060602Para = None
+    ADChannel: ADChannelMode = None
+    ADSampleRate: int = None
+    Gain: PGAAmpRate = None
 
 
 class WorkerSharedState:
@@ -44,7 +47,11 @@ class MPSDataWorker(QObject):
         self.config = config
         self.card = MPS060602(
             device_number=self.config.deviceNumber,
-            para=self.config.MPSParameter,
+            para=MPS060602Para(
+                self.config.ADChannel,
+                self.config.ADSampleRate,
+                self.config.Gain,
+            ),
             buffer_size=self.config.bufferSize,
         )
         self.sharedState = WorkerSharedState(
@@ -66,6 +73,7 @@ class MPSDataWorker(QObject):
 
     def _configure(self, config: DataWorkerConfig):
         shouldRestart = False
+        shouldConfigureCard = False
         if config.bufferSize is not None:
             self.config.bufferSize = config.bufferSize
             shouldRestart = True
@@ -74,16 +82,35 @@ class MPSDataWorker(QObject):
             self.config.deviceNumber = config.deviceNumber
             shouldRestart = True
 
-        if config.MPSParameter is not None:
-            self.config.MPSParameter = config.MPSParameter
-            self.card.configure(self.config.MPSParameter)
+        if config.ADChannel is not None:
+            self.config.ADChannel = config.ADChannel
+            shouldConfigureCard = True
 
+        if config.ADSampleRate is not None:
+            self.config.ADSampleRate = config.ADSampleRate
+            shouldConfigureCard = True
+
+        if config.Gain is not None:
+            self.config.Gain = config.Gain
+            shouldConfigureCard = True
+
+        cardParameter = MPS060602Para(
+            self.config.ADChannel,
+            self.config.ADSampleRate,
+            self.config.Gain,
+        )
         if shouldRestart:
             self._restartCard(
                 device_number=self.config.deviceNumber,
-                para=self.config.MPSParameter,
+                para=cardParameter,
                 buffer_size=self.config.bufferSize,
             )
+            logger.info("Card restarted.")
+        elif shouldConfigureCard:
+            self.card.configure(
+                cardParameter
+            )
+            logger.info("Card reconfigured.")
 
     def _restartCard(self, **kwargs):
         self.card.suspend()
@@ -94,7 +121,7 @@ class MPSDataWorker(QObject):
         """DataWorker must be paused while updating card info."""
         logger.info("DataWorker config updated.")
         self._configure(config)
-        self.configUpdated.emit()
+        self.configUpdated.emit(config)
 
 
 @dataclass

@@ -1,9 +1,13 @@
+import logging
 from model.model import ModelConfig
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QComboBox, QSpinBox, QPushButton
 
 from model.worker import DataWorkerConfig, MPSDataWorker, ProcessorConfig
 import mps060602
+
+
+logger = logging.getLogger(__name__)
 
 
 class ConfigPanelControl(QObject):
@@ -30,21 +34,24 @@ class ConfigPanelControl(QObject):
         self.frameRateComboBox = frameRateComboBox
         self.retryTriggerComboBox = retryTriggerComboBox
 
+        self._connectSignals()
+
     def _connectSignals(self):
         self.updateConfigButton.clicked.connect(self.updateConfig)
 
     def updateConfig(self):
         config = ModelConfig(
             dataWorker=DataWorkerConfig(
-                # MPSParameter=
-                ),
+                Gain=self._getADCRange()
+            ),
             processor=ProcessorConfig()
         )
         self.configUpdated.emit(config)
+        logger.info("Try to update configuration by panel.")
 
     # ============================================================
     #                  Internal Methods
     # ============================================================
 
-    def getADCRange(self):
+    def _getADCRange(self):
         return mps060602.PGAAmpRate.range_1V

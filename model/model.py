@@ -31,7 +31,9 @@ class OscilloscopeModel(QObject):
             dataWorker=DataWorkerConfig(
                 deviceNumber=DEVICE_NUMBER,
                 bufferSize=BUFFER_SIZE,
-                MPSParameter=PARAMETER
+                ADChannel=PARAMETER.ADChannel,
+                ADSampleRate=PARAMETER.ADSampleRate,
+                Gain=PARAMETER.Gain,
             ),
             processor=ProcessorConfig(
                 triggerVolt=0, timeoutMs=1000 / 60, triggerRetryNum=5)
@@ -79,7 +81,10 @@ class OscilloscopeModel(QObject):
 
     def _dataWorkerConfigUpdated(self, dataWorkerConfig: DataWorkerConfig):
         self.config.dataWorker = dataWorkerConfig
-        self.reportConfigToModel.emit(self.config)
+        updatedPart = ModelConfig(
+            dataWorker=dataWorkerConfig
+        )
+        self.reportConfigToModel.emit(updatedPart)
 
     def _processorConfigUpdated(self, processorConfig: ProcessorConfig):
         self.config.processor = processorConfig
