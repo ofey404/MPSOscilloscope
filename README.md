@@ -16,7 +16,9 @@ An oscilloscope built upon MPS060602 and PyQt5.
 - [x] Add zoom functionality.
 - [x] More slider control.
 - [x] Cursor panel
-- [ ] Configuration panel.
+- [x] Configuration panel.
+
+- [ ] Analysis panel.
 
 Move them to a container. more in ui/
 - [ ] Analysis panel.

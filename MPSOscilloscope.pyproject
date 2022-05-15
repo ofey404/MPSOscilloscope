@@ -1,8 +1,8 @@
 {
     "files": [
         "main.py",
-        "ui/mainwindow.py",
         "ui/mainwindow.ui",
+        "ui/basicAnalysis.ui",
         "view.py",
         "README.md"
     ]

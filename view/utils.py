@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QWidget
 
 
 @dataclass
@@ -29,3 +30,8 @@ def showError(info: str):
     msg.setInformativeText(info)
     msg.setWindowTitle("Error")
     msg.exec_()
+
+
+def replaceWidget(placeholder: QWidget, new: QWidget):
+    containing_layout = placeholder.parent().layout()
+    containing_layout.replaceWidget(placeholder, new)

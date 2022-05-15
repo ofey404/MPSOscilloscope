@@ -5,14 +5,16 @@ import mps060602
 
 from model import ModelConfig, ProcessorConfig
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QMainWindow, QWidget
+from PyQt5.QtWidgets import QMainWindow, QWidget, QFormLayout
 from ui.mainwindow import Ui_MainWindow as MainWindow
 
 from view.display import OscilloscopeDisplay, DisplayConfig
 from view.internalControllers.configPanelControl import ConfigPanelControl
 from view.internalControllers.displayZoomControl import DisplayZoomControl
-from view.utils import ScrollBarStepConverter
+from view.utils import ScrollBarStepConverter, replaceWidget
 from view.internalControllers.rightSliderControl import RightSliderControl
+
+from ui.basicAnalysis import Ui_Form as BasicAnalysis
 
 
 logger = logging.getLogger(__name__)
@@ -34,7 +36,9 @@ class OscilloscopeUi(QMainWindow):
         super().__init__()
 
         self.config = UIConfig()
-        self.mainwindow, self.display = self._setupUI()
+        self._setupUI()
+
+        self.panels = []
 
         self.savedUiState = dict()
 
@@ -111,16 +115,21 @@ class OscilloscopeUi(QMainWindow):
     # ============================================================
 
     def _setupUI(self):
-        def _replaceWidget(placeholder: QWidget, new: QWidget):
-            containing_layout = placeholder.parent().layout()
-            containing_layout.replaceWidget(placeholder, new)
+        self.mainwindow = MainWindow()
+        self.mainwindow.setupUi(self)
+        self.display = OscilloscopeDisplay(DisplayConfig())
+        replaceWidget(self.mainwindow.displayPlaceHolder, self.display)
+        self._setupAnalysisPanel()
 
-        mainwindow = MainWindow()
-        mainwindow.setupUi(self)
-        display = OscilloscopeDisplay(DisplayConfig())
-        _replaceWidget(mainwindow.displayPlaceHolder, display)
+    def _setupAnalysisPanel(self):
+        analysisPanel = BasicAnalysis()
+        panel = QWidget()
+        analysisPanel.setupUi(panel)
 
-        return mainwindow, display
+        replaceWidget(
+            self.mainwindow.basicAnalysisPlaceHolder,
+            panel
+        )
 
     def _connectSignals(self):
         self.mainwindow.actionDebug.triggered.connect(self.debugAction)
