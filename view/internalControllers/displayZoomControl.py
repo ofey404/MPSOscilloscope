@@ -69,7 +69,7 @@ class DisplayZoomControl:
         xlim, ylim = self.display.config.timeLimMs(), self.display.config.voltageLim
         self.zoomSpinBoxX.setValue((xlim[1] - xlim[0]) / 10)
         self.zoomSpinBoxY.setValue((ylim[1] - ylim[0]) / 10)
-        print("recalculateDefaultZoomStep")
+        logger.debug("recalculateDefaultZoomStep")
 
     # ============================================================
     #                  Internal Methods

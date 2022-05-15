@@ -73,8 +73,9 @@ class OscilloscopeUi(QMainWindow):
             ADCRangeComboBox=self.mainwindow.ADCRangeComboBox,
             windowTimeDoubleSpinBox=self.mainwindow.windowTimeDoubleSpinBox,
             sampleRateSpinBox=self.mainwindow.sampleRateSpinBox,
-            frameRateComboBox=self.mainwindow.frameRateComboBox,
-            retryTriggerComboBox=self.mainwindow.retryTriggerComboBox,
+            frameRateSpinBox=self.mainwindow.frameRateSpinBox,
+            retryTriggerSpinBox=self.mainwindow.retryTriggerSpinBox,
+            triggerSelectionComboBox=self.mainwindow.triggerSelectionComboBox,
         )
 
         self._connectSignals()

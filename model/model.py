@@ -1,5 +1,6 @@
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from attr import dataclass
+from model.trigger import EdgeTrigger
 
 from model.worker import DataWorkerConfig, MPSDataWorker, PostProcessWorker, ProcessorConfig
 import logging
@@ -37,7 +38,11 @@ class OscilloscopeModel(QObject):
                 Gain=PARAMETER.Gain,
             ),
             processor=ProcessorConfig(
-                triggerVolt=0, timeoutMs=1000 / 60, triggerRetryNum=5)
+                trigger=EdgeTrigger(),
+                triggerVolt=0,
+                timeoutMs=1000 / 60,
+                triggerRetryNum=5
+            )
         )
 
         self.dataWorker = MPSDataWorker(self.config.dataWorker)

@@ -3,7 +3,7 @@ import logging
 import typing
 from dataclasses import dataclass
 
-from model.trigger import EdgeTrigger
+from model.trigger import EdgeTrigger, Trigger
 
 from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
 from mps060602.core import AmpRate
@@ -81,7 +81,7 @@ class MPSDataWorker(QObject):
 
             def resizeToBufferSize(block: DataBlock):
                 if len(block.buffer) != self.config.bufferSize:
-                    logger.info("resize block!")
+                    logger.debug("resize block!")
                     return DataBlock(self.config.bufferSize)
                 else:
                     return block
@@ -101,7 +101,6 @@ class MPSDataWorker(QObject):
 
         if config.Gain is not None:
             self.config.Gain = config.Gain
-            # print("config.Gain",self.config.Gain.correct_factor)
             shouldConfigureCard = True
 
         cardParameter = MPS060602Para(
@@ -139,6 +138,7 @@ class ProcessorConfig:
     triggerVolt: float = None
     timeoutMs: int = None
     triggerRetryNum: int = None
+    trigger: Trigger = None
 
 
 class PostProcessWorker(QObject):
@@ -160,7 +160,7 @@ class PostProcessWorker(QObject):
     def process(self):
         for _ in range(self.config.triggerRetryNum):
             volt = self._getVoltDataFromQueue()
-            index = self.trigger.triggeredIndex(volt)
+            index = self.config.trigger.triggeredIndex(volt)
             if (index is None) or (index > self.sharedState.config.bufferSize / 2):
                 continue
             self.dataReady.emit(volt[index:])
@@ -187,10 +187,12 @@ class PostProcessWorker(QObject):
 
     def _configure(self, config: ProcessorConfig):
         if config.triggerVolt is not None:
+            self.config.trigger.setVolt(config.triggerVolt)
             self.config.triggerVolt = config.triggerVolt
-            self.trigger = EdgeTrigger(volt=config.triggerVolt)
+
         if config.triggerRetryNum is not None:
             self.config.triggerRetryNum = config.triggerRetryNum
+
         if config.timeoutMs is not None:
             self.config.timeoutMs = config.timeoutMs
             try:
@@ -198,6 +200,9 @@ class PostProcessWorker(QObject):
                 self.poller.setInterval(self.config.timeoutMs)
             except AttributeError:
                 pass
+
+        if config.trigger is not None:
+            self.config.trigger = config.trigger
 
     def updateConfig(self, config: ProcessorConfig):
         self._configure(config)

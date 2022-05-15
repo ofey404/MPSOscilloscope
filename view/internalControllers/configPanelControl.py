@@ -2,6 +2,7 @@ import logging
 from model.model import ModelConfig
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QComboBox, QSpinBox, QPushButton, QDoubleSpinBox
+from model.trigger import EdgeTrigger
 
 from model.worker import DataWorkerConfig, MPSDataWorker, ProcessorConfig
 import mps060602
@@ -14,6 +15,11 @@ logger = logging.getLogger(__name__)
 class ConfigError(Exception):
     pass
 
+
+_TRIGGER_MAP = {
+    "Up Edge": EdgeTrigger(upEdge=True),
+    "Down Edge": EdgeTrigger(upEdge=False),
+}
 
 _ADC_RANGE_MAP = {
     "10 V": mps060602.PGAAmpRate.range_10V,
@@ -40,8 +46,9 @@ class ConfigPanelControl(QObject):
                  ADCRangeComboBox: QComboBox,
                  windowTimeDoubleSpinBox: QDoubleSpinBox,
                  sampleRateSpinBox: QSpinBox,
-                 frameRateComboBox: QComboBox,
-                 retryTriggerComboBox: QComboBox,
+                 frameRateSpinBox: QSpinBox,
+                 retryTriggerSpinBox: QSpinBox,
+                 triggerSelectionComboBox: QComboBox,
                  ) -> None:
         super().__init__()
 
@@ -52,8 +59,9 @@ class ConfigPanelControl(QObject):
         self.ADCRangeComboBox = ADCRangeComboBox
         self.windowTimeDoubleSpinBox = windowTimeDoubleSpinBox
         self.sampleRateSpinBox = sampleRateSpinBox
-        self.frameRateComboBox = frameRateComboBox
-        self.retryTriggerComboBox = retryTriggerComboBox
+        self.frameRateSpinBox = frameRateSpinBox
+        self.retryTriggerSpinBox = retryTriggerSpinBox
+        self.triggerSelectionComboBox = triggerSelectionComboBox
 
         self._connectSignals()
         self.updateCalculatedFields()
@@ -68,7 +76,11 @@ class ConfigPanelControl(QObject):
                     ADChannel=self._inputChannel(),
                     ADSampleRate=self._sampleRate(),
                 ),
-                processor=ProcessorConfig()
+                processor=ProcessorConfig(
+                    timeoutMs=self._timeOutMs(),
+                    triggerRetryNum=self._triggerRetryNum(),
+                    trigger=self._triggerType()
+                )
             )
             self.configUpdated.emit(config)
             logger.debug("Try to update configuration by panel.")
@@ -116,3 +128,12 @@ class ConfigPanelControl(QObject):
     def _updateTimeRange(self):
         timeRangeMs = 1 / self._sampleRate() * self._bufferSize() * 1000 / 2
         self.windowTimeDoubleSpinBox.setValue(timeRangeMs)
+
+    def _timeOutMs(self):
+        return 1000 / self.frameRateSpinBox.value()
+
+    def _triggerRetryNum(self):
+        return self.retryTriggerSpinBox.value()
+
+    def _triggerType(self):
+        return _TRIGGER_MAP[self.triggerSelectionComboBox.currentText()]

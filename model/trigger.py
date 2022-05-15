@@ -15,6 +15,10 @@ class Trigger(ABC):
         """
         pass
 
+    @abstractmethod
+    def setVolt(self, volt: float):
+        pass
+
 
 class EdgeTrigger(Trigger):
     def __init__(self,
@@ -26,6 +30,7 @@ class EdgeTrigger(Trigger):
         upEdgeCriterion = lambda data, lastData: data > self.volt and lastData < self.volt
         downEdgeCriterion = lambda data, lastData: data < self.volt and lastData > self.volt
         self.criterion = upEdgeCriterion if upEdge else downEdgeCriterion
+        self.upEdge = upEdge
 
 
     def triggeredIndex(self, waveformVolt: typing.Iterable[float]) -> "int | None":
@@ -35,3 +40,6 @@ class EdgeTrigger(Trigger):
                 return i
             lastData = data
         return None
+
+    def setVolt(self, volt: float):
+        self.volt = volt

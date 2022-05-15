@@ -291,6 +291,31 @@
               </widget>
              </item>
              <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_19">
+               <item>
+                <widget class="QLabel" name="label_20">
+                 <property name="text">
+                  <string>Trigger Type</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QComboBox" name="triggerSelectionComboBox">
+                 <item>
+                  <property name="text">
+                   <string>Up Edge</string>
+                  </property>
+                 </item>
+                 <item>
+                  <property name="text">
+                   <string>Down Edge</string>
+                  </property>
+                 </item>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
               <layout class="QHBoxLayout" name="horizontalLayout_15">
                <item>
                 <widget class="QLabel" name="label_14">
@@ -300,25 +325,13 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="frameRateComboBox">
-                 <property name="editable">
-                  <bool>true</bool>
+                <widget class="QSpinBox" name="frameRateSpinBox">
+                 <property name="maximum">
+                  <number>120</number>
                  </property>
-                 <item>
-                  <property name="text">
-                   <string>60</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>24</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>120</string>
-                  </property>
-                 </item>
+                 <property name="value">
+                  <number>60</number>
+                 </property>
                 </widget>
                </item>
               </layout>
@@ -333,25 +346,13 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="retryTriggerComboBox">
-                 <property name="editable">
-                  <bool>true</bool>
+                <widget class="QSpinBox" name="retryTriggerSpinBox">
+                 <property name="minimum">
+                  <number>1</number>
                  </property>
-                 <item>
-                  <property name="text">
-                   <string>5</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>20</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>-1</string>
-                  </property>
-                 </item>
+                 <property name="value">
+                  <number>5</number>
+                 </property>
                 </widget>
                </item>
               </layout>
