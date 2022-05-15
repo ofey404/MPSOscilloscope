@@ -172,7 +172,6 @@ class OscilloscopeUi(QMainWindow):
 
     def debugAction(self):
         logger.info("Debug action triggered")
-        self.display.toggleTriggerLine()
 
     def _adjustPanel(self):
         screenBottomPos = self.mainwindow.bottomPanelSplitter.getRange(1)[

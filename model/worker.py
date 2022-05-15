@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from model.trigger import EdgeTrigger
 
 from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
+from mps060602.core import AmpRate
 from PyQt5.QtCore import QObject, QTimer, pyqtSignal
 
 from utils import Pool, LeakQueue
@@ -25,7 +26,7 @@ class DataWorkerConfig:
     bufferSize: int = None
     ADChannel: ADChannelMode = None
     ADSampleRate: int = None
-    Gain: PGAAmpRate = None
+    Gain: AmpRate = None
 
 
 class WorkerSharedState:
@@ -33,7 +34,7 @@ class WorkerSharedState:
         self.card = card
         self.config = config
 
-        self.poolSize = queueSize+workerNumber
+        self.poolSize = queueSize+workerNumber+1000
         def blockInitializer(): return DataBlock(self.config.bufferSize)
         def doResizeIfShould(block): return block
         self.pool = Pool(self.poolSize, blockInitializer, doResizeIfShould)
@@ -80,7 +81,7 @@ class MPSDataWorker(QObject):
 
             def resizeToBufferSize(block: DataBlock):
                 if len(block.buffer) != self.config.bufferSize:
-                    print("resize block!")
+                    logger.inro("resize block!")
                     return DataBlock(self.config.bufferSize)
                 else:
                     return block
@@ -100,6 +101,7 @@ class MPSDataWorker(QObject):
 
         if config.Gain is not None:
             self.config.Gain = config.Gain
+            # print("config.Gain",self.config.Gain.correct_factor)
             shouldConfigureCard = True
 
         cardParameter = MPS060602Para(
@@ -175,6 +177,10 @@ class PostProcessWorker(QObject):
         # Do copy manually, since PyQt object is never auto copied in signals.
         volt = [self.sharedState.card.to_volt(
             dataPoint) for dataPoint in block.buffer]
+
+        # FIXME: fix weird behavior in range...
+        volt = [v * self.sharedState.config.Gain.correct_factor for v in volt]
+
         # Return block to memory pool.
         self.sharedState.pool.retire(block)
         return volt
