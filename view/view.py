@@ -38,8 +38,6 @@ class OscilloscopeUi(QMainWindow):
         self.config = UIConfig()
         self._setupUI()
 
-        self.panels = []
-
         self.savedUiState = dict()
 
         self.scrollBarConverter = ScrollBarStepConverter()
@@ -123,12 +121,12 @@ class OscilloscopeUi(QMainWindow):
 
     def _setupAnalysisPanel(self):
         analysisPanel = BasicAnalysis()
-        panel = QWidget()
-        analysisPanel.setupUi(panel)
+        self.basicAnalysisPanel: BasicAnalysis = QWidget()
+        analysisPanel.setupUi(self.basicAnalysisPanel)
 
         replaceWidget(
             self.mainwindow.basicAnalysisPlaceHolder,
-            panel
+            self.basicAnalysisPanel
         )
 
     def _connectSignals(self):
