@@ -9,7 +9,7 @@ from matplotlib.backends.backend_qt5agg import \
     FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.lines import Line2D
-from model.defaults import AD_SAMPLE_RATE, MAX_BUFFER_SIZE
+from model.defaults import MAX_AD_SAMPLE_RATE, MAX_BUFFER_SIZE
 from dataclasses import dataclass, field
 
 matplotlib.use("Qt5Agg")
@@ -18,9 +18,9 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class DisplayConfig:
-    dataPointCount: int = MAX_BUFFER_SIZE // 2
+    bufferSize: int = MAX_BUFFER_SIZE
     voltageLim: tuple = (-1, 1)
-    dataStepTimeMs: float = 1 / AD_SAMPLE_RATE * 1000
+    sampleRate: int = MAX_AD_SAMPLE_RATE
 
     triggerLineVisible: bool = True
     trigger: float = 0
@@ -31,8 +31,14 @@ class DisplayConfig:
     verticalCursorVisible: List = field(default_factory=lambda: [False, False])
     verticalCursorTime: List = field(default_factory=lambda: [0, 0])
 
+    def dataStepTimeMs(self):
+        return 1 / self.sampleRate * 1000
+
+    def dataPointCount(self):
+        return self.bufferSize // 2
+
     def timeLimMs(self):
-        return (0, self.dataStepTimeMs * self.dataPointCount)
+        return (0, self.dataStepTimeMs() * self.dataPointCount())
 
 
 class VerticalLine(Line2D):
@@ -80,7 +86,7 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         # 2 times longer than minimal data length passed by trigger.
         self.n = np.linspace(
-            0, self.config.timeLimMs()[1] * 2, self.config.dataPointCount * 2 + 1)
+            0, self.config.timeLimMs()[1] * 2, self.config.dataPointCount() * 2 + 1)
         self.y = (self.n * 0.0) + 50
 
         # The window
@@ -133,6 +139,11 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
     def updateVoltLim(self, voltLim):
         self.config.voltageLim = voltLim
         self.resetZoomY()
+
+    def updateTimeLim(self, bufferSize, ADSampleRate):
+        self.config.bufferSize = bufferSize
+        self.config.sampleRate = ADSampleRate
+        self.resetZoomX()
 
     # def updateTimeLim(self, timeLim):
     #     self.config.timeLimMs() = timeLim

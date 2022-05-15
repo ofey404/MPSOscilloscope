@@ -94,9 +94,10 @@ class OscilloscopeUi(QMainWindow):
             self.display.updateVoltLim((-1, 1))
         self.displayZoomControl.repaintAllScrollBar()
 
-        self.display.updateTrigger(config.processor.triggerVolt)
+        self.display.updateTimeLim(
+            config.dataWorker.bufferSize, config.dataWorker.ADSampleRate)
 
-        self.configPanelControl.respondModelConfig(config)
+        self.display.updateTrigger(config.processor.triggerVolt)
 
     def show(self):
         super().show()
