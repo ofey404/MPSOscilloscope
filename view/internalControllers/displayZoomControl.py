@@ -64,6 +64,13 @@ class DisplayZoomControl:
 
         logger.debug("All scrollbar repainted.")
 
+
+    def recalculateDefaultZoomStep(self):
+        xlim, ylim = self.display.config.timeLimMs(), self.display.config.voltageLim
+        self.zoomSpinBoxX.setValue((xlim[1] - xlim[0]) / 10)
+        self.zoomSpinBoxY.setValue((ylim[1] - ylim[0]) / 10)
+        print("recalculateDefaultZoomStep")
+
     # ============================================================
     #                  Internal Methods
     # ============================================================

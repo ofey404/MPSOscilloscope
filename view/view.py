@@ -85,13 +85,15 @@ class OscilloscopeUi(QMainWindow):
     def updateByModelConfig(self, config: ModelConfig):
         gain = config.dataWorker.Gain
         if gain == mps060602.PGAAmpRate.range_10V:
-            self.display.updateVoltLim((-10, 10))
+            lim = (-10, 10)
         if gain == mps060602.PGAAmpRate.range_5V:
-            self.display.updateVoltLim((-5, 5))
+            lim = (-5, 5)
         if gain == mps060602.PGAAmpRate.range_2V:
-            self.display.updateVoltLim((-2, 2))
+            lim = (-2, 2)
         if gain == mps060602.PGAAmpRate.range_1V:
-            self.display.updateVoltLim((-1, 1))
+            lim = (-1, 1)
+        self.display.updateVoltLim(lim)
+        self.displayZoomControl.recalculateDefaultZoomStep()
         self.displayZoomControl.repaintAllScrollBar()
 
         self.display.updateTimeLim(
