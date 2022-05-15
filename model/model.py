@@ -82,10 +82,7 @@ class OscilloscopeModel(QObject):
 
     def _dataWorkerConfigUpdated(self, dataWorkerConfig: DataWorkerConfig):
         self.config.dataWorker = dataWorkerConfig
-        updatedPart = ModelConfig(
-            dataWorker=dataWorkerConfig
-        )
-        self.reportConfigToModel.emit(updatedPart)
+        self.reportConfigToModel.emit(self.config)
 
     def _processorConfigUpdated(self, processorConfig: ProcessorConfig):
         self.config.processor = processorConfig

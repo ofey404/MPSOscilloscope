@@ -15,6 +15,20 @@ class ConfigError(Exception):
     pass
 
 
+_ADC_RANGE_MAP = {
+    "10 V": mps060602.PGAAmpRate.range_10V,
+    "5 V": mps060602.PGAAmpRate.range_5V,
+    "2 V": mps060602.PGAAmpRate.range_2V,
+    "1 V": mps060602.PGAAmpRate.range_1V,
+}
+
+_INPUT_CHANNEL_MAP = {
+    "In 1": mps060602.ADChannelMode.in1,
+    "In 2": mps060602.ADChannelMode.in2,
+    "In 1 & 2": mps060602.ADChannelMode.in1_and_2,
+}
+
+
 class ConfigPanelControl(QObject):
     configUpdated = pyqtSignal(ModelConfig)
 
@@ -61,6 +75,9 @@ class ConfigPanelControl(QObject):
         except ConfigError as e:
             showError(str(e))
 
+    def respondModelConfig(self, config: ModelConfig):
+        ...
+
     def updateCalculatedFields(self):
         self._updateTimeRange()
 
@@ -78,25 +95,17 @@ class ConfigPanelControl(QObject):
 
     def _inputChannel(self):
         text = self.inputChannelComboBox.currentText()
-        if text == "In 1":
-            return mps060602.ADChannelMode.in1
-        if text == "In 2":
-            return mps060602.ADChannelMode.in2
-        if text == "In 1 & 2":
-            return mps060602.ADChannelMode.in1_and_2
-        raise ConfigError(f"Invalid Input Channel {text}.")
+        try:
+            return _INPUT_CHANNEL_MAP[text]
+        except KeyError:
+            raise ConfigError(f"Invalid Input Channel {text}.")
 
     def _ADCRange(self):
         text = self.ADCRangeComboBox.currentText()
-        if text == "10 V":
-            return mps060602.PGAAmpRate.range_10V
-        if text == "5 V":
-            return mps060602.PGAAmpRate.range_5V
-        if text == "2 V":
-            return mps060602.PGAAmpRate.range_2V
-        if text == "1 V":
-            return mps060602.PGAAmpRate.range_1V
-        raise ConfigError(f"Invalid ADC Range {text}.")
+        try:
+            return _ADC_RANGE_MAP[text]
+        except KeyError:
+            raise ConfigError(f"Invalid ADC Range {text}.")
 
     def _bufferSize(self):
         return self.bufferSizeSpinBox.value()

@@ -81,7 +81,7 @@ class MPSDataWorker(QObject):
 
             def resizeToBufferSize(block: DataBlock):
                 if len(block.buffer) != self.config.bufferSize:
-                    logger.inro("resize block!")
+                    logger.info("resize block!")
                     return DataBlock(self.config.bufferSize)
                 else:
                     return block
