@@ -77,7 +77,7 @@ class VerticalCursorControlInfo:
     def _onFirstVisited(self, control: "RightSliderControl"):
         if not control.display.config.verticalCursorVisible[self.indexThisCursor]:
             control.display.toggleVerticalCursorLine(self.indexThisCursor)
-        control.display.config.verticalCursorTime = [control.display.config.timeLimMs()[1] / 2, ] * 2
+        control.display.config.verticalCursorTime[self.indexThisCursor] = control.display.config.timeLimMs()[1] / 2
 
     def _onStoppedForTimeout(self, control: "RightSliderControl"):
         pass
