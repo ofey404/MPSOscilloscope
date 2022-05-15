@@ -2,7 +2,7 @@
     "files": [
         "main.py",
         "ui/mainwindow.ui",
-        "ui/basicAnalysis.ui",
+        "plugin/basicAnalysis/ui/basicAnalysis.ui",
         "view.py",
         "README.md"
     ]
