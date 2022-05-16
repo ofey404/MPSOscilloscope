@@ -56,6 +56,26 @@ class OscilloscopeModel(QObject):
         self._connectSignals()
         logger.info("Model inited.")
 
+    def start(self):
+        self.dataWorkerThread.start()
+        self.processorThread.start()
+
+        self.reportConfigToModel.emit(self.config)
+        logger.info("Worker threads started.")
+
+    def updateConfig(self, config: ModelConfig):
+        if config.dataWorker is not None:
+            self._configDataWorker.emit(config.dataWorker)
+        if config.processor is not None:
+            self._configProcessor.emit(config.processor)
+
+    def loadPlugin(self, plugin):
+        ...
+
+    # ============================================================
+    #                  Internal Methods
+    # ============================================================
+
     def _connectSignals(self):
         self.dataWorkerThread.started.connect(self.dataWorker.start)
         self.processorThread.started.connect(self.processor.start)
@@ -79,12 +99,6 @@ class OscilloscopeModel(QObject):
         self.updateConfig(ModelConfig(
             processor=ProcessorConfig(triggerVolt=0.1)))
 
-    def updateConfig(self, config: ModelConfig):
-        if config.dataWorker is not None:
-            self._configDataWorker.emit(config.dataWorker)
-        if config.processor is not None:
-            self._configProcessor.emit(config.processor)
-
     def _dataWorkerConfigUpdated(self, dataWorkerConfig: DataWorkerConfig):
         self.config.dataWorker = dataWorkerConfig
         self.reportConfigToModel.emit(self.config)
@@ -92,10 +106,3 @@ class OscilloscopeModel(QObject):
     def _processorConfigUpdated(self, processorConfig: ProcessorConfig):
         self.config.processor = processorConfig
         self.reportConfigToModel.emit(self.config)
-
-    def start(self):
-        self.dataWorkerThread.start()
-        self.processorThread.start()
-
-        self.reportConfigToModel.emit(self.config)
-        logger.info("Worker threads started.")

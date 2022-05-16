@@ -1,7 +1,7 @@
 import logging
 
-from attr import dataclass
 import mps060602
+from dataclasses import dataclass
 
 from model import ModelConfig, ProcessorConfig
 from PyQt5.QtCore import pyqtSignal
@@ -108,6 +108,9 @@ class OscilloscopeUi(QMainWindow):
         super().show()
         self._adjustPanel()
 
+    def loadPlugin(self, plugin):
+        ...
+
     # ============================================================
     #                  Internal Methods
     # ============================================================
@@ -188,4 +191,4 @@ class OscilloscopeUi(QMainWindow):
         self.mainwindow.bottomPanelSplitter.moveSplitter(
             screenBottomPos - 500, 1)
 
-        self.mainwindow.leftPanelSplitter.moveSplitter(300, 1)
+        self.mainwindow.leftPanelSplitter.moveSplitter(400, 1)

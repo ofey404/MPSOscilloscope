@@ -741,7 +741,7 @@
             </item>
            </layout>
           </widget>
-          <widget class="QTabWidget" name="tabWidget">
+          <widget class="QTabWidget" name="analysisTabWidget">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
              <horstretch>0</horstretch>
