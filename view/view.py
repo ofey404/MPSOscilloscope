@@ -14,7 +14,7 @@ from view.internalControllers.displayZoomControl import DisplayZoomControl
 from view.utils import ScrollBarStepConverter, replaceWidget
 from view.internalControllers.rightSliderControl import RightSliderControl
 
-from plugin.basicAnalysis.ui.basicAnalysis import Ui_Form as BasicAnalysis
+from plugin.builtin.basicAnalysis.ui.basicAnalysis import Ui_Form as BasicAnalysis
 
 
 logger = logging.getLogger(__name__)
