@@ -2,6 +2,7 @@ import logging
 
 import mps060602
 from dataclasses import dataclass
+from controller.pluginManager import PluginStatus
 
 from model import ModelConfig, ProcessorConfig
 from PyQt5.QtCore import pyqtSignal
@@ -30,6 +31,7 @@ class UIConfig:
 class OscilloscopeUi(QMainWindow):
     """MPS Oscilloscope's view (GUI)."""
     newModelConfig = pyqtSignal(ModelConfig)
+    togglePlugins = pyqtSignal(PluginStatus)
 
     def __init__(self) -> None:
         """View initializer."""
@@ -108,8 +110,12 @@ class OscilloscopeUi(QMainWindow):
         super().show()
         self._adjustPanel()
 
-    def loadPlugin(self, plugin):
+    def updateByPluginManager(self, pluginStatus: PluginStatus):
         ...
+
+    # ============== DEBUG ACTION ================================
+    def debugAction(self):
+        logger.info("Debug action triggered")
 
     # ============================================================
     #                  Internal Methods
@@ -181,9 +187,6 @@ class OscilloscopeUi(QMainWindow):
             else:
                 self.mainwindow.bottomPanelSplitter.moveSplitter(512, 1)
             self.config.bottomPanelVisible = True
-
-    def debugAction(self):
-        logger.info("Debug action triggered")
 
     def _adjustPanel(self):
         screenBottomPos = self.mainwindow.bottomPanelSplitter.getRange(1)[

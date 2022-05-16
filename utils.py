@@ -37,3 +37,7 @@ class LeakQueue(Queue):
             # Use _get(): Discard last item, without notifying other threads.
             self.onKick(self._get())
         super().put(item, block=block, timeout=timeout)
+
+
+class UnImplementedError(Exception):
+    ...

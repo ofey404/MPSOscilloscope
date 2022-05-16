@@ -1,26 +1,40 @@
 from abc import ABC, abstractmethod
+from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QWidget
 
 from plugin.helpers.metadata import PluginMetaData
+from utils import UnImplementedError
 
 
-class PanelType(ABC):
-    @abstractmethod
+class PluginConfigType(ABC):
+    def getData(self) -> QWidget:
+        raise UnImplementedError()
+
+    def setData(self, data) -> QWidget:
+        raise UnImplementedError()
+
+
+class PanelType(QObject):
     def getWidget(self) -> QWidget:
-        ...
+        raise UnImplementedError()
+
+    def getSignalUiUpdated(self) -> pyqtSignal(PluginConfigType):
+        raise UnImplementedError()
+
 
 class ProcessorType(ABC):
     ...
 
-class PluginType(ABC):
-    @abstractmethod
+
+class PluginType(QObject):
     def getMetadata(self) -> PluginMetaData:
-        ...
+        raise UnImplementedError()
 
-    @abstractmethod
     def getPanel(self) -> PanelType:
-        ...
+        raise UnImplementedError()
 
-    @abstractmethod
     def getProcessor(self) -> ProcessorType:
-        ...
+        raise UnImplementedError()
+
+    def getConfigureSignal(self) -> pyqtSignal(PluginConfigType):
+        raise UnImplementedError()

@@ -1,8 +1,10 @@
 from PyQt5.QtWidgets import QWidget
 from plugin.helpers.metadata import PluginMetaData
-from plugin.helpers.pluginType import PanelType, PluginType, ProcessorType
+from plugin.helpers.pluginType import PanelType, PluginConfigType, PluginType, ProcessorType
 
 from .ui.basicAnalysis import Ui_Form as BasicAnalysis
+
+from PyQt5.QtCore import pyqtSignal, QObject
 
 
 metadata = PluginMetaData(
@@ -15,7 +17,16 @@ eg: Peak-to-Peak, V_top, and dead time.
 )
 
 
+class BasicAnalysisConfig(PluginConfigType):
+    def getData(self) -> QWidget:
+        ...
+
+    def setData(self, data) -> QWidget:
+        ...
+
+
 class BasicAnalysisPlugin(PluginType):
+    configSignal = pyqtSignal(BasicAnalysisConfig)
 
     def __init__(self):
         prototype = BasicAnalysis()
@@ -37,6 +48,9 @@ eg: Peak-to-Peak, V_top, and dead time.
 
     def getProcessor(self) -> ProcessorType:
         ...
+
+    def getConfigureSignal(self) -> pyqtSignal(PluginConfigType):
+        return self.configSignal
 
 
 def init() -> PluginType:

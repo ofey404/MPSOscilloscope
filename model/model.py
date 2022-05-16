@@ -1,5 +1,6 @@
 from PyQt5.QtCore import QObject, QThread, pyqtSignal
 from attr import dataclass
+from controller.pluginManager import PluginStatus
 from model.trigger import EdgeTrigger
 
 from model.worker import DataWorkerConfig, MPSDataWorker, PostProcessWorker, ProcessorConfig
@@ -69,7 +70,7 @@ class OscilloscopeModel(QObject):
         if config.processor is not None:
             self._configProcessor.emit(config.processor)
 
-    def loadPlugin(self, plugin):
+    def updateByPluginManager(self, pluginStatus: PluginStatus):
         ...
 
     # ============================================================
