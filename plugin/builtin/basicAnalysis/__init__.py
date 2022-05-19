@@ -1,10 +1,8 @@
 from PyQt5.QtWidgets import QWidget
 from plugin.helpers.metadata import PluginMetaData
 from plugin.helpers.pluginType import PanelType, PluginConfigType, PluginType, ProcessorType
-
-from .ui.basicAnalysis import Ui_Form as BasicAnalysis
-
 from PyQt5.QtCore import pyqtSignal, QObject
+from .panel import BasicAnalysisPanel
 
 
 metadata = PluginMetaData(
@@ -30,10 +28,7 @@ class BasicAnalysisPlugin(PluginType):
 
     def __init__(self):
         super().__init__()
-        self.panel = BasicAnalysis()
-
-    def setupUI(self, parent: QWidget):
-        self.panel.setupUi(parent)
+        self.panel = BasicAnalysisPanel()
 
     def getMetadata(self) -> PluginMetaData:
         return PluginMetaData(

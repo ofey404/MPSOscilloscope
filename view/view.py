@@ -6,7 +6,9 @@ from controller.pluginManager import PluginStatus
 
 from model import ModelConfig, ProcessorConfig
 from PyQt5.QtCore import pyqtSignal
+from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtWidgets import QMainWindow, QWidget, QDialog
+from plugin.helpers.pluginType import PluginType
 from ui.mainwindow import Ui_MainWindow as MainWindow
 
 from view.display import OscilloscopeDisplay, DisplayConfig
@@ -111,8 +113,12 @@ class OscilloscopeUi(QMainWindow):
         self._adjustPanel()
 
     def updateByPluginManager(self, pluginStatus: PluginStatus):
-        for plugin, enabled in zip(pluginStatus.allPlugins, pluginStatus.enabled):
-            ...
+        for i, zipped in enumerate(zip(pluginStatus.allPlugins, pluginStatus.enabled)):
+            plugin, enabled = zipped
+            if enabled:
+                pluginStatus.controlTab[i] = self._addAnalysisPanel(plugin)
+            else:
+                self._removeWidgetFromPanel(plugin.getPanel().getWidget())
         logger.info("View updated by pluginManager.")
 
     # ============== DEBUG ACTION ================================
@@ -128,17 +134,43 @@ class OscilloscopeUi(QMainWindow):
         self.mainwindow.setupUi(self)
         self.display = OscilloscopeDisplay(DisplayConfig())
         replaceWidget(self.mainwindow.displayPlaceHolder, self.display)
-        self._setupAnalysisPanel()
+        self.mainwindow.analysisTabWidget.removeTab(0)
 
-    def _setupAnalysisPanel(self):
-        analysisPanel = BasicAnalysis()
-        self.basicAnalysisPanel: BasicAnalysis = QWidget()
-        analysisPanel.setupUi(self.basicAnalysisPanel)
+    def _addAnalysisPanel(self, plugin: PluginType):
+        if plugin.getPanel() is None:
+            logger.debug(f"No panel, plugin {plugin}")
+            return
+        content = plugin.getPanel().getWidget()
+        tabTitle = plugin.getMetadata().tab_title
+        id = plugin.getMetadata().id
+        _translate = QtCore.QCoreApplication.translate
+        analysisTabWidget = self.mainwindow.analysisTabWidget
 
-        replaceWidget(
-            self.mainwindow.basicAnalysisPlaceHolder,
-            self.basicAnalysisPanel
-        )
+        controlTab = QtWidgets.QWidget()
+        controlTab.setObjectName("controlTab"+id)
+
+        horizontalLayout = QtWidgets.QHBoxLayout(controlTab)
+        horizontalLayout.setObjectName("horizontalLayout"+id)
+        scrollArea = QtWidgets.QScrollArea(controlTab)
+        scrollArea.setWidgetResizable(True)
+        scrollArea.setObjectName("scrollArea"+id)
+        scrollAreaWidgetContents = QtWidgets.QWidget()
+        scrollAreaWidgetContents.setGeometry(QtCore.QRect(0, 0, 1247, 668))
+        scrollAreaWidgetContents.setObjectName("scrollAreaWidgetContents"+id)
+        verticalLayout = QtWidgets.QVBoxLayout(scrollAreaWidgetContents)
+        verticalLayout.setObjectName("verticalLayout"+id)
+        verticalLayout.addWidget(content)
+        scrollArea.setWidget(scrollAreaWidgetContents)
+        horizontalLayout.addWidget(scrollArea)
+        analysisTabWidget.addTab(controlTab, "")
+        analysisTabWidget.setTabText(analysisTabWidget.indexOf(
+            controlTab), _translate("MainWindow", tabTitle))
+
+        logger.info("Add widget to plugin panel.")
+        return controlTab
+
+    def _removeWidgetFromPanel(self, widget: QWidget):
+        ...
 
     def _connectSignals(self):
         self.mainwindow.actionDebug.triggered.connect(self.debugAction)

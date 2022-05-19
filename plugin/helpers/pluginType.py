@@ -37,3 +37,4 @@ class PluginType(QObject):
 
     def getConfigureSignal(self) -> pyqtSignal(PluginConfigType):
         raise NotImplementedError()
+

@@ -1,6 +1,7 @@
 import logging
 from typing import List
 from PyQt5.QtCore import pyqtSignal, QObject
+from PyQt5.QtWidgets import QWidget
 from dataclasses import dataclass
 from importlib import import_module
 
@@ -13,10 +14,13 @@ logger = logging.getLogger(__name__)
 class PluginStatus:
     allPlugins: List[PluginType] = None
     enabled: List[bool] = None
+    controlTab: List[QWidget] = None
 
     def __init__(self, moduleList) -> None:
         self.allPlugins = [m.init() for m in moduleList]
         self.enabled = [True for _ in self.allPlugins]
+        self.controlTab = [None for _ in self.allPlugins]
+
 
 
 class PluginManager(QObject):
@@ -28,8 +32,6 @@ class PluginManager(QObject):
         allPluginModule = [import_module(name) for name in allPluginName]
         self.status = PluginStatus(allPluginModule)
         logger.info(f"Load {len(self.status.allPlugins)} plugins.")
-
-        print(self.status.allPlugins[0].getMetadata())
 
     def togglePlugin(self, status: PluginStatus):
         ...

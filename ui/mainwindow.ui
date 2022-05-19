@@ -69,7 +69,7 @@
              <rect>
               <x>0</x>
               <y>0</y>
-              <width>190</width>
+              <width>336</width>
               <height>1389</height>
              </rect>
             </property>
@@ -774,7 +774,7 @@
            </property>
            <widget class="QWidget" name="controlTab">
             <attribute name="title">
-             <string>Basic Analysis</string>
+             <string>Placeholder Tab</string>
             </attribute>
             <layout class="QHBoxLayout" name="horizontalLayout_3">
              <item>
@@ -787,8 +787,8 @@
                  <rect>
                   <x>0</x>
                   <y>0</y>
-                  <width>1247</width>
-                  <height>668</height>
+                  <width>1101</width>
+                  <height>353</height>
                  </rect>
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_3">
