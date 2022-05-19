@@ -31,5 +31,8 @@ class PluginManager(QObject):
 
         print(self.status.allPlugins[0].getMetadata())
 
-    def togglePlugins(self, status: PluginStatus):
+    def togglePlugin(self, status: PluginStatus):
         ...
+
+    def updatePlugin(self):
+        self.pluginUpdated.emit(self.status)

@@ -3,23 +3,22 @@ from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QWidget
 
 from plugin.helpers.metadata import PluginMetaData
-from utils import UnImplementedError
 
 
 class PluginConfigType(ABC):
     def getData(self) -> QWidget:
-        raise UnImplementedError()
+        raise NotImplementedError()
 
     def setData(self, data) -> QWidget:
-        raise UnImplementedError()
+        raise NotImplementedError()
 
 
 class PanelType(QObject):
     def getWidget(self) -> QWidget:
-        raise UnImplementedError()
+        raise NotImplementedError()
 
     def getSignalUiUpdated(self) -> pyqtSignal(PluginConfigType):
-        raise UnImplementedError()
+        raise NotImplementedError()
 
 
 class ProcessorType(ABC):
@@ -28,13 +27,13 @@ class ProcessorType(ABC):
 
 class PluginType(QObject):
     def getMetadata(self) -> PluginMetaData:
-        raise UnImplementedError()
+        raise NotImplementedError()
 
     def getPanel(self) -> PanelType:
-        raise UnImplementedError()
+        raise NotImplementedError()
 
     def getProcessor(self) -> ProcessorType:
-        raise UnImplementedError()
+        raise NotImplementedError()
 
     def getConfigureSignal(self) -> pyqtSignal(PluginConfigType):
-        raise UnImplementedError()
+        raise NotImplementedError()

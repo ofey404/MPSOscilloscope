@@ -23,6 +23,7 @@ class OscilloscopeCtrl:
             exit(1)
 
         self._connectSignals()
+        pluginManager.updatePlugin()
         model.start()
         logger.info("Controller inited.")
 
@@ -33,7 +34,7 @@ class OscilloscopeCtrl:
         model.reportConfigToModel.connect(view.updateByModelConfig)
 
         view.newModelConfig.connect(model.updateConfig)
-        view.togglePlugins.connect(pluginManager.togglePlugins)
+        view.togglePlugins.connect(pluginManager.togglePlugin)
 
         pluginManager.pluginUpdated.connect(model.updateByPluginManager)
         pluginManager.pluginUpdated.connect(view.updateByPluginManager)

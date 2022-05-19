@@ -111,7 +111,9 @@ class OscilloscopeUi(QMainWindow):
         self._adjustPanel()
 
     def updateByPluginManager(self, pluginStatus: PluginStatus):
-        ...
+        for plugin, enabled in zip(pluginStatus.allPlugins, pluginStatus.enabled):
+            ...
+        logger.info("View updated by pluginManager.")
 
     # ============== DEBUG ACTION ================================
     def debugAction(self):
