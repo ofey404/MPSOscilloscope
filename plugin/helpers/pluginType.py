@@ -1,28 +1,19 @@
 from abc import ABC, abstractmethod
+from typing import List
 from PyQt5.QtCore import pyqtSignal, QObject
 from PyQt5.QtWidgets import QWidget
 
 from plugin.helpers.metadata import PluginMetaData
 
 
-class PluginConfigType(ABC):
-    def getData(self) -> QWidget:
-        raise NotImplementedError()
-
-    def setData(self, data) -> QWidget:
-        raise NotImplementedError()
-
-
 class PanelType(QObject):
     def getWidget(self) -> QWidget:
         raise NotImplementedError()
 
-    def getSignalUiUpdated(self) -> pyqtSignal(PluginConfigType):
+
+class ProcessorType(QObject):
+    def process(self, data: List[float]) -> List[float]:
         raise NotImplementedError()
-
-
-class ProcessorType(ABC):
-    ...
 
 
 class PluginType(QObject):
@@ -34,7 +25,3 @@ class PluginType(QObject):
 
     def getProcessor(self) -> ProcessorType:
         raise NotImplementedError()
-
-    def getConfigureSignal(self) -> pyqtSignal(PluginConfigType):
-        raise NotImplementedError()
-

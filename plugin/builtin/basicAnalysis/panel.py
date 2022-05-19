@@ -1,4 +1,5 @@
-from plugin.helpers.pluginType import PluginConfigType
+from .processor import BasicAnalysisData
+
 from .ui.basicAnalysis import Ui_Form as BasicAnalysis
 
 from PyQt5.QtCore import pyqtSignal
@@ -14,5 +15,5 @@ class BasicAnalysisPanel:
     def getWidget(self) -> QWidget:
         return self.widget
 
-    def getSignalUiUpdated(self) -> pyqtSignal(PluginConfigType):
-        raise NotImplementedError()
+    def updateByData(self, data: BasicAnalysisData):
+        self.uiForm.vTopDoubleSpinBox.setValue(data.vTop)

@@ -9,6 +9,7 @@ from model.trigger import EdgeTrigger, Trigger
 from mps060602 import MPS060602, ADChannelMode, MPS060602Para, PGAAmpRate
 from mps060602.core import AmpRate
 from PyQt5.QtCore import QObject, QTimer, pyqtSignal
+from plugin.helpers.pluginType import ProcessorType
 
 from utils import Pool, LeakQueue
 
@@ -145,6 +146,7 @@ class ProcessorConfig:
     timeoutMs: int = None
     triggerRetryNum: int = None
     trigger: Trigger = None
+    pluginProcessors: typing.List[ProcessorType] = None
 
 
 class PostProcessWorker(QObject):
@@ -169,13 +171,21 @@ class PostProcessWorker(QObject):
             index = self.config.trigger.triggeredIndex(volt)
             if (index is None) or (index > self.sharedState.config.bufferSize / 2):
                 continue
-            self.dataReady.emit(volt[index:])
+            data = volt[index:]
+            data = self._pluginPostProcess(data)
+            self.dataReady.emit(data)
             logger.debug(
                 f"Preprocess success. {self.sharedState.config.bufferSize}")
             return
 
         # Trigger failed, emit the whole waveform.
         self.dataReady.emit(volt)
+
+    def _pluginPostProcess(self, data):
+        if self.config.pluginProcessors is not None:
+            for p in self.config.pluginProcessors:
+                data = p.process(data)
+        return data
 
     def _getVoltDataFromQueue(self) -> typing.List[float]:
         block = self.sharedState.leakQueue.get()
@@ -209,6 +219,9 @@ class PostProcessWorker(QObject):
 
         if config.trigger is not None:
             self.config.trigger = config.trigger
+
+        if config.pluginProcessors is not None:
+            self.config.pluginProcessors = config.pluginProcessors
 
     def updateConfig(self, config: ProcessorConfig):
         self._configure(config)

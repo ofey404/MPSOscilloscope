@@ -48,7 +48,6 @@ class OscilloscopeModel(QObject):
 
         self.dataWorker = MPSDataWorker(self.config.dataWorker)
 
-
         self.dataWorkerThread = self._moveToThread(self.dataWorker)
 
         sharedState = self.dataWorker.sharedState
@@ -73,7 +72,14 @@ class OscilloscopeModel(QObject):
             self._configProcessor.emit(config.processor)
 
     def updateByPluginManager(self, pluginStatus: PluginStatus):
-        ...
+        self.updateConfig(
+            ModelConfig(
+                processor=ProcessorConfig(
+                    pluginProcessors=pluginStatus.orderedPostProcessor
+                )
+            )
+        )
+        logger.info("Model updated by pluginManager.")
 
     # ============================================================
     #                  Internal Methods

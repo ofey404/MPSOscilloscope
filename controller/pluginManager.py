@@ -15,12 +15,14 @@ class PluginStatus:
     allPlugins: List[PluginType] = None
     enabled: List[bool] = None
     controlTab: List[QWidget] = None
+    orderedPostProcessor: List[PluginType] = None
 
     def __init__(self, moduleList) -> None:
         self.allPlugins = [m.init() for m in moduleList]
         self.enabled = [True for _ in self.allPlugins]
         self.controlTab = [None for _ in self.allPlugins]
-
+        self.orderedPostProcessor = [
+            p.getProcessor() for p in self.allPlugins if p.getProcessor() is not None]
 
 
 class PluginManager(QObject):

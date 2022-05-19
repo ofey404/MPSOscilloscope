@@ -113,12 +113,14 @@ class OscilloscopeUi(QMainWindow):
         self._adjustPanel()
 
     def updateByPluginManager(self, pluginStatus: PluginStatus):
-        for i, zipped in enumerate(zip(pluginStatus.allPlugins, pluginStatus.enabled)):
-            plugin, enabled = zipped
+        for i in range(len(pluginStatus.allPlugins)):
+            plugin, enabled = pluginStatus.allPlugins[i], pluginStatus.enabled[i]
             if enabled:
                 pluginStatus.controlTab[i] = self._addAnalysisPanel(plugin)
             else:
-                self._removeWidgetFromPanel(plugin.getPanel().getWidget())
+                controlTab = pluginStatus.controlTab[i]
+                if controlTab is not None:
+                    self._removeAnalysisPanel(controlTab)
         logger.info("View updated by pluginManager.")
 
     # ============== DEBUG ACTION ================================
@@ -135,6 +137,12 @@ class OscilloscopeUi(QMainWindow):
         self.display = OscilloscopeDisplay(DisplayConfig())
         replaceWidget(self.mainwindow.displayPlaceHolder, self.display)
         self.mainwindow.analysisTabWidget.removeTab(0)
+
+    def _removeAnalysisPanel(self, controlTab: QWidget):
+        analysisTabWidget = self.mainwindow.analysisTabWidget
+        tabIndex = analysisTabWidget.indexOf(controlTab)
+        analysisTabWidget.removeTab(tabIndex)
+        logger.info("Removed widget from plugin panel.")
 
     def _addAnalysisPanel(self, plugin: PluginType):
         if plugin.getPanel() is None:
@@ -166,7 +174,7 @@ class OscilloscopeUi(QMainWindow):
         analysisTabWidget.setTabText(analysisTabWidget.indexOf(
             controlTab), _translate("MainWindow", tabTitle))
 
-        logger.info("Add widget to plugin panel.")
+        logger.info("Added widget to plugin panel.")
         return controlTab
 
     def _removeWidgetFromPanel(self, widget: QWidget):
