@@ -85,7 +85,7 @@ class ConfigPanelControl(QObject):
             self.configUpdated.emit(config)
             logger.debug("Try to update configuration by panel.")
         except ConfigError as e:
-            showError(str(e))
+            showError("ConfigError", str(e))
 
     def respondModelConfig(self, config: ModelConfig):
         ...

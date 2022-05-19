@@ -47,6 +47,8 @@ class OscilloscopeModel(QObject):
         )
 
         self.dataWorker = MPSDataWorker(self.config.dataWorker)
+
+
         self.dataWorkerThread = self._moveToThread(self.dataWorker)
 
         sharedState = self.dataWorker.sharedState

@@ -1,3 +1,4 @@
+from mps060602.errors import OpenDeviceFailed
 from ctypes import c_ushort
 import logging
 import typing
@@ -47,15 +48,20 @@ class MPSDataWorker(QObject):
     def __init__(self, config: DataWorkerConfig):
         super().__init__()
         self.config = config
-        self.card = MPS060602(
-            device_number=self.config.deviceNumber,
-            para=MPS060602Para(
-                self.config.ADChannel,
-                self.config.ADSampleRate,
-                self.config.Gain,
-            ),
-            buffer_size=self.config.bufferSize,
-        )
+        try:
+            self.card = MPS060602(
+                device_number=self.config.deviceNumber,
+                para=MPS060602Para(
+                    self.config.ADChannel,
+                    self.config.ADSampleRate,
+                    self.config.Gain,
+                ),
+                buffer_size=self.config.bufferSize,
+            )
+        except OpenDeviceFailed:
+            logger.info("Open device Failed")
+            self.card = None
+
         self.sharedState = WorkerSharedState(
             card=self.card, config=self.config)
 

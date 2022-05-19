@@ -29,9 +29,11 @@ class BasicAnalysisPlugin(PluginType):
     configSignal = pyqtSignal(BasicAnalysisConfig)
 
     def __init__(self):
-        prototype = BasicAnalysis()
-        self.panel: BasicAnalysis = QWidget()
-        prototype.setupUi(self.panel)
+        super().__init__()
+        self.panel = BasicAnalysis()
+
+    def setupUI(self, parent: QWidget):
+        self.panel.setupUi(parent)
 
     def getMetadata(self) -> PluginMetaData:
         return PluginMetaData(

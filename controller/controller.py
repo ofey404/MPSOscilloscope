@@ -4,6 +4,7 @@ from model import OscilloscopeModel
 from view import OscilloscopeUi
 
 from controller.pluginManager import PluginManager
+from view.utils import showError
 
 logger = logging.getLogger(__name__)
 
@@ -15,6 +16,11 @@ class OscilloscopeCtrl:
         self.model = model
         self.view = view
         self.pluginManager = pluginManager
+
+        if self.model.dataWorker.card == None:
+            showError("Card is unplugged.",
+                      "Please connect MPS060602 to USB port,\nthen restart the application.")
+            exit(1)
 
         self._connectSignals()
         model.start()

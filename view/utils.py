@@ -23,10 +23,10 @@ class ScrollBarStepConverter:
         maxRange = maxlim[1] - maxlim[0]
         return (intStepValue / self.maxStep) * maxRange + maxlim[0]
 
-def showError(info: str):
+def showError(title: str, info: str):
     msg = QMessageBox()
     msg.setIcon(QMessageBox.Critical)
-    msg.setText("Error")
+    msg.setText(title)
     msg.setInformativeText(info)
     msg.setWindowTitle("Error")
     msg.exec_()

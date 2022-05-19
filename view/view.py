@@ -6,7 +6,7 @@ from controller.pluginManager import PluginStatus
 
 from model import ModelConfig, ProcessorConfig
 from PyQt5.QtCore import pyqtSignal
-from PyQt5.QtWidgets import QMainWindow, QWidget, QFormLayout
+from PyQt5.QtWidgets import QMainWindow, QWidget, QDialog
 from ui.mainwindow import Ui_MainWindow as MainWindow
 
 from view.display import OscilloscopeDisplay, DisplayConfig
