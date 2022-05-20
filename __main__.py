@@ -23,6 +23,7 @@ def main(argv):
     pluginManager = PluginManager([
         "plugin.builtin.linearInterpolation",
         "plugin.builtin.basicAnalysis",
+        "plugin.builtin.fastFourierTranformation",
     ])
 
     OscilloscopeCtrl(model, view, pluginManager)

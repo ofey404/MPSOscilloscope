@@ -3,6 +3,7 @@
         "main.py",
         "ui/mainwindow.ui",
         "plugin/builtin/basicAnalysis/ui/basicAnalysis.ui",
+        "plugin/builtin/fastFourierTranformation/ui/fft.ui",
         "view.py",
         "README.md"
     ]

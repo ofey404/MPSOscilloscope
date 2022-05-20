@@ -1,6 +1,4 @@
 
-from PyQt5.QtCore import pyqtSignal
-
 from plugin.helpers.metadata import PluginMetaData
 from plugin.helpers.pluginType import PanelType, PluginType, ProcessorType
 
@@ -19,7 +17,6 @@ eg: Peak-to-Peak, V_top, and dead time.
 
 
 class BasicAnalysisPlugin(PluginType):
-    configSignal = pyqtSignal(BasicAnalysisData)
 
     def __init__(self):
         super().__init__()
@@ -37,9 +34,6 @@ class BasicAnalysisPlugin(PluginType):
 
     def getProcessor(self) -> ProcessorType:
         return self.processor
-
-    def getConfigureSignal(self) -> pyqtSignal(BasicAnalysisData):
-        return self.configSignal
 
     def _connectSignals(self):
         self.processor.dataUpdated.connect(self.panel.updateByData)
