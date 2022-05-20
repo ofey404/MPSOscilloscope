@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\plugin\builtin\fastFourierTranformation\ui\fft.ui'
+# Form implementation generated from reading ui file '.\src\plugin\builtin\fastFourierTranformation\ui\fft.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #

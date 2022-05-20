@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import QApplication
 from controller.controller import OscilloscopeCtrl
 from controller.pluginManager import PluginManager
 from model import OscilloscopeModel
+from controller.utils import pluginListFromConfigFile
 from view import OscilloscopeUi
 
 logger = logging.getLogger(__name__)
@@ -20,11 +21,7 @@ def main(argv):
 
     model = OscilloscopeModel()
 
-    pluginManager = PluginManager([
-        "plugin.builtin.linearInterpolation",
-        "plugin.builtin.basicAnalysis",
-        "plugin.builtin.fastFourierTranformation",
-    ])
+    pluginManager = PluginManager(pluginListFromConfigFile())
 
     OscilloscopeCtrl(model, view, pluginManager)
 

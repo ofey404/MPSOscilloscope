@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file '.\plugin\builtin\basicAnalysis\ui\basicAnalysis.ui'
+# Form implementation generated from reading ui file '.\src\plugin\builtin\basicAnalysis\ui\basicAnalysis.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.4
 #
