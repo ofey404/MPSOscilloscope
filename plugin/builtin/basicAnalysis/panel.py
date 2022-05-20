@@ -16,3 +16,9 @@ class BasicAnalysisPanel:
 
     def updateByData(self, data: BasicAnalysisData):
         self.uiForm.vTopDoubleSpinBox.setValue(data.vTop)
+        self.uiForm.vBaseDoubleSpinBox.setValue(data.vBase)
+        self.uiForm.vAmplitudeDoubleSpinBox.setValue(data.vAmplitude)
+        self.uiForm.vMaxDoubleSpinBox.setValue(data.vMax)
+        self.uiForm.vMinDoubleSpinBox.setValue(data.vMin)
+        self.uiForm.vPeakToPeakDoubleSpinBox.setValue(data.vPeakToPeak)
+        self.uiForm.frameRateDoubleSpinBox.setValue(data.frameRate)

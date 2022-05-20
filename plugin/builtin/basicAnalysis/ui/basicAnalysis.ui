@@ -46,6 +46,9 @@
          <property name="readOnly">
           <bool>true</bool>
          </property>
+         <property name="decimals">
+          <number>2</number>
+         </property>
          <property name="minimum">
           <double>-99.000000000000000</double>
          </property>
@@ -69,6 +72,9 @@
         <widget class="QDoubleSpinBox" name="vBaseDoubleSpinBox">
          <property name="readOnly">
           <bool>true</bool>
+         </property>
+         <property name="decimals">
+          <number>2</number>
          </property>
          <property name="minimum">
           <double>-100.000000000000000</double>
@@ -94,6 +100,9 @@
          <property name="readOnly">
           <bool>true</bool>
          </property>
+         <property name="decimals">
+          <number>2</number>
+         </property>
          <property name="minimum">
           <double>-99.000000000000000</double>
          </property>
@@ -117,6 +126,9 @@
         <widget class="QDoubleSpinBox" name="vMaxDoubleSpinBox">
          <property name="readOnly">
           <bool>true</bool>
+         </property>
+         <property name="decimals">
+          <number>2</number>
          </property>
          <property name="minimum">
           <double>-99.989999999999995</double>
@@ -142,6 +154,9 @@
          <property name="readOnly">
           <bool>true</bool>
          </property>
+         <property name="decimals">
+          <number>2</number>
+         </property>
          <property name="minimum">
           <double>-99.989999999999995</double>
          </property>
@@ -165,6 +180,9 @@
         <widget class="QDoubleSpinBox" name="vPeakToPeakDoubleSpinBox">
          <property name="readOnly">
           <bool>true</bool>
+         </property>
+         <property name="decimals">
+          <number>2</number>
          </property>
          <property name="minimum">
           <double>-99.989999999999995</double>
@@ -204,11 +222,11 @@
       </widget>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
+      <layout class="QHBoxLayout" name="horizontalLayout_9">
        <item>
-        <widget class="QLabel" name="label_2">
+        <widget class="QLabel" name="label_10">
          <property name="text">
-          <string>Dead Time Percent</string>
+          <string>Frame Rate</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -216,9 +234,9 @@
         </widget>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="deadTimePercentDoubleSpinBox">
-         <property name="readOnly">
-          <bool>true</bool>
+        <widget class="QDoubleSpinBox" name="frameRateDoubleSpinBox">
+         <property name="decimals">
+          <number>0</number>
          </property>
         </widget>
        </item>
