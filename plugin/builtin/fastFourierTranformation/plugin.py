@@ -33,4 +33,4 @@ class FFTPlugin(PluginType):
         return self.processor
 
     def _connectSignals(self):
-        ...
+        self.processor.dataUpdated.connect(self.panel.updateByData)

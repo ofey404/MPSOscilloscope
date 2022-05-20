@@ -15,10 +15,11 @@ class FFTDisplay(FigureCanvas, TimedAnimation):
         # The window
         self.fig, self.ax = self._init_fig()
 
-        self.x = [0, 1]
-        self.y = [0, 1]
-        self.line = Line2D(self.x, self.y)
-        self.ax.add_line(self.line)
+        self.freq = [0, 1]
+        self.real = [0, 1]
+
+        self.realLine = Line2D(self.freq, self.real)
+        self.ax.add_line(self.realLine)
 
         FigureCanvas.__init__(self, self.fig)
         TimedAnimation.__init__(self, self.fig, interval=50, blit=True)
@@ -27,20 +28,28 @@ class FFTDisplay(FigureCanvas, TimedAnimation):
         fig = Figure(figsize=(5, 5), dpi=100)
         ax = fig.add_subplot(111)
 
-        ax.set_xlabel('time (ms)')
-        ax.set_ylabel('voltage')
+        ax.set_xlabel('Freq')
+        ax.set_ylabel('Real')
 
         return fig, ax
+
+    def updateData(self, data: FFTData):
+        self.ax.set_ylim((min(data.real), max(data.real)))
+        self.ax.set_xlim((min(data.freq), max(data.freq)))
+        self.realLine.set_data(
+            data.freq, data.real,
+        )
+        print("updateData")
 
     def _init_draw(self):
         pass
 
     def new_frame_seq(self):
-        return iter(range(len(self.x) + 20))
+        return iter(range(len(self.freq) + 20))
 
     def _draw_frame(self, framedata):
         self._drawn_artists = [
-            self.line
+            self.realLine,
         ]
 
         for l in self._drawn_artists:
@@ -59,4 +68,4 @@ class FFTPanel:
         return self.widget
 
     def updateByData(self, data: FFTData):
-        self.uiForm.vTopDoubleSpinBox.setValue(data.vTop)
+        self.display.updateData(data)
