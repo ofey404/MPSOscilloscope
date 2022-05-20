@@ -2,7 +2,6 @@ from .processor import BasicAnalysisData
 
 from .ui.basicAnalysis import Ui_Form as BasicAnalysis
 
-from PyQt5.QtCore import pyqtSignal
 from PyQt5.QtWidgets import QWidget
 
 

@@ -34,7 +34,7 @@ class OscilloscopeCtrl:
         model.reportConfigToModel.connect(view.updateByModelConfig)
 
         view.newModelConfig.connect(model.updateConfig)
-        view.togglePlugins.connect(pluginManager.togglePlugin)
+        view.togglePlugins.connect(pluginManager.configurePluginStatus)
 
         pluginManager.pluginUpdated.connect(model.updateByPluginManager)
         pluginManager.pluginUpdated.connect(view.updateByPluginManager)

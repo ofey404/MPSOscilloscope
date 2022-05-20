@@ -35,7 +35,10 @@ class PluginManager(QObject):
         self.status = PluginStatus(allPluginModule)
         logger.info(f"Load {len(self.status.allPlugins)} plugins.")
 
-    def togglePlugin(self, status: PluginStatus):
+    def configurePluginStatus(self, status: PluginStatus):
+        ...
+
+    def reOrderPostProcessor(self):
         ...
 
     def updatePlugin(self):

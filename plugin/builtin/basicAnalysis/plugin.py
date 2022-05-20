@@ -8,6 +8,16 @@ from .panel import BasicAnalysisPanel
 from .processor import BasicAnalysisProcessor, BasicAnalysisData
 
 
+_METADATA = PluginMetaData(
+    id="BasicAnalysis",
+    display_name="Basic Analysis Plugin",
+    description="""Show waveform metrics and oscilloscope status.
+eg: Peak-to-Peak, V_top, and dead time.
+""",
+    tab_title="Basic Analysis",
+)
+
+
 class BasicAnalysisPlugin(PluginType):
     configSignal = pyqtSignal(BasicAnalysisData)
 
@@ -20,14 +30,7 @@ class BasicAnalysisPlugin(PluginType):
         self._connectSignals()
 
     def getMetadata(self) -> PluginMetaData:
-        return PluginMetaData(
-            id="BasicAnalysis",
-            display_name="Basic Analysis Plugin",
-            description="""Show waveform metrics and oscilloscope status.
-eg: Peak-to-Peak, V_top, and dead time.
-""",
-            tab_title="Basic Analysis",
-        )
+        return _METADATA
 
     def getPanel(self) -> PanelType:
         return self.panel

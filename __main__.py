@@ -20,7 +20,10 @@ def main(argv):
 
     model = OscilloscopeModel()
 
-    pluginManager = PluginManager(["plugin.builtin.basicAnalysis"])
+    pluginManager = PluginManager([
+        "plugin.builtin.basicAnalysis",
+        "plugin.builtin.linearInterpolation",
+    ])
 
     OscilloscopeCtrl(model, view, pluginManager)
 

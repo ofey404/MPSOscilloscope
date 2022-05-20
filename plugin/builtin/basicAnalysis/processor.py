@@ -13,7 +13,6 @@ class BasicAnalysisProcessor(ProcessorType):
     dataUpdated = pyqtSignal(BasicAnalysisData)
 
     def process(self, data: List[float]) -> List[float]:
-        print(max(data))
         self.dataUpdated.emit(
             BasicAnalysisData(
                 vTop=max(data)
