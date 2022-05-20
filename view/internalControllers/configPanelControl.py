@@ -107,9 +107,11 @@ class ConfigPanelControl(QObject):
     def respondToModelConfig(self, config: ModelConfig):
         self._deviceNumber(config.dataWorker.deviceNumber)
 
-        self._syncProcessorList(
-            config.processor.allPluginProcessor
-        )
+        if config.processor.allPluginProcessor is not None:
+            pList = config.processor.allPluginProcessor
+        else:
+            pList = []
+        self._syncProcessorList(pList)
 
     def updateCalculatedFields(self):
         self._updateTimeRange()

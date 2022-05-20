@@ -31,10 +31,10 @@ class OscilloscopeCtrl:
         model, view, pluginManager = self.model, self.view, self.pluginManager
 
         model.dataReady.connect(view.updateData)
-        model.reportConfigToModel.connect(view.updateByModelConfig)
+        model.reportConfigToView.connect(view.updateByModelConfig)
 
         view.newModelConfig.connect(model.updateConfig)
-        view.togglePlugins.connect(pluginManager.configurePluginStatus)
+        view.pluginPanelControl.pluginStatusUpdated.connect(pluginManager.configurePluginStatus)
 
         pluginManager.pluginUpdated.connect(model.updateByPluginManager)
         pluginManager.pluginUpdated.connect(view.updateByPluginManager)

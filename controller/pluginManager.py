@@ -36,10 +36,8 @@ class PluginManager(QObject):
         logger.info(f"Load {len(self.status.allPlugins)} plugins.")
 
     def configurePluginStatus(self, status: PluginStatus):
-        ...
-
-    def reOrderPostProcessor(self):
-        ...
+        self.status = status
+        self.updatePlugin()
 
     def updatePlugin(self):
         self.pluginUpdated.emit(self.status)

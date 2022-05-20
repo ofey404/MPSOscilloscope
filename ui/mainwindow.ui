@@ -444,7 +444,7 @@
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_8">
                <item>
-                <widget class="QPushButton" name="pushButton_5">
+                <widget class="QPushButton" name="updatePluginButton">
                  <property name="text">
                   <string>Update</string>
                  </property>
@@ -493,21 +493,27 @@
                 </widget>
                </item>
                <item>
-                <widget class="QListWidget" name="enabledPluginsListWidget"/>
+                <widget class="QListWidget" name="enabledPluginsListWidget">
+                 <item>
+                  <property name="text">
+                   <string>Placeholder</string>
+                  </property>
+                 </item>
+                </widget>
                </item>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_21">
                  <item>
                   <widget class="QPushButton" name="pluginAddButton">
                    <property name="text">
-                    <string>↑</string>
+                    <string>+</string>
                    </property>
                   </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="pluginRemoveButton">
                    <property name="text">
-                    <string>↓</string>
+                    <string>-</string>
                    </property>
                   </widget>
                  </item>
@@ -527,7 +533,13 @@
                 </widget>
                </item>
                <item>
-                <widget class="QListWidget" name="allAvailablePluginsListWidget"/>
+                <widget class="QListWidget" name="allAvailablePluginsListWidget">
+                 <item>
+                  <property name="text">
+                   <string>Placeholder</string>
+                  </property>
+                 </item>
+                </widget>
                </item>
                <item>
                 <spacer name="verticalSpacer_2">

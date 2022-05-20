@@ -12,12 +12,11 @@ from plugin.helpers.pluginType import PluginType
 from ui.mainwindow import Ui_MainWindow as MainWindow
 
 from view.display import OscilloscopeDisplay, DisplayConfig
+from view.internalControllers.pluginPanelControl import PluginPanelControl
 from view.internalControllers.configPanelControl import ConfigPanelControl
 from view.internalControllers.displayZoomControl import DisplayZoomControl
 from view.utils import ScrollBarStepConverter, replaceWidget
 from view.internalControllers.rightSliderControl import RightSliderControl
-
-from plugin.builtin.basicAnalysis.ui.basicAnalysis import Ui_Form as BasicAnalysis
 
 
 logger = logging.getLogger(__name__)
@@ -87,6 +86,15 @@ class OscilloscopeUi(QMainWindow):
             postProcessorOrderDownButton=self.mainwindow.postProcessorOrderDownButton,
         )
 
+        self.pluginPanelControl = PluginPanelControl(
+            updatePluginButton=self.mainwindow.updatePluginButton,
+            configFilePathLineEdit=self.mainwindow.configFilePathLineEdit,
+            enabledPluginsListWidget=self.mainwindow.enabledPluginsListWidget,
+            allAvailablePluginsListWidget=self.mainwindow.allAvailablePluginsListWidget,
+            pluginAddButton=self.mainwindow.pluginAddButton,
+            pluginRemoveButton=self.mainwindow.pluginRemoveButton,
+        )
+
         self._connectSignals()
 
     def updateData(self, data):
@@ -117,14 +125,8 @@ class OscilloscopeUi(QMainWindow):
         self._adjustPanel()
 
     def updateByPluginManager(self, pluginStatus: PluginStatus):
-        for i in range(len(pluginStatus.allPlugins)):
-            plugin, enabled = pluginStatus.allPlugins[i], pluginStatus.enabled[i]
-            if enabled:
-                pluginStatus.controlTab[i] = self._addAnalysisPanel(plugin)
-            else:
-                controlTab = pluginStatus.controlTab[i]
-                if controlTab is not None:
-                    self._removeAnalysisPanel(controlTab)
+        self.pluginPanelControl.respondToPluginStatus(pluginStatus)
+        self._updateAllAnalysisPanel(pluginStatus)
         logger.info("View updated by pluginManager.")
 
     # ============== DEBUG ACTION ================================
@@ -141,6 +143,16 @@ class OscilloscopeUi(QMainWindow):
         self.display = OscilloscopeDisplay(DisplayConfig())
         replaceWidget(self.mainwindow.displayPlaceHolder, self.display)
         self.mainwindow.analysisTabWidget.removeTab(0)
+
+    def _updateAllAnalysisPanel(self, pluginStatus: PluginStatus):
+        for i in range(len(pluginStatus.allPlugins)):
+            plugin, enabled = pluginStatus.allPlugins[i], pluginStatus.enabled[i]
+            if enabled:
+                pluginStatus.controlTab[i] = self._addAnalysisPanel(plugin)
+            else:
+                controlTab = pluginStatus.controlTab[i]
+                if controlTab is not None:
+                    self._removeAnalysisPanel(controlTab)
 
     def _removeAnalysisPanel(self, controlTab: QWidget):
         analysisTabWidget = self.mainwindow.analysisTabWidget
