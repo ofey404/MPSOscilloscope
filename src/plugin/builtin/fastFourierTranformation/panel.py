@@ -39,7 +39,6 @@ class FFTDisplay(FigureCanvas, TimedAnimation):
         self.realLine.set_data(
             data.freq, data.real,
         )
-        print("updateData")
 
     def _init_draw(self):
         pass
