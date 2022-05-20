@@ -19,3 +19,6 @@ class BasicAnalysisProcessor(ProcessorType):
             )
         )
         return data
+
+    def displayName(self) -> str:
+        return "Basic Analysis Processor"

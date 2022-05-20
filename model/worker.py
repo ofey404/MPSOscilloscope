@@ -146,7 +146,7 @@ class ProcessorConfig:
     timeoutMs: int = None
     triggerRetryNum: int = None
     trigger: Trigger = None
-    pluginProcessors: typing.List[ProcessorType] = None
+    allPluginProcessor: typing.List[ProcessorType] = None
 
 
 class PostProcessWorker(QObject):
@@ -182,8 +182,8 @@ class PostProcessWorker(QObject):
         self.dataReady.emit(volt)
 
     def _pluginPostProcess(self, data):
-        if self.config.pluginProcessors is not None:
-            for p in self.config.pluginProcessors:
+        if self.config.allPluginProcessor is not None:
+            for p in self.config.allPluginProcessor:
                 data = p.process(data)
         return data
 
@@ -220,8 +220,8 @@ class PostProcessWorker(QObject):
         if config.trigger is not None:
             self.config.trigger = config.trigger
 
-        if config.pluginProcessors is not None:
-            self.config.pluginProcessors = config.pluginProcessors
+        if config.allPluginProcessor is not None:
+            self.config.allPluginProcessor = config.allPluginProcessor
 
     def updateConfig(self, config: ProcessorConfig):
         self._configure(config)

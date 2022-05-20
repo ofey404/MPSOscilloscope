@@ -15,6 +15,9 @@ class ProcessorType(QObject):
     def process(self, data: List[float]) -> List[float]:
         raise NotImplementedError()
 
+    def displayName(self) -> str:
+        raise NotImplementedError()
+
 
 class PluginType(QObject):
     def getMetadata(self) -> PluginMetaData:

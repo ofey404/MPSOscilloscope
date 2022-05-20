@@ -1,11 +1,17 @@
 import logging
+import typing
+
+from tomlkit import item
 from model.model import ModelConfig
 from PyQt5.QtCore import QObject, pyqtSignal
-from PyQt5.QtWidgets import QComboBox, QSpinBox, QPushButton, QDoubleSpinBox
+from PyQt5.QtWidgets import QComboBox, QSpinBox, QPushButton, QDoubleSpinBox, QListWidget
+import PyQt5.QtCore
+
 from model.trigger import EdgeTrigger
 
 from model.worker import DataWorkerConfig, MPSDataWorker, ProcessorConfig
 import mps060602
+from plugin.helpers.pluginType import ProcessorType
 from view.utils import showError
 
 
@@ -49,6 +55,9 @@ class ConfigPanelControl(QObject):
                  frameRateSpinBox: QSpinBox,
                  retryTriggerSpinBox: QSpinBox,
                  triggerSelectionComboBox: QComboBox,
+                 postProcessorListWidget: QListWidget,
+                 postProcessorOrderUpButton: QPushButton,
+                 postProcessorOrderDownButton: QPushButton,
                  ) -> None:
         super().__init__()
 
@@ -62,6 +71,12 @@ class ConfigPanelControl(QObject):
         self.frameRateSpinBox = frameRateSpinBox
         self.retryTriggerSpinBox = retryTriggerSpinBox
         self.triggerSelectionComboBox = triggerSelectionComboBox
+
+        self.postProcessorListWidget = postProcessorListWidget
+        self.postProcessorOrderUpButton = postProcessorOrderUpButton
+        self.postProcessorOrderDownButton = postProcessorOrderDownButton
+
+        self.cachedProcessorList = []
 
         self._connectSignals()
         self.updateCalculatedFields()
@@ -79,7 +94,9 @@ class ConfigPanelControl(QObject):
                 processor=ProcessorConfig(
                     timeoutMs=self._timeOutMs(),
                     triggerRetryNum=self._triggerRetryNum(),
-                    trigger=self._triggerType()
+                    trigger=self._triggerType(),
+                    # FIXME: Model and View sticking together so ugly!
+                    allPluginProcessor=self._processors(),
                 )
             )
             self.configUpdated.emit(config)
@@ -87,8 +104,12 @@ class ConfigPanelControl(QObject):
         except ConfigError as e:
             showError("ConfigError", str(e))
 
-    def respondModelConfig(self, config: ModelConfig):
-        ...
+    def respondToModelConfig(self, config: ModelConfig):
+        self._deviceNumber(config.dataWorker.deviceNumber)
+
+        self._syncProcessorList(
+            config.processor.allPluginProcessor
+        )
 
     def updateCalculatedFields(self):
         self._updateTimeRange()
@@ -101,8 +122,68 @@ class ConfigPanelControl(QObject):
         self.updateConfigButton.clicked.connect(self.updateConfig)
         self.bufferSizeSpinBox.valueChanged.connect(self._updateTimeRange)
         self.sampleRateSpinBox.valueChanged.connect(self._updateTimeRange)
+        self.postProcessorOrderUpButton.clicked.connect(
+            self._moveSelectedProcessorUp)
+        self.postProcessorOrderDownButton.clicked.connect(
+            self._moveSelectedProcessorDown)
 
-    def _deviceNumber(self):
+    def _processors(self):
+        def findItemFromText(itemText: str, pList: typing.List[ProcessorType]):
+            for p in pList:
+                if p.displayName() == itemText:
+                    return p
+            raise Exception()
+        # FIXME: Super ugly!!! Lift this logic out to controller.
+        lw = self.postProcessorListWidget
+
+        allPluginProcessor = []
+        for i in range(lw.count()):
+            itemText = lw.item(i).text()
+            allPluginProcessor.append(
+                findItemFromText(itemText, self.cachedProcessorList)
+            )
+        return allPluginProcessor
+
+    def _syncProcessorList(self, pList: typing.List[ProcessorType]):
+        # Sync saved processor list.
+        self.cachedProcessorList = pList
+
+        # Sync display.
+        allNames = [p.displayName() for p in pList]
+        lw = self.postProcessorListWidget
+        for name in allNames:
+            if not lw.findItems(name, PyQt5.QtCore.Qt.MatchFlag.MatchExactly):
+                lw.addItem(name)
+        for i in range(lw.count()):
+            item = lw.item(i)
+            if item is not None:
+                itemText = item.text()
+                if itemText not in allNames:
+                    lw.takeItem(i)
+
+    def _firstSelectedIndex(self):
+        s = self.postProcessorListWidget.selectedIndexes()
+        if len(s) > 0:
+            return s[0]
+        return None
+
+    def _moveSelectedProcessorUp(self):
+        lw = self.postProcessorListWidget
+        currentRow = lw.currentRow()
+        currentItem = lw.takeItem(currentRow)
+        lw.insertItem(currentRow - 1, currentItem)
+        logger.info("Moved processor up.")
+
+    def _moveSelectedProcessorDown(self):
+        lw = self.postProcessorListWidget
+        currentRow = lw.currentRow()
+        currentItem = lw.takeItem(currentRow)
+        lw.insertItem(currentRow+1, currentItem)
+        logger.info("Moved processor down.")
+
+    def _deviceNumber(self, val: int = None):
+        if val is not None:
+            self.deviceNumberSpinBox.setValue(val)
         return self.deviceNumberSpinBox.value()
 
     def _inputChannel(self):

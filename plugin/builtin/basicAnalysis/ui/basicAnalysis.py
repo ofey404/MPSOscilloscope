@@ -32,6 +32,7 @@ class Ui_Form(object):
         self.horizontalLayout_3.addWidget(self.label_4)
         self.vTopDoubleSpinBox = QtWidgets.QDoubleSpinBox(Form)
         self.vTopDoubleSpinBox.setReadOnly(True)
+        self.vTopDoubleSpinBox.setMinimum(-99.0)
         self.vTopDoubleSpinBox.setObjectName("vTopDoubleSpinBox")
         self.horizontalLayout_3.addWidget(self.vTopDoubleSpinBox)
         self.verticalLayout_2.addLayout(self.horizontalLayout_3)

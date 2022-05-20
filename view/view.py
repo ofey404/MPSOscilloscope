@@ -82,6 +82,9 @@ class OscilloscopeUi(QMainWindow):
             frameRateSpinBox=self.mainwindow.frameRateSpinBox,
             retryTriggerSpinBox=self.mainwindow.retryTriggerSpinBox,
             triggerSelectionComboBox=self.mainwindow.triggerSelectionComboBox,
+            postProcessorListWidget=self.mainwindow.postProcessorListWidget,
+            postProcessorOrderUpButton=self.mainwindow.postProcessorOrderUpButton,
+            postProcessorOrderDownButton=self.mainwindow.postProcessorOrderDownButton,
         )
 
         self._connectSignals()
@@ -107,6 +110,7 @@ class OscilloscopeUi(QMainWindow):
             config.dataWorker.bufferSize, config.dataWorker.ADSampleRate)
 
         self.display.updateTrigger(config.processor.triggerVolt)
+        self.configPanelControl.respondToModelConfig(config)
 
     def show(self):
         super().show()

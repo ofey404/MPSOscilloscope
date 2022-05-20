@@ -75,7 +75,7 @@ class OscilloscopeModel(QObject):
         self.updateConfig(
             ModelConfig(
                 processor=ProcessorConfig(
-                    pluginProcessors=pluginStatus.orderedPostProcessor
+                    allPluginProcessor=pluginStatus.orderedPostProcessor
                 )
             )
         )
