@@ -1,13 +1,13 @@
 from typing import List
 from PyQt5.QtCore import pyqtSignal
 from plugin.helpers.pluginType import ProcessorType
+
 from dataclasses import dataclass
 
 
 @dataclass
 class FFTData:
     ...
-
 
 class FFTProcessor(ProcessorType):
     dataUpdated = pyqtSignal(FFTData)

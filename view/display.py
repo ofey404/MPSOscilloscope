@@ -84,9 +84,9 @@ class OscilloscopeDisplay(FigureCanvas, TimedAnimation):
 
         self.config = config
 
-        # 2 times longer than minimal data length passed by trigger.
+        # 4 times longer than minimal data length passed by trigger.
         self.n = np.linspace(
-            0, self.config.timeLimMs()[1] * 2, self.config.dataPointCount() * 2 + 1)
+            0, self.config.timeLimMs()[1] * 4, self.config.dataPointCount() * 4 + 1)
         self.y = (self.n * 0.0) + 50
 
         # The window
