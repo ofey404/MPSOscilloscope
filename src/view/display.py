@@ -1,5 +1,4 @@
 import logging
-from tkinter import W
 from typing import List
 
 import matplotlib

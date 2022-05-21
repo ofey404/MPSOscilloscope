@@ -1,4 +1,3 @@
-from tkinter import W
 from PyQt5.QtCore import pyqtSignal, QTimer, QObject
 from PyQt5.QtWidgets import QSlider, QComboBox, QLabel, QPushButton, QSpinBox
 from dataclasses import dataclass

@@ -1,7 +1,6 @@
 import logging
 import typing
 
-from tomlkit import item
 from model.model import ModelConfig
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWidgets import QComboBox, QSpinBox, QPushButton, QDoubleSpinBox, QListWidget
